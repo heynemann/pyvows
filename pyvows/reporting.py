@@ -20,28 +20,37 @@ class VowsDefaultReporter(object):
         init(autoreset=True)
         self.result = result
         self.tab = " " * 2
-        self.indent = 0
+        self.indent = 1
 
     def camel_split(self, string):
-        return re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z]))', ' ', string)
+        return re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z]))', ' ', string).strip()
 
     def pretty_print(self):
         for name, context in self.result.contexts.iteritems():
             self.print_context(name, context)
         print
-        print " %s OK » %d honored • %d errored (%.2fs)" % (
+        print "%s%s OK » %d honored • %d errored (%.2fs)" % (
+                self.tab * self.indent,
                 self.result.successful and self.honored or self.errored,
                 self.result.successful_tests,
-                self.result.failed_tests,
+                self.result.errored_tests,
                 self.result.ellapsed_time
         )
 
     def print_context(self, name, context):
-        print " %s%s" % (self.tab * self.indent, self.camel_split(name))
+        print "%s%s" % (self.tab * self.indent, self.camel_split(name))
         self.indent += 1
 
-        for test in context.tests:
-            if test.successful:
-                print " %s%s %s" % (self.tab * self.indent, self.honored, self.camel_split(test.name))
+        print_test = lambda icon, test_name: "%s%s %s" % (self.tab * self.indent, icon, self.camel_split(test_name))
+
+        for test in context['tests']:
+            if test['succeeded']:
+                print print_test(VowsDefaultReporter.honored, test['name'])
+            else:
+                print print_test(VowsDefaultReporter.broken, test['name'])
+                print "%s%s" % (self.tab * (self.indent + 1), Fore.RED + str(test['error']) + Fore.RESET)
+
+        for name, context in context['contexts'].iteritems():
+            self.print_context(name, context)
 
         self.indent -= 1

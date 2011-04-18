@@ -10,3 +10,6 @@
 
 from pyvows.core import Vows
 from pyvows.assertions import *
+
+if __name__ == '__main__':
+    Vows.run()

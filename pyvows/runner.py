@@ -28,7 +28,7 @@ class VowsRunner(object):
             self.run_context(context_col, key, value)
 
         end_time = time.time() 
-        result.ellapsed_time = (end_time - start_time)
+        result.ellapsed_time = float(end_time - start_time)
         return result
 
     def run_context(self, context_col, key, value):
@@ -41,7 +41,7 @@ class VowsRunner(object):
         value_instance = value()
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
-                self.run_context(context_col, member_name, member)
+                self.run_context(context_col[key]['contexts'], member_name, member)
                 continue
 
             if inspect.ismethod(member) and member_name == 'topic':
@@ -61,7 +61,6 @@ class VowsRunner(object):
                     result_obj['succeeded'] = True
                 except Exception, err:
                     result_obj['error'] = err
-                    result_obj['succeeded'] = False
 
                 context_col[key]['tests'].append(result_obj)
 
