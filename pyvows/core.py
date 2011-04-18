@@ -8,10 +8,31 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+import sys
+import os
+from os.path import join, abspath, splitext
+import fnmatch
+import glob
+
 from pyvows.runner import VowsRunner
+from pyvows.reporting import VowsDefaultReporter
+
+class VowsSuite(object):
+    contexts = {}
+
+def locate(pattern, root=os.curdir, recursive=True):
+    root_path = os.path.abspath(root)
+
+    if recursive:
+        return_files = []
+        for path, dirs, files in os.walk(root_path):
+            for filename in fnmatch.filter(files, pattern):
+                return_files.append(os.path.join(path, filename))
+        return return_files
+    else:
+        return glob(join(root_path, pattern))
 
 class Vows(object):
-    __current_vows__ = {}
 
     class Context(object):
         pass
@@ -21,9 +42,12 @@ class Vows(object):
 
     @classmethod
     def batch(cls, method):
+        global suite
         def method_name(*args, **kw):
             method(*args, **kw)
-        Vows.__current_vows__[method.__name__] = method
+
+        VowsSuite.contexts[method.__name__] = method
+
         return method_name
 
     @classmethod
@@ -38,12 +62,37 @@ class Vows(object):
 
     @classmethod
     def ensure(cls):
-        runner = VowsRunner(cls.__current_vows__, Vows.Context)
+        global suite
+
+        runner = VowsRunner(VowsSuite.contexts, Vows.Context)
 
         result = runner.run()
 
-        cls.__current_vows__ = {}
-
         return result
 
+    @classmethod
+    def gather(cls, path):
+        path = abspath(path)
 
+        files = locate("*_vows.py", path)
+        sys.path.insert(0, path)
+        for module_path in files:
+            module_name = splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
+            __import__(module_name)
+
+def main():
+    if sys.argv:
+        path = sys.argv[-1]
+    else:
+        path = '.'
+
+    Vows.gather(path)
+
+    result = Vows.ensure()
+
+    reporter = VowsDefaultReporter(result)
+
+    reporter.pretty_print()
+
+if __name__ == '__main__':
+    main()

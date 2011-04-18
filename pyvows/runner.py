@@ -9,6 +9,7 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 import inspect
+import time
 
 from pyvows.result import VowsResult
 
@@ -18,10 +19,16 @@ class VowsRunner(object):
         self.context_class = context_class
 
     def run(self):
+        start_time = time.time() 
+        time.sleep(2) 
         result = VowsResult()
         context_col = result.contexts
+
         for key, value in self.vows.iteritems():
             self.run_context(context_col, key, value)
+
+        end_time = time.time() 
+        result.ellapsed_time = (end_time - start_time)
         return result
 
     def run_context(self, context_col, key, value):
@@ -43,7 +50,7 @@ class VowsRunner(object):
 
             if inspect.ismethod(member):
                 result_obj = {
-                    'method': member_name,
+                    'name': member_name,
                     'result': None,
                     'error': None,
                     'succeeded': False
