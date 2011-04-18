@@ -23,7 +23,7 @@ class VowsDefaultReporter(object):
         self.indent = 1
 
     def camel_split(self, string):
-        return re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z]))', ' ', string).strip()
+        return re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?=[0-9]\b))', ' ', string).strip()
 
     def pretty_print(self):
         for name, context in self.result.contexts.iteritems():
@@ -48,7 +48,7 @@ class VowsDefaultReporter(object):
                 print print_test(VowsDefaultReporter.honored, test['name'])
             else:
                 print print_test(VowsDefaultReporter.broken, test['name'])
-                print "%s%s" % (self.tab * (self.indent + 1), Fore.RED + str(test['error']) + Fore.RESET)
+                print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + str(test['error']) + Fore.RESET)
 
         for name, context in context['contexts'].iteritems():
             self.print_context(name, context)

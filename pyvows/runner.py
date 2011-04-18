@@ -37,18 +37,21 @@ class VowsRunner(object):
             'tests': []
         }
 
-        topic = None
         value_instance = value()
+
+        topic = value_instance.topic() if hasattr(value_instance, 'topic') else None
+
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
                 self.run_context(context_col[key]['contexts'], member_name, member)
                 continue
 
             if inspect.ismethod(member) and member_name == 'topic':
-                topic = member(value_instance)
                 continue
 
             if inspect.ismethod(member):
+                if not topic:
+                    continue
                 result_obj = {
                     'name': member_name,
                     'result': None,

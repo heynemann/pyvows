@@ -35,23 +35,8 @@ class Vows(object):
     class Context(object):
         pass
 
-    class NotAssert(object):
-        def __init__(self, assertion):
-            self.assertion = assertion
-
-        def __getattr__(self, name):
-            if name == 'assertion':
-                return super(Vows.NotAssert, self).getattr(name)
-
-            def assert_not(*args, **kw):
-                if hasattr(self.assertion, 'not_%s' % name):
-                    getattr(self.assertion, 'not_%s' % name)(*args, **kw)
-
-            return assert_not
     class Assert(object):
-        @classmethod
-        def Not(cls):
-            return Vows.NotAssert(Vows.Assert)
+        pass
 
     @staticmethod
     def batch(method):

@@ -13,14 +13,14 @@ from pyvows import Vows
 @Vows.batch
 class DivisionTests(Vows.Context):
 
-    class WhenDividingNumberByZero(Vows.Context):
+    class WhenDividing42Per1(Vows.Context):
 
         def topic(self):
             return 42 / 1
 
-        def we_get_a_number(self, topic):
-            Vows.Assert.is_numeric(topic)
+        def WeGetANumber(self, topic):
+            Vows.Assert.not_is_numeric(topic)
 
-        def we_get_42(self, topic):
-            Vows.Assert.are_equal(topic, 42)
+        def WeGet42(self, topic):
+            Vows.Assert.are_equal(42, topic)
 
