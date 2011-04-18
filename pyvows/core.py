@@ -17,9 +17,6 @@ import glob
 from pyvows.runner import VowsRunner
 from pyvows.reporting import VowsDefaultReporter
 
-class VowsSuite(object):
-    contexts = {}
-
 def locate(pattern, root=os.curdir, recursive=True):
     root_path = os.path.abspath(root)
 
@@ -33,6 +30,7 @@ def locate(pattern, root=os.curdir, recursive=True):
         return glob(join(root_path, pattern))
 
 class Vows(object):
+    contexts = {}
 
     class Context(object):
         pass
@@ -46,7 +44,7 @@ class Vows(object):
         def method_name(*args, **kw):
             method(*args, **kw)
 
-        VowsSuite.contexts[method.__name__] = method
+        cls.contexts[method.__name__] = method
 
         return method_name
 
@@ -64,7 +62,7 @@ class Vows(object):
     def ensure(cls):
         global suite
 
-        runner = VowsRunner(VowsSuite.contexts, Vows.Context)
+        runner = VowsRunner(cls.contexts, Vows.Context)
 
         result = runner.run()
 
