@@ -19,8 +19,8 @@ class DivisionTests(Vows.Context):
             return 42 / 1
 
         def WeGetANumber(self, topic):
-            Vows.Assert.not_is_numeric(topic)
+            Vows.Assert.is_numeric(topic)
 
         def WeGet42(self, topic):
-            Vows.Assert.not_are_equal(42, topic)
+            Vows.Assert.are_equal(42, topic)
 
