@@ -20,7 +20,6 @@ class VowsRunner(object):
 
     def run(self):
         start_time = time.time() 
-        time.sleep(2) 
         result = VowsResult()
         context_col = result.contexts
 

@@ -29,7 +29,7 @@ class VowsDefaultReporter(object):
         for name, context in self.result.contexts.iteritems():
             self.print_context(name, context)
         print
-        print "%s%s OK » %d honored • %d errored (%.2fs)" % (
+        print "%s%s OK » %d honored • %d errored (%.6fs)" % (
                 self.tab * self.indent,
                 self.honored if self.result.successful else self.broken,
                 self.result.successful_tests,

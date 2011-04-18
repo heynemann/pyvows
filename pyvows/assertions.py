@@ -31,7 +31,10 @@ def validate(lit):
         return float(lit)
     except ValueError:
         pass
-    return complex(lit)
+    try:
+        return complex(lit)
+    except ValueError:
+        return None
 
 @Vows.assertion
 def are_equal(expected, actual):
