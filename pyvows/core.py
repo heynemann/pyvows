@@ -40,11 +40,10 @@ class Vows(object):
 
     @classmethod
     def batch(cls, method):
-        global suite
         def method_name(*args, **kw):
             method(*args, **kw)
 
-        cls.contexts[method.__name__] = method
+        Vows.contexts[method.__name__] = method
 
         return method_name
 
@@ -60,9 +59,7 @@ class Vows(object):
 
     @classmethod
     def ensure(cls):
-        global suite
-
-        runner = VowsRunner(cls.contexts, Vows.Context)
+        runner = VowsRunner(Vows.contexts, Vows.Context)
 
         result = runner.run()
 
@@ -78,19 +75,20 @@ class Vows(object):
             module_name = splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
             __import__(module_name)
 
-def main():
-    if sys.argv:
-        path = sys.argv[-1]
-    else:
-        path = '.'
+    @classmethod
+    def run(cls):
+        if sys.argv:
+            path = sys.argv[-1]
+        else:
+            path = '.'
 
-    Vows.gather(path)
+        Vows.gather(path)
 
-    result = Vows.ensure()
+        result = Vows.ensure()
 
-    reporter = VowsDefaultReporter(result)
+        reporter = VowsDefaultReporter(result)
 
-    reporter.pretty_print()
+        reporter.pretty_print()
 
 if __name__ == '__main__':
-    main()
+    Vows.run()
