@@ -22,5 +22,5 @@ class DivisionTests(Vows.Context):
             Vows.Assert.not_is_numeric(topic)
 
         def WeGet42(self, topic):
-            Vows.Assert.are_equal(42, topic)
+            Vows.Assert.not_are_equal(42, topic)
 

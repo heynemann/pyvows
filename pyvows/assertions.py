@@ -35,16 +35,16 @@ def validate(lit):
 
 @Vows.assertion
 def are_equal(expected, actual):
-    assert expected == actual, "Expected %s, got %s" % (expected, actual)
+    assert expected == actual, "Expected topic to be %s, but it was %s" % (expected, actual)
 
 @Vows.assertion
 def is_numeric(actual):
-    assert validate(str(actual)), "Expected %s to be numeric, but it wasn't" % actual
+    assert validate(str(actual)), "Expected topic(%s) to be numeric, but it wasn't" % actual
 
 @Vows.assertion
 def not_are_equal(expected, actual):
-    assert expected != actual, "Expected %s not to be %s" % (expected, actual)
+    assert expected != actual, "Expected topic not to be %s, but it was" % (expected)
 
 @Vows.assertion
 def not_is_numeric(actual):
-    assert validate(str(actual)) is None, "Expected %s not to be numeric, but it was" % actual
+    assert validate(str(actual)) is None, "Expected topic(%s) not to be numeric, but it was" % actual

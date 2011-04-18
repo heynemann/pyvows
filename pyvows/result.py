@@ -19,7 +19,7 @@ class VowsResult(object):
 
     @property
     def total_test_count(self):
-        return self.count_tests(contexts=None, first=True, count_func=lambda test: (test['succeeded'] and 1 or 0))
+        return self.count_tests(contexts=None, first=True, count_func=lambda test: 1)
 
     @property
     def successful_tests(self):

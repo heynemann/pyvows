@@ -31,7 +31,7 @@ class VowsDefaultReporter(object):
         print
         print "%s%s OK » %d honored • %d errored (%.2fs)" % (
                 self.tab * self.indent,
-                self.result.successful and self.honored or self.errored,
+                self.honored if self.result.successful else self.broken,
                 self.result.successful_tests,
                 self.result.errored_tests,
                 self.result.ellapsed_time
