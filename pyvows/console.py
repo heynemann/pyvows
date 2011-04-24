@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# pyvows testing engine
+# pyVows testing engine
 # https://github.com/heynemann/pyvows
 
 # Licensed under the MIT license:
@@ -17,7 +17,7 @@ from pyvows.core import Vows
 
 def __get_arguments():
     current_dir = os.curdir
-    parser = argparse.ArgumentParser(description='Runs PyVows.')
+    parser = argparse.ArgumentParser(description='Runs pyVows.')
 
     parser.add_argument('-p', '--pattern', default='*_vows.py', help='Pattern of vows files. Defaults to *_vows.py.')
 

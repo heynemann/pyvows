@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# pyvows testing engine
+# pyVows testing engine
 # https://github.com/heynemann/pyvows
 
 # Licensed under the MIT license:
@@ -10,6 +10,8 @@
 
 from pyvows.core import Vows
 from pyvows.assertions import *
+
+__version__ = (0, 1, 0)
 
 if __name__ == '__main__':
     Vows.run()
