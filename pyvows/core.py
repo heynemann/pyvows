@@ -15,7 +15,6 @@ import fnmatch
 import glob
 
 from pyvows.runner import VowsRunner
-from pyvows.reporting import VowsDefaultReporter
 
 def locate(pattern, root=os.curdir, recursive=True):
     root_path = os.path.abspath(root)
@@ -66,27 +65,13 @@ class Vows(object):
         return result
 
     @classmethod
-    def gather(cls, path):
+    def gather(cls, path, pattern):
         path = abspath(path)
 
-        files = locate("*_vows.py", path)
+        files = locate(pattern, path)
         sys.path.insert(0, path)
         for module_path in files:
             module_name = splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
             __import__(module_name)
 
-    @classmethod
-    def run(cls):
-        if sys.argv:
-            path = sys.argv[-1]
-        else:
-            path = '.'
-
-        Vows.gather(path)
-
-        result = Vows.ensure()
-
-        reporter = VowsDefaultReporter(result)
-
-        reporter.pretty_print()
 
