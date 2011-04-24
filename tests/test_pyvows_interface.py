@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# pyvows testing engine
+# pyVows testing engine
 # https://github.com/heynemann/pyvows
 
 # Licensed under the MIT license:

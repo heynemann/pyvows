@@ -1,5 +1,5 @@
 vows:
-	@env PYTHONPATH=. python pyvows/__init__.py tests/
+	@env PYTHONPATH=. python pyvows/console.py tests/
 
 test:
 	@nosetests -s -v tests/
