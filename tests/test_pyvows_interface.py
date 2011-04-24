@@ -13,10 +13,10 @@ from pyvows import Vows
 import division_vows
 
 def test_can_get_vows():
-    assert Vows.__current_vows__
+    assert Vows.contexts
 
 def test_can_get_vows_by_key():
-    assert 'DivisionTests' in Vows.__current_vows__
+    assert 'DivisionTests' in Vows.contexts
 
 def test_can_run_vows():
     result = Vows.ensure()

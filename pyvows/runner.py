@@ -11,6 +11,12 @@
 import inspect
 import time
 
+try:
+    import pp
+    HAS_PP = True
+except ImportError:
+    HAS_PP = False
+
 from pyvows.result import VowsResult
 
 class VowsRunner(object):
@@ -66,3 +72,12 @@ class VowsRunner(object):
 
                 context_col[key]['tests'].append(result_obj)
 
+class VowsParallelRunner(object):
+    def __init__(self, vows, context_class):
+        self.vows = vows
+        self.context_class = context_class
+
+    def run(self):
+        pass
+
+DEFAULT_RUNNER = VowsParallelRunner if HAS_PP else VowsRunner
