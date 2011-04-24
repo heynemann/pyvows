@@ -14,7 +14,7 @@ from os.path import join, abspath, splitext
 import fnmatch
 import glob
 
-from pyvows.runner import DEFAULT_RUNNER
+from pyvows.runner import VowsParallelRunner
 
 def locate(pattern, root=os.curdir, recursive=True):
     root_path = os.path.abspath(root)
@@ -57,8 +57,8 @@ class Vows(object):
         return method_name
 
     @classmethod
-    def ensure(cls):
-        runner = DEFAULT_RUNNER(Vows.contexts, Vows.Context)
+    def ensure(cls, runner=VowsParallelRunner):
+        runner = runner(Vows.contexts, Vows.Context)
 
         result = runner.run()
 

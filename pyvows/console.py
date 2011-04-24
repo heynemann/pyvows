@@ -13,6 +13,7 @@ from os.path import isfile, split
 import argparse
 
 from pyvows.reporting import VowsDefaultReporter
+from pyvows.runner import VowsRunner, VowsParallelRunner
 from pyvows.core import Vows
 
 def __get_arguments():
@@ -20,6 +21,7 @@ def __get_arguments():
     parser = argparse.ArgumentParser(description='Runs pyVows.')
 
     parser.add_argument('-p', '--pattern', default='*_vows.py', help='Pattern of vows files. Defaults to *_vows.py.')
+    parser.add_argument('-s', '--sequential', action="store_true", default=False, help='Indicates that vows should be run sequentially. Defaults to parallel running.')
 
     parser.add_argument('path', default=current_dir, nargs='?', help='Directory to look for vows recursively. If a file is passed, the file will be the target for vows. Defaults to current dir.')
 
@@ -27,10 +29,10 @@ def __get_arguments():
 
     return arguments
 
-def run(path, pattern):
+def run(path, pattern, sequential):
     Vows.gather(path, pattern)
 
-    result = Vows.ensure()
+    result = Vows.ensure(VowsRunner if sequential else VowsParallelRunner)
 
     reporter = VowsDefaultReporter(result)
 
@@ -45,7 +47,7 @@ def main():
     if isfile(path):
         path, pattern = split(path)
 
-    run(path, pattern)
+    run(path, pattern, arguments.sequential)
 
 if __name__ == '__main__':
     main()

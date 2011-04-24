@@ -12,10 +12,11 @@ import inspect
 import time
 
 try:
-    import pp
-    HAS_PP = True
+    from Queue import Queue
+    from threading import Thread
+    HAS_PARALLEL = True
 except ImportError:
-    HAS_PP = False
+    HAS_PARALLEL = False
 
 from pyvows.result import VowsResult
 
@@ -25,14 +26,14 @@ class VowsRunner(object):
         self.context_class = context_class
 
     def run(self):
-        start_time = time.time() 
+        start_time = time.time()
         result = VowsResult()
         context_col = result.contexts
 
         for key, value in self.vows.iteritems():
             self.run_context(context_col, key, value)
 
-        end_time = time.time() 
+        end_time = time.time()
         result.ellapsed_time = float(end_time - start_time)
         return result
 
@@ -76,9 +77,75 @@ class VowsParallelRunner(object):
     def __init__(self, vows, context_class):
         self.vows = vows
         self.context_class = context_class
-        self.server = pp.Server(ppservers=tuple())
+        self.queue = Queue()
+
+    def worker(self):
+        while True:
+            item = self.queue.get()
+
+            if item[0] == 'context':
+                self.run_context(item)
+            elif item[0] == 'vow':
+                self.run_vow(item)
+
+            self.queue.task_done()
 
     def run(self):
-        pass
+        start_time = time.time()
+        result = VowsResult()
 
-DEFAULT_RUNNER = VowsParallelRunner if HAS_PP else VowsRunner
+        for i in range(4):
+            t = Thread(target=self.worker)
+            t.daemon = True
+            t.start()
+
+        for name, context in self.vows.iteritems():
+            self.queue.put(('context', result.contexts, name, context))
+
+        self.queue.join()
+
+        end_time = time.time()
+        result.ellapsed_time = float(end_time - start_time)
+        return result
+
+    def run_context(self, item):
+        operation, context_col, key, value = item
+
+        context_col[key] = {
+            'contexts': {},
+            'tests': []
+        }
+
+        value_instance = value()
+
+        topic = value_instance.topic() if hasattr(value_instance, 'topic') else None
+
+        for member_name, member in inspect.getmembers(value):
+            if inspect.isclass(member) and issubclass(member, self.context_class):
+                self.queue.put(('context', context_col[key]['contexts'], member_name, member))
+                continue
+
+            if inspect.ismethod(member) and member_name == 'topic':
+                continue
+
+            if inspect.ismethod(member):
+                if not topic:
+                    continue
+                self.queue.put(('vow', context_col[key]['tests'], topic, value_instance, member, member_name))
+
+    def run_vow(self, item):
+        operation, tests_col, topic, value_instance, member, member_name = item
+        result_obj = {
+            'name': member_name,
+            'result': None,
+            'error': None,
+            'succeeded': False
+        }
+        try:
+            result = member(value_instance, topic)
+            result_obj['result'] = result
+            result_obj['succeeded'] = True
+        except Exception, err:
+            result_obj['error'] = err
+
+        tests_col.append(result_obj)
