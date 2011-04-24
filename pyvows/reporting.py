@@ -26,6 +26,10 @@ class VowsDefaultReporter(object):
         return re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?=[0-9]\b))', ' ', string).strip()
 
     def pretty_print(self):
+        if not self.result:
+            print " %s No vows found! » 0 honored • 0 broken (0.0s)" % self.broken
+            return
+
         for name, context in self.result.contexts.iteritems():
             self.print_context(name, context)
         print

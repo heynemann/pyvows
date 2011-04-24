@@ -76,6 +76,7 @@ class VowsParallelRunner(object):
     def __init__(self, vows, context_class):
         self.vows = vows
         self.context_class = context_class
+        self.server = pp.Server(ppservers=tuple())
 
     def run(self):
         pass
