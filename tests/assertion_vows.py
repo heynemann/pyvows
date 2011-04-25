@@ -88,3 +88,18 @@ class Assertion(Vows.Context):
 
             def WeAssertItIsNotLike41(self, topic):
                 Vows.Assert.not_are_alike(41, topic)
+
+        class WhenItIsAList(Vows.Context):
+
+            class OfNumbers(Vows.Context):
+                def topic(self):
+                    return [1, 2, 3]
+
+                def WeCanCompareToOtherList(self, topic):
+                    Vows.Assert.are_alike([1, 2, 3], topic)
+
+                def WeCanCompareToAListInDifferentOrder(self, topic):
+                    Vows.Assert.are_alike([3, 2, 1], topic)
+
+
+
