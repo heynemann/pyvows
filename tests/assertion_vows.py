@@ -104,6 +104,29 @@ class Assertion(Vows.Context):
                 def we_can_compare_to_a_tuple_in_different_order(self, topic):
                     Vows.Assert.are_alike((3, 2, 1), topic)
 
+            class OfStrings(Vows.Context):
+                def topic(self):
+                    return ["some", "string", "list"]
+
+                def we_can_compare_to_other_list_in_different_order(self, topic):
+                    Vows.Assert.are_alike(["list", "some", "string"], topic)
+
+            class OfLists(Vows.Context):
+
+                class WithinList(Vows.Context):
+                    def topic(self):
+                        return [["my", "list"], ["of", "lists"]]
+
+                    def we_can_compare_to_other_list_of_lists(self, topic):
+                        Vows.Assert.are_alike((['lists', 'of'], ['list', 'my']), topic)
+
+                class WithinTuple(Vows.Context):
+                    def topic(self):
+                        return (["my", "list"], ["of", "lists"])
+
+                    def we_can_compare_to_other_list_of_lists(self, topic):
+                        Vows.Assert.are_alike((['lists', 'of'], ['list', 'my']), topic)
+
         class WhenItIsATuple(Vows.Context):
 
             class OfNumbers(Vows.Context):

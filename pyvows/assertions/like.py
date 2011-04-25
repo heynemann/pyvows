@@ -44,11 +44,21 @@ def compare_numbers(expected, actual):
     return float(expected) == float(actual)
 
 def compare_lists(expected, actual):
+    return match_lists(expected, actual) and match_lists(actual, expected)
+
+def match_lists(expected, actual):
     for item in expected:
-        if not item in actual:
-            return False
-    for item in actual:
-        if not item in expected:
+        if isinstance(item, (list, tuple)):
+            found = False
+            for inner_item in actual:
+                if not isinstance(inner_item, (list, tuple)):
+                    continue
+                if compare_lists(item, inner_item):
+                    found = True
+                    break
+            if not found:
+                return False
+        elif not item in actual:
             return False
 
     return True
