@@ -36,7 +36,7 @@ pyVows is a test engine based in Vows JS and features topic-based testing as wel
 
     entry_points = {
         'console_scripts': [
-            'vows = pyvows.console:main'
+            'pyvows = pyvows.console:main'
         ],
     },
 
