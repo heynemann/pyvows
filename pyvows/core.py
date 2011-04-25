@@ -28,14 +28,24 @@ def locate(pattern, root=os.curdir, recursive=True):
     else:
         return glob(join(root_path, pattern))
 
+class VowsAssertion(object):
+    class AssertionNotFoundError(AttributeError):
+        def __init__(self, name):
+            super(VowsAssertion.AssertionNotFoundError, self).__init__("Assertion with name %s was not found!" % name)
+
+    def __getattr__(self, name):
+        if not hasattr(self, name):
+            raise VowsAssertion.AssertionNotFoundError(name)
+        return super(VowsAssertion, self).__getattr__(name)
+
+
 class Vows(object):
     contexts = {}
 
     class Context(object):
         pass
 
-    class Assert(object):
-        pass
+    Assert = VowsAssertion()
 
     @staticmethod
     def batch(method):
@@ -50,8 +60,7 @@ class Vows(object):
     def assertion(cls, method):
         def method_name(*args, **kw):
             method(*args, **kw)
-        @classmethod
-        def exec_assertion(cls, *args, **kw):
+        def exec_assertion(*args, **kw):
             return method_name(*args, **kw)
         setattr(Vows.Assert, method.__name__, exec_assertion)
         return method_name

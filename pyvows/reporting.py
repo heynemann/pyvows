@@ -53,7 +53,7 @@ class VowsDefaultReporter(object):
             else:
                 print print_test(VowsDefaultReporter.broken, test['name'])
                 print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + str(test['error']) + Fore.RESET)
-
+                print "%s%s" % (self.tab * (self.indent + 3), Fore.RED + "(found in %s at line %s)" % (test['file'], test['lineno']) + Fore.RESET)
         for name, context in context['contexts'].iteritems():
             self.print_context(name, context)
 

@@ -118,7 +118,10 @@ class VowsParallelRunner(object):
 
         value_instance = value()
 
-        topic = value_instance.topic() if hasattr(value_instance, 'topic') else None
+        try:
+            topic = value_instance.topic() if hasattr(value_instance, 'topic') else None
+        except Exception, err:
+            topic = err
 
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
@@ -135,11 +138,14 @@ class VowsParallelRunner(object):
 
     def run_vow(self, item):
         operation, tests_col, topic, value_instance, member, member_name = item
+        filename, lineno = self.file_info_for(member)
         result_obj = {
             'name': member_name,
             'result': None,
             'error': None,
-            'succeeded': False
+            'succeeded': False,
+            'file': filename,
+            'lineno': lineno
         }
         try:
             result = member(value_instance, topic)
@@ -149,3 +155,15 @@ class VowsParallelRunner(object):
             result_obj['error'] = err
 
         tests_col.append(result_obj)
+
+    def file_info_for(self, member):
+        if hasattr(member, '__code__'):
+            code = member.__code__
+        elif hasattr(member, '__func__'):
+            code = member.__func__.__code__
+
+        filename = code.co_filename
+        lineno = code.co_firstlineno
+
+        return filename, lineno
+

@@ -8,6 +8,8 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+import inspect
+
 from pyvows import Vows
 
 def validate(lit):
@@ -51,3 +53,12 @@ def not_are_equal(expected, actual):
 @Vows.assertion
 def not_is_numeric(actual):
     assert validate(str(actual)) is None, "Expected topic(%s) not to be numeric, but it was" % actual
+
+@Vows.assertion
+def is_function(actual):
+    assert inspect.ismethod(actual) or inspect.isfunction(actual), "Expected topic(%s) to be a function or a method, but it was a %s" % (actual, actual.__class__)
+
+@Vows.assertion
+def not_is_function(actual):
+    assert not inspect.ismethod(actual) and not inspect.isfunction(actual), "Expected topic(%s) not to be a function or a method, but it was" % actual
+

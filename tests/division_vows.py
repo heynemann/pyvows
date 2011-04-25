@@ -24,33 +24,3 @@ class DivisionTests(Vows.Context):
         def WeGet42(self, topic):
             Vows.Assert.are_equal(42, topic)
 
-@Vows.batch
-class Assertion(Vows.Context):
-
-    class Equal(Vows.Context):
-
-        def topic(self):
-            return "test"
-
-        def WeGetTest(self, topic):
-            Vows.Assert.are_equal('test', topic)
-
-        def WeDoNotGetElse(self, topic):
-            Vows.Assert.not_are_equal('else', topic)
-
-    class IsNumeric(Vows.Context):
-
-        class WhenItIsANumber(Vows.Context):
-            def topic(self):
-                return 42
-
-            def WeAssertItIsNumeric(self, topic):
-                Vows.Assert.is_numeric(topic)
-
-        class WhenItIsNotANumber(Vows.Context):
-            def topic(self):
-                return 'test'
-
-            def WeAssertItIsNotNumeric(self, topic):
-                Vows.Assert.not_is_numeric(topic)
-
