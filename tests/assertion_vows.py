@@ -57,3 +57,13 @@ class Assertion(Vows.Context):
 
             def WeAssertItIsNotAFunction(self, topic):
                 Vows.Assert.not_is_function(topic)
+
+    class IsLike(Vows.Context):
+
+        class WhenItIsAString(Vows.Context):
+            def topic(self):
+                return " some StRinG with RanDoM CaSe And  Weird   SpACING   "
+
+            def WeAssertItIsLikeOtherString(self, topic):
+                Vows.Assert.are_alike('some string with random case and weird spacing', topic)
+
