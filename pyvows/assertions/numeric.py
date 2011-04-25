@@ -8,39 +8,15 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-from pyvows import Vows
+import numbers
 
-def validate(lit):
-    if lit == '0': return 0
-    litneg = lit[1:] if lit[0] == '-' else lit
-    if litneg[0] == '0':
-        if litneg[1] in 'xX':
-            return int(lit,16)
-        elif litneg[1] in 'bB':
-            return int(lit,2)
-        else:
-            try:
-                return int(lit,8)
-            except ValueError:
-                pass
-    try:
-        return int(lit)
-    except ValueError:
-        pass
-    try:
-        return float(lit)
-    except ValueError:
-        pass
-    try:
-        return complex(lit)
-    except ValueError:
-        return None
+from pyvows import Vows
 
 @Vows.assertion
 def is_numeric(actual):
-    assert validate(str(actual)), "Expected topic(%s) to be numeric, but it wasn't" % actual
+    assert isinstance(actual, numbers.Number), "Expected topic(%s) to be numeric, but it wasn't" % actual
 
 @Vows.assertion
 def not_is_numeric(actual):
-    assert validate(str(actual)) is None, "Expected topic(%s) not to be numeric, but it was" % actual
+    assert not isinstance(actual, numbers.Number), "Expected topic(%s) not to be numeric, but it was" % actual
 

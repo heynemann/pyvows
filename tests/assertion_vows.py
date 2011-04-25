@@ -70,3 +70,21 @@ class Assertion(Vows.Context):
             def WeAssertItIsNotLikeOtherString(self, topic):
                 Vows.Assert.not_are_alike('some other string', topic)
 
+        class WhenItIsANumber(Vows.Context):
+            def topic(self):
+                return 42
+
+            def WeAssertItIsNotLikeAString(self, topic):
+                Vows.Assert.not_are_alike('42', topic)
+
+            def WeAssertItIsLike42(self, topic):
+                Vows.Assert.are_alike(42, topic)
+
+            def WeAssertItIsLike42Float(self, topic):
+                Vows.Assert.are_alike(42.0, topic)
+
+            def WeAssertItIsLike42Long(self, topic):
+                Vows.Assert.are_alike(long(42), topic)
+
+            def WeAssertItIsNotLike41(self, topic):
+                Vows.Assert.not_are_alike(41, topic)
