@@ -23,14 +23,19 @@ def not_are_alike(expected, actual):
     compare_alike(expected, actual, lambda result: not result, message)
 
 def compare_alike(expected, actual, modifier, message):
+    assert modifier(match_alike(expected, actual)), message % (actual, expected)
+
+def match_alike(expected, actual):
     if isinstance(actual, basestring):
-        assert modifier(compare_strings(expected, actual)), message % ("'%s'" % actual, "'%s'" % expected)
+        return compare_strings(expected, actual)
     elif isinstance(actual, numbers.Number):
-        assert modifier(compare_numbers(expected, actual)), message % (actual, expected)
+        return compare_numbers(expected, actual)
     elif isinstance(actual, (list, tuple)):
-        assert modifier(compare_lists(expected, actual)), message % (actual, expected)
+        return compare_lists(expected, actual)
+    elif isinstance(actual, dict):
+        return compare_dicts(expected, actual)
     else:
-        assert False, "Could not compare %s and %s" % (expected, actual)
+        raise RuntimeError("Could not compare %s and %s" % (expected, actual))
 
 def compare_strings(expected, actual):
     replaced_actual = actual.lower().replace(' ', '')
@@ -42,6 +47,15 @@ def compare_numbers(expected, actual):
        not isinstance(expected, numbers.Number):
         return False
     return float(expected) == float(actual)
+
+def compare_dicts(expected, actual):
+    return match_dicts(expected, actual) and match_dicts(actual, expected)
+
+def match_dicts(expected, actual):
+    for k, v in expected.iteritems():
+        if not k in actual or not match_alike(actual[k], v):
+            return False
+    return True
 
 def compare_lists(expected, actual):
     return match_lists(expected, actual) and match_lists(actual, expected)
@@ -62,3 +76,4 @@ def match_lists(expected, actual):
             return False
 
     return True
+

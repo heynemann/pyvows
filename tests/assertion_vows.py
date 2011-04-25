@@ -127,6 +127,17 @@ class Assertion(Vows.Context):
                     def we_can_compare_to_other_list_of_lists(self, topic):
                         Vows.Assert.are_alike((['lists', 'of'], ['list', 'my']), topic)
 
+            class OfDicts(Vows.Context):
+
+                def topic(self):
+                    return [{'some': 'key', 'other': 'key'}]
+
+                def we_can_compare_to_other_list_of_dicts(self, topic):
+                    Vows.Assert.are_alike([{'some': 'key', 'other': 'key'}], topic)
+
+                def we_can_compare_to_other_list_of_dicts_out_of_order(self, topic):
+                    Vows.Assert.are_alike([{'other': 'key', 'some': 'key'}], topic)
+
         class WhenItIsATuple(Vows.Context):
 
             class OfNumbers(Vows.Context):
@@ -141,4 +152,33 @@ class Assertion(Vows.Context):
 
                 def we_can_compare_to_a_list_in_different_order(self, topic):
                     Vows.Assert.are_alike([3, 2, 1], topic)
+        
+        class WhenItIsADict(Vows.Context):
+
+            def topic(self):
+                return { 'some': 'key', 'other': 'value' }
+
+            def we_can_compare_to_other_dict(self, topic):
+                Vows.Assert.are_alike({ 'some': 'key', 'other': 'value' }, topic)
+
+            def we_can_compare_to_a_dict_in_other_order(self, topic):
+                Vows.Assert.are_alike({ 'other': 'value', 'some': 'key' }, topic)
+
+            class OfDicts(Vows.Context):
+
+                def topic(self):
+                    return {
+                        'some': {
+                            'key': 'value',
+                            'key2': 'value2'
+                        }
+                    }
+
+                def we_can_compare_to_nested_dicts(self, topic):
+                    Vows.Assert.are_alike({
+                        'some': {
+                            'key2': 'value2',
+                            'key': 'value'
+                        }
+                    }, topic)
 
