@@ -24,6 +24,49 @@ class Assertion(Vows.Context):
         def we_do_not_get_else(self, topic):
             Vows.Assert.not_are_equal('else', topic)
 
+    class IsTrue(Vows.Context):
+
+        def topic(self):
+            return True
+
+        def we_can_assert_it_is_true(self, topic):
+            Vows.Assert.is_true(topic)
+
+        def we_can_assert_number_is_true(self, topic):
+            Vows.Assert.is_true(1)
+
+        def we_can_assert_string_is_true(self, topic):
+            Vows.Assert.is_true('some')
+
+        def we_can_assert_list_is_true(self, topic):
+            Vows.Assert.is_true(['some'])
+
+        def we_can_assert_empty_dict_is_true(self, topic):
+            Vows.Assert.is_true({'some': 'key'})
+
+    class IsFalse(Vows.Context):
+
+        def topic(self):
+            return False
+
+        def we_can_assert_it_is_false(self, topic):
+            Vows.Assert.is_false(topic)
+
+        def we_can_assert_zero_is_false(self, topic):
+            Vows.Assert.is_false(0)
+
+        def we_can_assert_none_is_false(self, topic):
+            Vows.Assert.is_false(None)
+
+        def we_can_assert_empty_string_is_false(self, topic):
+            Vows.Assert.is_false('')
+
+        def we_can_assert_empty_list_is_false(self, topic):
+            Vows.Assert.is_false('')
+
+        def we_can_assert_empty_dict_is_false(self, topic):
+            Vows.Assert.is_false({})
+
     class IsNumeric(Vows.Context):
 
         class WhenItIsANumber(Vows.Context):

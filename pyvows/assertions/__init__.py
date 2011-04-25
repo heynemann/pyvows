@@ -12,3 +12,4 @@ import pyvows.assertions.equality
 import pyvows.assertions.numeric
 import pyvows.assertions.function
 import pyvows.assertions.like
+import pyvows.assertions.boolean

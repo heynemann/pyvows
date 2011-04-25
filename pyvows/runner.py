@@ -56,8 +56,6 @@ class VowsRunner(object):
                 continue
 
             if inspect.ismethod(member):
-                if not topic:
-                    continue
                 result_obj = {
                     'name': member_name,
                     'result': None,
