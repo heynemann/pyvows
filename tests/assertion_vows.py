@@ -67,3 +67,6 @@ class Assertion(Vows.Context):
             def WeAssertItIsLikeOtherString(self, topic):
                 Vows.Assert.are_alike('some string with random case and weird spacing', topic)
 
+            def WeAssertItIsNotLikeOtherString(self, topic):
+                Vows.Assert.not_are_alike('some other string', topic)
+

@@ -13,10 +13,14 @@ from pyvows import Vows
 @Vows.assertion
 def are_alike(expected, actual):
     if isinstance(actual, basestring):
-        compare_strings(expected, actual)
+        assert compare_strings(expected, actual), "Expected topic('%s') to be like '%s', but it wasn't" % (actual, expected)
+
+@Vows.assertion
+def not_are_alike(expected, actual):
+    if isinstance(actual, basestring):
+        assert not compare_strings(expected, actual), "Expected topic('%s') not to be like '%s', but it was" % (actual, expected)
 
 def compare_strings(expected, actual):
     replaced_actual = actual.lower().replace(' ', '')
     replaced_expected = expected.lower().replace(' ', '')
-    assert replaced_expected.lower() == replaced_actual.lower(), "Expected topic('%s') to be like '%s', but it wasn't" % (actual, expected)
-
+    return replaced_expected.lower() == replaced_actual.lower()
