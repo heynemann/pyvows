@@ -25,6 +25,9 @@ class VowsDefaultReporter(object):
     def camel_split(self, string):
         return re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?=[0-9]\b))', ' ', string).strip()
 
+    def under_split(self, string):
+        return ' '.join(string.split('_'))
+
     def pretty_print(self):
         if not self.result:
             print " %s No vows found! » 0 honored • 0 broken (0.0s)" % self.broken
@@ -42,10 +45,10 @@ class VowsDefaultReporter(object):
         )
 
     def print_context(self, name, context):
-        print "%s%s" % (self.tab * self.indent, self.camel_split(name))
+        print "%s%s" % (self.tab * self.indent, self.camel_split(name).capitalize())
         self.indent += 1
 
-        print_test = lambda icon, test_name: "%s%s %s" % (self.tab * self.indent, icon, self.camel_split(test_name))
+        print_test = lambda icon, test_name: "%s%s %s" % (self.tab * self.indent, icon, self.camel_split(self.under_split(test_name)).capitalize())
 
         for test in context['tests']:
             if test['succeeded']:

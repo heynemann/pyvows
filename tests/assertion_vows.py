@@ -18,10 +18,10 @@ class Assertion(Vows.Context):
         def topic(self):
             return "test"
 
-        def WeGetTest(self, topic):
+        def we_get_test(self, topic):
             Vows.Assert.are_equal('test', topic)
 
-        def WeDoNotGetElse(self, topic):
+        def we_do_not_get_else(self, topic):
             Vows.Assert.not_are_equal('else', topic)
 
     class IsNumeric(Vows.Context):
@@ -30,14 +30,14 @@ class Assertion(Vows.Context):
             def topic(self):
                 return 42
 
-            def WeAssertItIsNumeric(self, topic):
+            def we_assert_it_is_numeric(self, topic):
                 Vows.Assert.is_numeric(topic)
 
         class WhenItIsNotANumber(Vows.Context):
             def topic(self):
                 return 'test'
 
-            def WeAssertItIsNotNumeric(self, topic):
+            def we_assert_it_is_not_numeric(self, topic):
                 Vows.Assert.not_is_numeric(topic)
 
     class IsFunction(Vows.Context):
@@ -48,14 +48,14 @@ class Assertion(Vows.Context):
                     pass
                 return my_func
 
-            def WeAssertItIsAFunction(self, topic):
+            def we_assert_it_is_a_function(self, topic):
                 Vows.Assert.is_function(topic)
 
         class WhenItIsANumber(Vows.Context):
             def topic(self):
                 return 42
 
-            def WeAssertItIsNotAFunction(self, topic):
+            def we_assert_it_is_not_a_function(self, topic):
                 Vows.Assert.not_is_function(topic)
 
     class IsLike(Vows.Context):
@@ -64,29 +64,29 @@ class Assertion(Vows.Context):
             def topic(self):
                 return " some StRinG with RanDoM CaSe And  Weird   SpACING   "
 
-            def WeAssertItIsLikeOtherString(self, topic):
+            def we_assert_it_is_like_other_string(self, topic):
                 Vows.Assert.are_alike('some string with random case and weird spacing', topic)
 
-            def WeAssertItIsNotLikeOtherString(self, topic):
+            def we_assert_it_is_not_like_other_string(self, topic):
                 Vows.Assert.not_are_alike('some other string', topic)
 
         class WhenItIsANumber(Vows.Context):
             def topic(self):
                 return 42
 
-            def WeAssertItIsNotLikeAString(self, topic):
+            def we_assert_it_is_not_like_a_string(self, topic):
                 Vows.Assert.not_are_alike('42', topic)
 
-            def WeAssertItIsLike42(self, topic):
+            def we_assert_it_is_like_42(self, topic):
                 Vows.Assert.are_alike(42, topic)
 
-            def WeAssertItIsLike42Float(self, topic):
+            def we_assert_it_is_like_42_float(self, topic):
                 Vows.Assert.are_alike(42.0, topic)
 
-            def WeAssertItIsLike42Long(self, topic):
+            def we_assert_it_is_like_42_long(self, topic):
                 Vows.Assert.are_alike(long(42), topic)
 
-            def WeAssertItIsNotLike41(self, topic):
+            def we_assert_it_is_not_like_41(self, topic):
                 Vows.Assert.not_are_alike(41, topic)
 
         class WhenItIsAList(Vows.Context):
@@ -95,11 +95,27 @@ class Assertion(Vows.Context):
                 def topic(self):
                     return [1, 2, 3]
 
-                def WeCanCompareToOtherList(self, topic):
+                def we_can_compare_to_other_list(self, topic):
                     Vows.Assert.are_alike([1, 2, 3], topic)
 
-                def WeCanCompareToAListInDifferentOrder(self, topic):
+                def we_can_compare_to_a_list_in_different_order(self, topic):
                     Vows.Assert.are_alike([3, 2, 1], topic)
 
+                def we_can_compare_to_a_tuple_in_different_order(self, topic):
+                    Vows.Assert.are_alike((3, 2, 1), topic)
 
+        class WhenItIsATuple(Vows.Context):
+
+            class OfNumbers(Vows.Context):
+                def topic(self):
+                    return (1, 2, 3)
+
+                def we_can_compare_to_other_tuple(self, topic):
+                    Vows.Assert.are_alike((1, 2, 3), topic)
+
+                def we_can_compare_to_a_tuple_in_different_order(self, topic):
+                    Vows.Assert.are_alike((3, 2, 1), topic)
+
+                def we_can_compare_to_a_list_in_different_order(self, topic):
+                    Vows.Assert.are_alike([3, 2, 1], topic)
 
