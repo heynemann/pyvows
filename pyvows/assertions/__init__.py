@@ -19,4 +19,5 @@ import pyvows.assertions.emptiness
 import pyvows.assertions.inclusion
 import pyvows.assertions.regexp
 import pyvows.assertions.errors
+import pyvows.assertions.length
 

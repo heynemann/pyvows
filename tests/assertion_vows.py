@@ -211,6 +211,34 @@ class Assertion(Vows.Context):
         def we_can_see_that_is_has_error_message_of(self, topic):
             Assert.has_error_message_of("some bogus error", topic)
 
+    class Length(Vows.Context):
+        class WithString(Vows.Context):
+            def topic(self):
+                return "some string"
+
+            def we_can_see_it_has_11_characters(self, topic):
+                Assert.length(11, topic)
+
+        class WithList(Vows.Context):
+            def topic(self):
+                return ["some", "list"]
+
+            def we_can_see_it_has_2_items(self, topic):
+                Assert.length(2, topic)
+
+        class WithTuple(Vows.Context):
+            def topic(self):
+                return tuple(["some", "list"])
+
+            def we_can_see_it_has_2_items(self, topic):
+                Assert.length(2, topic)
+        class WithDict(Vows.Context):
+            def topic(self):
+                return { "some": "item", "other": "item" }
+
+            def we_can_see_it_has_2_items(self, topic):
+                Assert.length(2, topic)
+ 
     class Include(Vows.Context):
 
         class WhenItIsAString(Vows.Context):
