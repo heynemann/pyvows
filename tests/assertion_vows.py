@@ -201,6 +201,16 @@ class Assertion(Vows.Context):
         def we_assert_it_does_not_match_regexp(self, topic):
             Assert.not_match(r'^other.+$', topic)
 
+    class HasThrown(Vows.Context):
+        def topic(self):
+            raise ValueError("some bogus error")
+
+        def we_can_see_it_was_a_value_error(self, topic):
+            Assert.has_errored_with(ValueError, topic)
+
+        def we_can_see_that_is_has_error_message_of(self, topic):
+            Assert.has_error_message_of("some bogus error", topic)
+
     class Include(Vows.Context):
 
         class WhenItIsAString(Vows.Context):
