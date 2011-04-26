@@ -13,3 +13,4 @@ import pyvows.assertions.numeric
 import pyvows.assertions.function
 import pyvows.assertions.like
 import pyvows.assertions.boolean
+import pyvows.assertions.classes

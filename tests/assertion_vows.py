@@ -10,6 +10,9 @@
 
 from pyvows import Vows
 
+class SomeClass(object): pass
+class OtherClass(object): pass
+
 @Vows.batch
 class Assertion(Vows.Context):
 
@@ -23,6 +26,16 @@ class Assertion(Vows.Context):
 
         def we_do_not_get_else(self, topic):
             Vows.Assert.not_are_equal('else', topic)
+
+    class IsInstance(Vows.Context):
+        def topic(self):
+            return SomeClass()
+
+        def we_get_an_instance_of_someclass(self, topic):
+            Vows.Assert.is_instance_of(SomeClass, topic)
+
+        def we_do_not_get_an_instance_of_otherclass(self, topic):
+            Vows.Assert.not_is_instance_of(OtherClass, topic)
 
     class IsTrue(Vows.Context):
 
