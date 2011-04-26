@@ -1,0 +1,457 @@
+@light-blue:   hsla(224, 85%, 58%, 1);
+@dark-blue:    darken(@light-blue, 30%);
+@dark-alpha:   hsla(hue(@dark-blue), saturation(@dark-blue), lightness(@dark-blue), 0.5);
+
+@light-green:  hsl(75, 50%, 65%);
+@light-yellow: desaturate(#fefec8, 10%);
+@alpha-dark:   hsla(224, 85%, 58%, 0.5);
+@darkest:      hsl(20, 10%, 15%);
+@dark:         hsl(100, 30%, 25%);
+@medium:       hsl(90, 40%, 25%);
+@light:        hsl(90, 40%, 20%);
+@lightest:     hsl(90, 20%, 90%);
+@highlight:    hsl(80, 50%, 90%);
+@red:          hsl(10, 60%, 40%);
+@alpha-red:    hsla(10, 60%, 40%, 0.5);
+
+.box-shadow (@x, @y, @blur, @alpha) {
+  box-shadow:         @x @y @blur rgba(0, 0, 0, @alpha);
+  -moz-box-shadow:    @x @y @blur rgba(0, 0, 0, @alpha);
+  -webkit-box-shadow: @x @y @blur rgba(0, 0, 0, @alpha);
+}
+.border-radius (@radius) {
+  border-radius: @radius;
+  -moz-border-radius: @radius;
+  -webkit-border-radius: @radius;
+}
+
+.border-radius (@radius, bottom) {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  -moz-border-top-right-radius: 0;
+  -moz-border-top-left-radius: 0;
+  -webkit-border-top-left-radius: 0;
+  -webkit-border-top-right-radius: 0;
+}
+.border-radius (@radius, right) {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  -moz-border-bottom-left-radius: 0;
+  -moz-border-top-left-radius: 0;
+  -webkit-border-bottom-left-radius: 0;
+  -webkit-border-top-left-radius: 0;
+}
+.box-shadow-inset (@x, @y, @blur, @color) {
+  box-shadow: @x @y @blur @color inset;
+  -moz-box-shadow: @x @y @blur @color inset;
+  -webkit-box-shadow: @x @y @blur @color inset;
+}
+.code () {
+  font-family: 'Bitstream Vera Sans Mono',
+               'DejaVu Sans Mono',
+               'Monaco',
+               Courier,
+               monospace !important;
+}
+.wrap () {
+  text-wrap: wrap;
+  white-space: pre-wrap;       /* css-3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+html { margin: 0 }
+body {
+  background-color: @darkest;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  font-size: 100%;
+  overflow-x: hidden;
+}
+nav, header, footer, section, article {
+	display: block;
+}
+a {
+  color: #b83000;
+  text-decoration: none;
+}
+h1 a {
+  color: black;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: normal;
+}
+ul, li {
+  list-style-type: none;
+}
+code { .code; }
+code {
+  .string, .regexp { color: @dark }
+  .keyword { font-weight: bold }
+  .comment { color: rgba(0, 0, 0, 0.5) }
+  .number { color: @red }
+  .class, .special { color: rgba(0, 50, 100, 0.8) }
+}
+pre {
+  padding: 0 30px;
+  .wrap;
+}
+blockquote {
+  font-style: italic;
+}
+body > footer {
+  text-align: left;
+  margin-left: 10px;
+	font-style: italic;
+  font-size: 18px;
+  color: #888;
+}
+
+nav {
+  margin-left: 15px;
+}
+nav a, #dropdown li {
+  display: inline-block;
+  color: white;
+  line-height: 42px;
+  margin: 0;
+  padding: 0px 15px;
+  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.5);
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-width: 0 2px;
+  &:hover {
+    .dark-red;
+    text-decoration: none;
+  }
+}
+.dark-red {
+    border: 2px solid darken(@red, 25%);
+    border-left-color: darken(@red, 15%);
+    border-right-color: darken(@red, 15%);
+    border-bottom: 0;
+    border-top: 0;
+    background-color: darken(@red, 10%);
+}
+
+.content {
+  margin: 0 auto;
+  width: 960px;
+}
+
+#menu {
+  position: absolute;
+  width: 100%;
+  z-index: 3;
+  clear: both;
+  display: block;
+  background-color: darken(@dark-blue, 10%);
+  height: 42px;
+  border-top: 2px solid lighten(@dark-blue, 20%);
+  border-bottom: 2px solid darken(@dark-blue, 15%);
+  .box-shadow(0, 1px, 8px, 0.6);
+  -moz-box-shadow: 0 0 0 #000; // Because firefox sucks.
+
+  &.docked {
+    background-color: @dark-alpha;
+  }
+  &:hover {
+    background-color: darken(@dark-blue, 2%);
+  }
+
+  #dropdown {
+    margin: 0 0 0 84px;
+    padding: 0;
+    padding-top: 5px;
+    display: none;
+    width: 190px;
+    border-top: 2px solid @red;
+    color: @highlight;
+    border: 2px solid darken(@red, 25%);
+    border-left-color: darken(@red, 15%);
+    border-right-color: darken(@red, 15%);
+    border-top-width: 0;
+    background-color: darken(@red, 10%);
+    ul {
+      padding: 0px;
+    }
+    li {
+      font-size: 14px;
+      display: block;
+      text-align: left;
+      padding: 0;
+      border: 0;
+      a {
+        display: block;
+        padding: 0px 15px;
+        text-decoration: none;
+        color: white;
+        &:hover {
+          background-color: darken(@red, 20%);
+          text-decoration: none;
+        }
+      }
+    }
+    .border-radius(5px, bottom);
+    .box-shadow(0, 6px, 8px, 0.5);
+  }
+}
+
+hr {
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 30px 0;
+  border: 0;
+}
+
+#main, #about, #docs {
+  color: @darkest;
+  background-color: @light-blue;
+  pre, code {
+    border-color: darken(@highlight, 35%);
+    background-color: lighten(@highlight, 5%);
+  }
+}
+#main #intro, #about .content, #docs .content {
+  background-color: lighten(@light-green, 25%);
+  .box-shadow(1px, 0px, 6px, 0.5);
+}
+
+#docs .content {
+    border-top: 1px solid @light-green;
+  .box-shadow(0, 5px, 5px, 0.4);
+}
+#main {
+  margin: 0 auto;
+  width: 100%;
+  border-top: 6px solid rgba(0, 0, 0, 0.1);
+  font-family: 'Droid Serif', 'Georgia';
+
+  #intro {
+    float: left;
+    margin-top: -8px;
+
+    height: 400px;
+    position: relative;
+    z-index: 2;
+    width: 425px;
+    padding: 45px 20px 23px 25px;
+    border: 2px dashed darken(@light-green, 10%);
+    border-bottom: 0;
+    border-top: 0;
+    h1 {
+      text-shadow: 1px 1px 1px white;
+      font-family: 'Lobster';
+      color: darken(@dark-blue, 2%);
+      font-size: 96px;
+      font-weight: normal;
+    }
+    h2 {
+      span {
+        color: @red;
+      }
+      color: lighten(@dark-blue, 10%);
+      margin: 20px 0;
+      font-size: 28px;
+      line-height: 1.3em;
+    }
+    h3 {
+      color: lighten(@dark-blue, 10%);
+      line-height: 1.4em;
+      margin: 30px 0 15px 0;
+      font-size: 1em;
+      text-shadow: 0px 0px 0px @lightest;
+    }
+  }
+  #example {
+    p {
+      font-size: 16px;
+      font-family: 'Helvetica', 'Arial', sans-serif;
+      color: darken(@dark-blue, 10%);
+      font-weight: bold;
+      text-shadow: 0px 1px 1px @lightest;
+    }
+    pre.command {
+      padding: 15px 25px;
+    }
+    pre {
+      text-shadow: 0 -1px 1px darken(@darkest, 3%);
+      background-color: desaturate(@darkest, 8%);
+      width: 400px;
+      color: lighten(@lightest, 2%);
+      background-repeat: repeat;
+      padding: 25px;
+      border: 1px dashed @lightest;
+      line-height: 15px;
+      .box-shadow(0, 0px, 15px, 0.5);
+      .code;
+      .border-radius(2px);
+      .vow, #ok {
+        color: hsl(90, 40%, 60%);
+      }
+      .vow.pending {
+        color: hsl(190, 20%, 50%);
+      }
+      #time { color: #aaa }
+    }
+    float: right;
+    font-size: 12px;
+    width: 460px;
+  }
+}
+
+.report {
+  pre {
+    .vow, #ok {
+      color: hsl(90, 40%, 30%);
+    }
+  }
+}
+
+#synopsis, #docs, #reference, #about, #installing {
+  .content {
+    width: 870px;
+    padding: 45px;
+  }
+  code { font-size: 16px }
+  margin: 0 auto;
+  font-family: 'Georgia', serif;
+  font-size: 18px;
+  line-height: 24px;
+  p {
+    line-height: 26px;  
+  }
+  padding: 0 60px;
+  pre, p > code {
+    padding: 0 3px;
+    border-width: 1px;
+    border-style: dashed;
+  }
+  pre {
+    padding: 15px;
+    margin: 15px 0;
+    font-size: 16px;
+  }
+  h1 {
+    font-size: 48px;
+    font-family: 'Lobster';
+    margin-top: 15px;
+    margin-bottom: 30px;
+  }
+  h2 {
+    font-family: 'Droid Serif', 'Georgia', serif;
+    margin: 30px 0;
+  }
+  p + h2, pre + h2, code + h2 {
+    border-top: 6px solid rgba(255, 255, 255, 0.1);
+    padding-top: 30px;
+  }
+  pre + h3 {
+    margin-top: 30px;
+  }
+  h3 {
+    margin: 15px 0;
+  }
+}
+
+#about, #docs {
+  p + h2, pre + h2, code + h2 {
+    border-top: 6px solid rgba(0, 0, 0, 0.1);
+  }
+  hr {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+#installing {
+  color: @darkest;
+  background-color: darken(@light-yellow, 10%);
+  .content {
+    clear: both;
+    border-color: transparent;
+    background-color: lighten(@light-yellow, 2%);
+    .box-shadow(0, 5px, 5px, 0.4);
+  }
+  pre {
+    background-color: @highlight;
+    border-color: darken(@light-yellow, 50%);
+  }
+  p + h2, pre + h2, code + h2 {
+    border-top-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+td {
+  padding-right: 30px;
+}
+
+#synopsis pre {
+    padding: 20px;
+    line-height: 18px;
+    font-size: 14px;
+}
+#reference, #synopsis {
+  @bg: desaturate(darken(@darkest, 5%), 20%);
+  text-shadow: 0 -1px 1px @bg;
+  color: @highlight;
+  background-color: @bg;
+  .content {
+    background-color: desaturate(@darkest, 20%);
+    clear: both;
+    .box-shadow(0, 5px, 5px, 0.4);
+  }
+  pre, p > code {
+    background-color: @bg;
+    border-color: darken(@light-yellow, 5%);
+  }
+  code {
+    .string, .regexp { color: desaturate(@light-green, 15%) }
+    .keyword { color: hsl(40, 40%, 60%); font-weight: normal }
+    .comment { color: rgba(255, 255, 255, 0.2) }
+    .number { color: @red }
+    .class, .special { color: hsl(190, 20%, 50%) }
+  }
+  a {
+    color: @light-yellow;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+    &:hover {
+      text-decoration: none;
+      border-bottom: 1px dashed @light-yellow;
+    }
+  }
+}
+#synopsis {
+  padding-top: 30px;
+  background-color: @darkest !important;
+  .content {
+    background-color: desaturate(lighten(@darkest, 3%), 5%);
+  }
+}
+#about footer {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 6px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.4);
+  #copy { font-size: 12px }
+}
+
+#github {
+  width: 14px;
+  background-color: rgba(255, 255, 255, 0.7);
+  .box-shadow(-1px, -1px, 1px, 0.5);
+  padding: 0 1px;
+  margin-left: 2px;
+  @radius: 2px;
+  border-radius: @radius;
+  -moz-border-radius: @radius;
+  -webkit-border-radius: @radius;
+}
