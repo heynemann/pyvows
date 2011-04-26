@@ -13,6 +13,8 @@ from pyvows import Vows
 class SomeClass(object): pass
 class OtherClass(object): pass
 
+Assert = Vows.Assert
+
 @Vows.batch
 class Assertion(Vows.Context):
 
@@ -22,20 +24,36 @@ class Assertion(Vows.Context):
             return "test"
 
         def we_get_test(self, topic):
-            Vows.Assert.are_equal('test', topic)
+            Assert.are_equal('test', topic)
 
         def we_do_not_get_else(self, topic):
-            Vows.Assert.not_are_equal('else', topic)
+            Assert.not_are_equal('else', topic)
 
     class IsInstance(Vows.Context):
         def topic(self):
             return SomeClass()
 
         def we_get_an_instance_of_someclass(self, topic):
-            Vows.Assert.is_instance_of(SomeClass, topic)
+            Assert.is_instance_of(SomeClass, topic)
 
         def we_do_not_get_an_instance_of_otherclass(self, topic):
-            Vows.Assert.not_is_instance_of(OtherClass, topic)
+            Assert.not_is_instance_of(OtherClass, topic)
+
+    class IsNull(Vows.Context):
+
+        class WhenItIsNull(Vows.Context):
+            def topic(self):
+                return None
+
+            def we_get_to_check_for_nullability_in_None(self, topic):
+                Assert.is_null(topic)
+
+        class WhenItIsNotNull(Vows.Context):
+            def topic(self):
+                return "something"
+
+            def we_see_string_is_not_null(self, topic):
+                Assert.is_not_null(topic)
 
     class IsTrue(Vows.Context):
 
@@ -43,19 +61,19 @@ class Assertion(Vows.Context):
             return True
 
         def we_can_assert_it_is_true(self, topic):
-            Vows.Assert.is_true(topic)
+            Assert.is_true(topic)
 
         def we_can_assert_number_is_true(self, topic):
-            Vows.Assert.is_true(1)
+            Assert.is_true(1)
 
         def we_can_assert_string_is_true(self, topic):
-            Vows.Assert.is_true('some')
+            Assert.is_true('some')
 
         def we_can_assert_list_is_true(self, topic):
-            Vows.Assert.is_true(['some'])
+            Assert.is_true(['some'])
 
         def we_can_assert_empty_dict_is_true(self, topic):
-            Vows.Assert.is_true({'some': 'key'})
+            Assert.is_true({'some': 'key'})
 
     class IsFalse(Vows.Context):
 
@@ -63,22 +81,22 @@ class Assertion(Vows.Context):
             return False
 
         def we_can_assert_it_is_false(self, topic):
-            Vows.Assert.is_false(topic)
+            Assert.is_false(topic)
 
         def we_can_assert_zero_is_false(self, topic):
-            Vows.Assert.is_false(0)
+            Assert.is_false(0)
 
         def we_can_assert_none_is_false(self, topic):
-            Vows.Assert.is_false(None)
+            Assert.is_false(None)
 
         def we_can_assert_empty_string_is_false(self, topic):
-            Vows.Assert.is_false('')
+            Assert.is_false('')
 
         def we_can_assert_empty_list_is_false(self, topic):
-            Vows.Assert.is_false('')
+            Assert.is_false('')
 
         def we_can_assert_empty_dict_is_false(self, topic):
-            Vows.Assert.is_false({})
+            Assert.is_false({})
 
     class IsNumeric(Vows.Context):
 
@@ -87,14 +105,14 @@ class Assertion(Vows.Context):
                 return 42
 
             def we_assert_it_is_numeric(self, topic):
-                Vows.Assert.is_numeric(topic)
+                Assert.is_numeric(topic)
 
         class WhenItIsNotANumber(Vows.Context):
             def topic(self):
                 return 'test'
 
             def we_assert_it_is_not_numeric(self, topic):
-                Vows.Assert.not_is_numeric(topic)
+                Assert.not_is_numeric(topic)
 
     class IsFunction(Vows.Context):
 
@@ -105,14 +123,14 @@ class Assertion(Vows.Context):
                 return my_func
 
             def we_assert_it_is_a_function(self, topic):
-                Vows.Assert.is_function(topic)
+                Assert.is_function(topic)
 
         class WhenItIsANumber(Vows.Context):
             def topic(self):
                 return 42
 
             def we_assert_it_is_not_a_function(self, topic):
-                Vows.Assert.not_is_function(topic)
+                Assert.not_is_function(topic)
 
     class IsLike(Vows.Context):
 
@@ -121,29 +139,29 @@ class Assertion(Vows.Context):
                 return " some StRinG with RanDoM CaSe And  Weird   SpACING   "
 
             def we_assert_it_is_like_other_string(self, topic):
-                Vows.Assert.are_alike('some string with random case and weird spacing', topic)
+                Assert.are_alike('some string with random case and weird spacing', topic)
 
             def we_assert_it_is_not_like_other_string(self, topic):
-                Vows.Assert.not_are_alike('some other string', topic)
+                Assert.not_are_alike('some other string', topic)
 
         class WhenItIsANumber(Vows.Context):
             def topic(self):
                 return 42
 
             def we_assert_it_is_not_like_a_string(self, topic):
-                Vows.Assert.not_are_alike('42', topic)
+                Assert.not_are_alike('42', topic)
 
             def we_assert_it_is_like_42(self, topic):
-                Vows.Assert.are_alike(42, topic)
+                Assert.are_alike(42, topic)
 
             def we_assert_it_is_like_42_float(self, topic):
-                Vows.Assert.are_alike(42.0, topic)
+                Assert.are_alike(42.0, topic)
 
             def we_assert_it_is_like_42_long(self, topic):
-                Vows.Assert.are_alike(long(42), topic)
+                Assert.are_alike(long(42), topic)
 
             def we_assert_it_is_not_like_41(self, topic):
-                Vows.Assert.not_are_alike(41, topic)
+                Assert.not_are_alike(41, topic)
 
         class WhenItIsAList(Vows.Context):
 
@@ -152,20 +170,20 @@ class Assertion(Vows.Context):
                     return [1, 2, 3]
 
                 def we_can_compare_to_other_list(self, topic):
-                    Vows.Assert.are_alike([1, 2, 3], topic)
+                    Assert.are_alike([1, 2, 3], topic)
 
                 def we_can_compare_to_a_list_in_different_order(self, topic):
-                    Vows.Assert.are_alike([3, 2, 1], topic)
+                    Assert.are_alike([3, 2, 1], topic)
 
                 def we_can_compare_to_a_tuple_in_different_order(self, topic):
-                    Vows.Assert.are_alike((3, 2, 1), topic)
+                    Assert.are_alike((3, 2, 1), topic)
 
             class OfStrings(Vows.Context):
                 def topic(self):
                     return ["some", "string", "list"]
 
                 def we_can_compare_to_other_list_in_different_order(self, topic):
-                    Vows.Assert.are_alike(["list", "some", "string"], topic)
+                    Assert.are_alike(["list", "some", "string"], topic)
 
             class OfLists(Vows.Context):
 
@@ -174,14 +192,14 @@ class Assertion(Vows.Context):
                         return [["my", "list"], ["of", "lists"]]
 
                     def we_can_compare_to_other_list_of_lists(self, topic):
-                        Vows.Assert.are_alike((['lists', 'of'], ['list', 'my']), topic)
+                        Assert.are_alike((['lists', 'of'], ['list', 'my']), topic)
 
                 class WithinTuple(Vows.Context):
                     def topic(self):
                         return (["my", "list"], ["of", "lists"])
 
                     def we_can_compare_to_other_list_of_lists(self, topic):
-                        Vows.Assert.are_alike((['lists', 'of'], ['list', 'my']), topic)
+                        Assert.are_alike((['lists', 'of'], ['list', 'my']), topic)
 
             class OfDicts(Vows.Context):
 
@@ -189,10 +207,10 @@ class Assertion(Vows.Context):
                     return [{'some': 'key', 'other': 'key'}]
 
                 def we_can_compare_to_other_list_of_dicts(self, topic):
-                    Vows.Assert.are_alike([{'some': 'key', 'other': 'key'}], topic)
+                    Assert.are_alike([{'some': 'key', 'other': 'key'}], topic)
 
                 def we_can_compare_to_other_list_of_dicts_out_of_order(self, topic):
-                    Vows.Assert.are_alike([{'other': 'key', 'some': 'key'}], topic)
+                    Assert.are_alike([{'other': 'key', 'some': 'key'}], topic)
 
         class WhenItIsATuple(Vows.Context):
 
@@ -201,13 +219,13 @@ class Assertion(Vows.Context):
                     return (1, 2, 3)
 
                 def we_can_compare_to_other_tuple(self, topic):
-                    Vows.Assert.are_alike((1, 2, 3), topic)
+                    Assert.are_alike((1, 2, 3), topic)
 
                 def we_can_compare_to_a_tuple_in_different_order(self, topic):
-                    Vows.Assert.are_alike((3, 2, 1), topic)
+                    Assert.are_alike((3, 2, 1), topic)
 
                 def we_can_compare_to_a_list_in_different_order(self, topic):
-                    Vows.Assert.are_alike([3, 2, 1], topic)
+                    Assert.are_alike([3, 2, 1], topic)
         
         class WhenItIsADict(Vows.Context):
 
@@ -215,10 +233,10 @@ class Assertion(Vows.Context):
                 return { 'some': 'key', 'other': 'value' }
 
             def we_can_compare_to_other_dict(self, topic):
-                Vows.Assert.are_alike({ 'some': 'key', 'other': 'value' }, topic)
+                Assert.are_alike({ 'some': 'key', 'other': 'value' }, topic)
 
             def we_can_compare_to_a_dict_in_other_order(self, topic):
-                Vows.Assert.are_alike({ 'other': 'value', 'some': 'key' }, topic)
+                Assert.are_alike({ 'other': 'value', 'some': 'key' }, topic)
 
             class OfDicts(Vows.Context):
 
@@ -231,7 +249,7 @@ class Assertion(Vows.Context):
                     }
 
                 def we_can_compare_to_nested_dicts(self, topic):
-                    Vows.Assert.are_alike({
+                    Assert.are_alike({
                         'some': {
                             'key2': 'value2',
                             'key': 'value'
