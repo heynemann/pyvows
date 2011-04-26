@@ -39,6 +39,65 @@ class Assertion(Vows.Context):
         def we_do_not_get_an_instance_of_otherclass(self, topic):
             Assert.not_is_instance_of(OtherClass, topic)
 
+    class IsEmpty(Vows.Context):
+        class WhenEmpty(Vows.Context):
+            class WhenString(Vows.Context):
+                def topic(self):
+                    return ''
+
+                def we_get_an_empty_string(self, topic):
+                    Assert.is_empty(topic)
+
+            class WhenList(Vows.Context):
+                def topic(self):
+                    return []
+
+                def we_get_an_empty_list(self, topic):
+                    Assert.is_empty(topic)
+
+            class WhenTuple(Vows.Context):
+                def topic(self):
+                    return tuple([])
+
+                def we_get_an_empty_tuple(self, topic):
+                    Assert.is_empty(topic)
+
+            class WhenDict(Vows.Context):
+                def topic(self):
+                    return {}
+
+                def we_get_an_empty_dict(self, topic):
+                    Assert.is_empty(topic)
+
+        class WhenNotEmpty(Vows.Context):
+            class WhenString(Vows.Context):
+                def topic(self):
+                    return 'whatever'
+
+                def we_get_a_not_empty_string(self, topic):
+                    Assert.is_not_empty(topic)
+
+            class WhenList(Vows.Context):
+                def topic(self):
+                    return ['something']
+
+                def we_get_a_not_empty_list(self, topic):
+                    Assert.is_not_empty(topic)
+
+            class WhenTuple(Vows.Context):
+                def topic(self):
+                    return tuple(['something'])
+
+                def we_get_a_not_empty_tuple(self, topic):
+                    Assert.is_not_empty(topic)
+
+            class WhenDict(Vows.Context):
+                def topic(self):
+                    return {"key": "value"}
+
+                def we_get_a_not_empty_dict(self, topic):
+                    Assert.is_not_empty(topic)
+
     class IsNull(Vows.Context):
 
         class WhenItIsNull(Vows.Context):
@@ -131,6 +190,82 @@ class Assertion(Vows.Context):
 
             def we_assert_it_is_not_a_function(self, topic):
                 Assert.not_is_function(topic)
+
+    class Regexp(Vows.Context):
+        def topic(self):
+            return "some string"
+
+        def we_assert_it_matches_regexp(self, topic):
+            Assert.match(r'^some.+$', topic)
+
+        def we_assert_it_does_not_match_regexp(self, topic):
+            Assert.not_match(r'^other.+$', topic)
+
+    class Include(Vows.Context):
+
+        class WhenItIsAString(Vows.Context):
+            def topic(self):
+                return "some big string"
+
+            def we_can_find_some(self, topic):
+                Assert.include('some', topic)
+
+            def we_can_find_big(self, topic):
+                Assert.include('big', topic)
+
+            def we_can_find_string(self, topic):
+                Assert.include('string', topic)
+
+            def we_cant_find_else(self, topic):
+                Assert.not_include('else', topic)
+
+        class WhenItIsAList(Vows.Context):
+            def topic(self):
+                return ["some", "big", "string"]
+
+            def we_can_find_some(self, topic):
+                Assert.include('some', topic)
+
+            def we_can_find_big(self, topic):
+                Assert.include('big', topic)
+
+            def we_can_find_string(self, topic):
+                Assert.include('string', topic)
+
+            def we_cant_find_else(self, topic):
+                Assert.not_include('else', topic)
+
+        class WhenItIsATuple(Vows.Context):
+            def topic(self):
+                return tuple(["some", "big", "string"])
+
+            def we_can_find_some(self, topic):
+                Assert.include('some', topic)
+
+            def we_can_find_big(self, topic):
+                Assert.include('big', topic)
+
+            def we_can_find_string(self, topic):
+                Assert.include('string', topic)
+
+            def we_cant_find_else(self, topic):
+                Assert.not_include('else', topic)
+
+        class WhenItIsADict(Vows.Context):
+            def topic(self):
+                return {"some": 1, "big": 2, "string": 3}
+
+            def we_can_find_some(self, topic):
+                Assert.include('some', topic)
+
+            def we_can_find_big(self, topic):
+                Assert.include('big', topic)
+
+            def we_can_find_string(self, topic):
+                Assert.include('string', topic)
+
+            def we_cant_find_else(self, topic):
+                Assert.not_include('else', topic)
 
     class IsLike(Vows.Context):
 
