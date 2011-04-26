@@ -130,8 +130,6 @@ class VowsParallelRunner(object):
                 continue
 
             if inspect.ismethod(member):
-                if not topic:
-                    continue
                 self.queue.put(('vow', context_col[key]['tests'], topic, value_instance, member, member_name))
 
     def run_vow(self, item):
