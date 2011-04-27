@@ -29,6 +29,14 @@ class Assertion(Vows.Context):
         def we_do_not_get_else(self, topic):
             Assert.not_are_equal('else', topic)
 
+        class WhenHaveASubClassThatHaveAExtraParamInTopic(Vows.Context):
+
+            def topic(self, last):
+                return last
+
+            def we_get_the_last_topic_value_without_modifications(self, topic):
+                Assert.are_equal('test', topic)
+
     class IsInstance(Vows.Context):
         def topic(self):
             return SomeClass()
@@ -38,6 +46,23 @@ class Assertion(Vows.Context):
 
         def we_do_not_get_an_instance_of_otherclass(self, topic):
             Assert.not_is_instance_of(OtherClass, topic)
+
+        class WeCanModifyATopicValue(Vows.Context):
+
+            def topic(self, older):
+                older.coisa = 1
+                return older
+
+            def we_get_a_mod_instance_from_my_topic(self, topic):
+                Assert.are_equal(True, hasattr(topic, 'coisa'))
+
+        class TheOtherContext(Vows.Context):
+
+            def topic(self, older):
+                return older
+
+            def cant_percept_the_motifications(self, topic):
+                Assert.are_equal(False, hasattr(topic, 'coisa'))
 
     class IsEmpty(Vows.Context):
         class WhenEmpty(Vows.Context):
@@ -238,7 +263,7 @@ class Assertion(Vows.Context):
 
             def we_can_see_it_has_2_items(self, topic):
                 Assert.length(2, topic)
- 
+
     class Include(Vows.Context):
 
         class WhenItIsAString(Vows.Context):
@@ -399,7 +424,7 @@ class Assertion(Vows.Context):
 
                 def we_can_compare_to_a_list_in_different_order(self, topic):
                     Assert.are_alike([3, 2, 1], topic)
-        
+
         class WhenItIsADict(Vows.Context):
 
             def topic(self):

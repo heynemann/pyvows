@@ -10,6 +10,7 @@
 
 import inspect
 import time
+import copy
 
 try:
     from Queue import Queue
@@ -37,7 +38,7 @@ class VowsRunner(object):
         result.ellapsed_time = float(end_time - start_time)
         return result
 
-    def run_context(self, context_col, key, value):
+    def run_context(self, context_col, key, value, last_topic=None):
         context_col[key] = {
             'contexts': {},
             'tests': []
@@ -45,11 +46,17 @@ class VowsRunner(object):
 
         value_instance = value()
 
-        topic = value_instance.topic() if hasattr(value_instance, 'topic') else None
+        topic = None
+        if hasattr(value_instance, 'topic'):
+            topic_func = getattr(value_instance, 'topic')
+            if topic_func.func_code.co_argcount > 1:
+                topic = topic_func(copy.deepcopy(last_topic))
+            else:
+                topic = topic_func()
 
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
-                self.run_context(context_col[key]['contexts'], member_name, member)
+                self.run_context(context_col[key]['contexts'], member_name, member, topic)
                 continue
 
             if inspect.ismethod(member) and member_name == 'topic':
@@ -70,6 +77,9 @@ class VowsRunner(object):
                     result_obj['error'] = err
 
                 context_col[key]['tests'].append(result_obj)
+
+    def run_topic(self, value_instance, last_topic=None):
+        return topic
 
 class VowsParallelRunner(object):
     def __init__(self, vows, context_class):
@@ -98,7 +108,7 @@ class VowsParallelRunner(object):
             t.start()
 
         for name, context in self.vows.iteritems():
-            self.queue.put(('context', result.contexts, name, context))
+            self.queue.put(('context', result.contexts, name, context, None))
 
         self.queue.join()
 
@@ -107,7 +117,7 @@ class VowsParallelRunner(object):
         return result
 
     def run_context(self, item):
-        operation, context_col, key, value = item
+        operation, context_col, key, value, last_topic = item
 
         context_col[key] = {
             'contexts': {},
@@ -116,14 +126,20 @@ class VowsParallelRunner(object):
 
         value_instance = value()
 
+        topic = None
         try:
-            topic = value_instance.topic() if hasattr(value_instance, 'topic') else None
+            if hasattr(value_instance, 'topic'):
+                topic_func = getattr(value_instance, 'topic')
+                if topic_func.func_code.co_argcount > 1:
+                    topic = topic_func(copy.deepcopy(last_topic))
+                else:
+                    topic = topic_func()
         except Exception, err:
             topic = err
 
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
-                self.queue.put(('context', context_col[key]['contexts'], member_name, member))
+                self.queue.put(('context', context_col[key]['contexts'], member_name, member, topic))
                 continue
 
             if inspect.ismethod(member) and member_name == 'topic':
