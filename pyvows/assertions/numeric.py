@@ -13,10 +13,10 @@ import numbers
 from pyvows import Vows
 
 @Vows.assertion
-def is_numeric(actual):
-    assert isinstance(actual, numbers.Number), "Expected topic(%s) to be numeric, but it wasn't" % actual
+def to_be_numeric(topic):
+    assert isinstance(topic, numbers.Number), "Expected topic(%s) to be numeric, but it wasn't" % topic
 
 @Vows.assertion
-def not_is_numeric(actual):
-    assert not isinstance(actual, numbers.Number), "Expected topic(%s) not to be numeric, but it was" % actual
+def not_to_be_numeric(topic):
+    assert not isinstance(topic, numbers.Number), "Expected topic(%s) not to be numeric, but it was" % topic
 

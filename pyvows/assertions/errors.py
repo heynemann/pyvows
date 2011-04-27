@@ -11,10 +11,10 @@
 from pyvows import Vows
 
 @Vows.assertion
-def has_errored_with(expected, actual):
-    assert isinstance(actual, expected), "Expected topic(%s) to be an error of type %s, but it was a %s" % (actual, expected, actual.__class__)
+def to_be_an_error_like(topic, expected):
+    assert isinstance(topic, expected), "Expected topic(%s) to be an error of type %s, but it was a %s" % (topic, expected, topic.__class__)
 
 @Vows.assertion
-def has_error_message_of(expected, actual):
-    assert str(actual) == expected, "Expected topic(%s) to be an error with message '%s', but it had a different message" % (actual, expected)
+def to_have_an_error_message_of(topic, expected):
+    assert str(topic) == expected, "Expected topic(%s) to be an error with message '%s', but it had a different message" % (topic, expected)
 

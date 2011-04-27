@@ -13,10 +13,10 @@ import inspect
 from pyvows import Vows
 
 @Vows.assertion
-def is_function(actual):
-    assert inspect.ismethod(actual) or inspect.isfunction(actual), "Expected topic(%s) to be a function or a method, but it was a %s" % (actual, actual.__class__)
+def to_be_a_function(topic):
+    assert inspect.ismethod(topic) or inspect.isfunction(topic), "Expected topic(%s) to be a function or a method, but it was a %s" % (topic, topic.__class__)
 
 @Vows.assertion
-def not_is_function(actual):
-    assert not inspect.ismethod(actual) and not inspect.isfunction(actual), "Expected topic(%s) not to be a function or a method, but it was" % actual
+def not_to_be_a_function(topic):
+    assert not inspect.ismethod(topic) and not inspect.isfunction(topic), "Expected topic(%s) not to be a function or a method, but it was" % topic
 

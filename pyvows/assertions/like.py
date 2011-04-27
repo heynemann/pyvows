@@ -13,58 +13,58 @@ import numbers
 from pyvows import Vows
 
 @Vows.assertion
-def are_alike(expected, actual):
+def to_be_like(topic, expected):
     message = "Expected topic(%s) to be like %s, but it wasn't"
-    compare_alike(expected, actual, lambda result: result, message)
+    compare_alike(expected, topic, lambda result: result, message)
 
 @Vows.assertion
-def not_are_alike(expected, actual):
+def not_to_be_like(topic, expected):
     message = 'Expected topic(%s) not to be like %s, but it was'
-    compare_alike(expected, actual, lambda result: not result, message)
+    compare_alike(expected, topic, lambda result: not result, message)
 
-def compare_alike(expected, actual, modifier, message):
-    assert modifier(match_alike(expected, actual)), message % (actual, expected)
+def compare_alike(expected, topic, modifier, message):
+    assert modifier(match_alike(expected, topic)), message % (topic, expected)
 
-def match_alike(expected, actual):
-    if isinstance(actual, basestring):
-        return compare_strings(expected, actual)
-    elif isinstance(actual, numbers.Number):
-        return compare_numbers(expected, actual)
-    elif isinstance(actual, (list, tuple)):
-        return compare_lists(expected, actual)
-    elif isinstance(actual, dict):
-        return compare_dicts(expected, actual)
+def match_alike(expected, topic):
+    if isinstance(topic, basestring):
+        return compare_strings(expected, topic)
+    elif isinstance(topic, numbers.Number):
+        return compare_numbers(expected, topic)
+    elif isinstance(topic, (list, tuple)):
+        return compare_lists(expected, topic)
+    elif isinstance(topic, dict):
+        return compare_dicts(expected, topic)
     else:
-        raise RuntimeError("Could not compare %s and %s" % (expected, actual))
+        raise RuntimeError("Could not compare %s and %s" % (expected, topic))
 
-def compare_strings(expected, actual):
-    replaced_actual = actual.lower().replace(' ', '')
+def compare_strings(expected, topic):
+    replaced_topic = topic.lower().replace(' ', '')
     replaced_expected = expected.lower().replace(' ', '')
-    return replaced_expected.lower() == replaced_actual.lower()
+    return replaced_expected.lower() == replaced_topic.lower()
 
-def compare_numbers(expected, actual):
-    if not isinstance(actual, numbers.Number) or \
+def compare_numbers(expected, topic):
+    if not isinstance(topic, numbers.Number) or \
        not isinstance(expected, numbers.Number):
         return False
-    return float(expected) == float(actual)
+    return float(expected) == float(topic)
 
-def compare_dicts(expected, actual):
-    return match_dicts(expected, actual) and match_dicts(actual, expected)
+def compare_dicts(expected, topic):
+    return match_dicts(expected, topic) and match_dicts(topic, expected)
 
-def match_dicts(expected, actual):
+def match_dicts(expected, topic):
     for k, v in expected.iteritems():
-        if not k in actual or not match_alike(actual[k], v):
+        if not k in topic or not match_alike(topic[k], v):
             return False
     return True
 
-def compare_lists(expected, actual):
-    return match_lists(expected, actual) and match_lists(actual, expected)
+def compare_lists(expected, topic):
+    return match_lists(expected, topic) and match_lists(topic, expected)
 
-def match_lists(expected, actual):
+def match_lists(expected, topic):
     for item in expected:
         if isinstance(item, (list, tuple)):
             found = False
-            for inner_item in actual:
+            for inner_item in topic:
                 if not isinstance(inner_item, (list, tuple)):
                     continue
                 if compare_lists(item, inner_item):
@@ -72,7 +72,7 @@ def match_lists(expected, actual):
                     break
             if not found:
                 return False
-        elif not item in actual:
+        elif not item in topic:
             return False
 
     return True
