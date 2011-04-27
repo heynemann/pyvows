@@ -13,10 +13,10 @@ import re
 from pyvows import Vows
 
 @Vows.assertion
-def match(expected, actual):
-    assert re.match(expected, actual), "Expected topic(%s) to match the regular expression %s, but it didn't" % (actual, expected)
+def to_match(topic, expected):
+    assert re.match(expected, topic), "Expected topic(%s) to match the regular expression %s, but it didn't" % (topic, expected)
 
 @Vows.assertion
-def not_match(expected, actual):
-    assert not re.match(expected, actual), "Expected topic(%s) to not match the regular expression %s, but it did" % (actual, expected)
+def not_to_match(topic, expected):
+    assert not re.match(expected, topic), "Expected topic(%s) to not match the regular expression %s, but it did" % (topic, expected)
 

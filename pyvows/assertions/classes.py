@@ -11,10 +11,10 @@
 from pyvows import Vows
 
 @Vows.assertion
-def is_instance_of(expected, actual):
-    assert isinstance(actual, expected), "Expected topic(%s) to be an instance of %s, but it was a %s" % (actual, expected, actual.__class__)
+def to_be_instance_of(topic, expected):
+    assert isinstance(topic, expected), "Expected topic(%s) to be an instance of %s, but it was a %s" % (topic, expected, topic.__class__)
 
 @Vows.assertion
-def not_is_instance_of(expected, actual):
-    assert not isinstance(actual, expected), "Expected topic(%s) not to be an instance of %s, but it was a %s" % (actual, expected, actual.__class__)
+def not_to_be_instance_of(topic, expected):
+    assert not isinstance(topic, expected), "Expected topic(%s) not to be an instance of %s, but it was a %s" % (topic, expected, topic.__class__)
 

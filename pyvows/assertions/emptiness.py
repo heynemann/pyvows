@@ -11,14 +11,14 @@
 from pyvows import Vows
 
 @Vows.assertion
-def is_empty(actual):
-    message = "Expected topic(%s) to be empty, but it wasn't" % (actual, )
+def to_be_empty(topic):
+    message = "Expected topic(%s) to be empty, but it wasn't" % (topic, )
 
-    assert len(actual) == 0, message
+    assert len(topic) == 0, message
 
 @Vows.assertion
-def is_not_empty(actual):
-    message = "Expected topic(%s) not to be empty, but it was" % (actual, )
+def not_to_be_empty(topic):
+    message = "Expected topic(%s) not to be empty, but it was" % (topic, )
 
-    assert len(actual) > 0, message
+    assert len(topic) > 0, message
 

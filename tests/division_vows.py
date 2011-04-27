@@ -8,7 +8,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-from pyvows import Vows
+from pyvows import Vows, expect
 
 @Vows.batch
 class DivisionTests(Vows.Context):
@@ -19,8 +19,8 @@ class DivisionTests(Vows.Context):
             return 42 / 1
 
         def WeGetANumber(self, topic):
-            Vows.Assert.is_numeric(topic)
+            expect(topic).to_be_numeric()
 
         def WeGet42(self, topic):
-            Vows.Assert.are_equal(42, topic)
+            expect(topic).to_be_equal_to(42)
 

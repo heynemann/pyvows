@@ -11,10 +11,10 @@
 from pyvows import Vows
 
 @Vows.assertion
-def is_null(actual):
-    assert actual is None, "Expected topic(%s) to be None, but it wasn't" % actual
+def to_be_null(topic):
+    assert topic is None, "Expected topic(%s) to be None, but it wasn't" % topic
 
 @Vows.assertion
-def is_not_null(actual):
-    assert actual is not None, "Expected topic(%s) not to be None, but it was" % actual
+def not_to_be_null(topic):
+    assert topic is not None, "Expected topic(%s) not to be None, but it was" % topic
 

@@ -28,6 +28,29 @@ def locate(pattern, root=os.curdir, recursive=True):
     else:
         return glob(join(root_path, pattern))
 
+class expect(object):
+
+    def __init__(self, topic):
+        self.topic = topic
+        self.not_assert = False
+
+    def __getattr__(self, name):
+        if name == "topic":
+            return super(expect, self).__getattr__(name)
+
+        if name == "Not":
+            self.not_assert = not self.not_assert
+            return self
+
+        method_name = "not_%s" % name if self.not_assert else name
+        if not hasattr(Vows.Assert, method_name):
+            raise AttributeError("Assertion %s was not found!" % method_name)
+
+        def assert_topic(*args, **kw):
+            return getattr(Vows.Assert, method_name)(self.topic, *args, **kw)
+
+        return assert_topic
+
 class VowsAssertion(object):
     class AssertionNotFoundError(AttributeError):
         def __init__(self, name):
