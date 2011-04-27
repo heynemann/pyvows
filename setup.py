@@ -31,7 +31,7 @@ pyVows is a test engine based in Vows JS and features topic-based testing as wel
                    'Operating System :: POSIX :: Linux',
                    'Programming Language :: Python :: 2.6'
     ],
-    packages = ['pyvows'],
+    packages = ['pyvows', 'pyvows.assertions'],
     package_dir = {"pyvows": "pyvows"},
 
     entry_points = {
