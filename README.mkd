@@ -41,13 +41,13 @@ class SumContext(Vows.Context):
         return add_two_numbers(41, 1)
 
     def we_get_a_result(self, topic):
-        Vows.Assert.is_not_null(topic)
+        expect(topic).not_to_be_null()
 
     def we_get_a_number(self, topic):
-        Vows.Assert.is_numeric(topic)
+        expect(topic).to_be_numeric()
 
     def we_get_42(self, topic):
-        Vows.Assert.are_equal(42, topic)
+        expect(topic).to_be_equal_to(42)
 ```
 
 Some things to notice here:
