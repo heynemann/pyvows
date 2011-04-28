@@ -279,6 +279,23 @@ class Assertion(Vows.Context):
         def we_can_see_that_is_has_error_message_of(self, topic):
             expect(topic).to_have_an_error_message_of("some bogus error")
 
+        def we_can_see_that_is_an_error_instance(self, topic):
+            expect(topic).to_be_an_error()
+
+        class TheExceptionClass(Vows.Context):
+            def topic(self, error):
+                return type(error)
+
+            def we_can_see_that_is_an_error_class(self, topic):
+                expect(topic).to_be_an_error()
+
+    class NotHasThrown(Vows.Context):
+        def topic(self):
+            return 0
+
+        def we_can_see_that_is_not_an_error(self, topic):
+            expect(topic).Not.to_be_an_error()
+
     class Length(Vows.Context):
         class WithString(Vows.Context):
             def topic(self):
