@@ -68,8 +68,10 @@ def main():
     path = arguments.path
     pattern = arguments.pattern
 
-    if isfile(path):
+    if path and isfile(path):
         path, pattern = split(path)
+    if not path:
+        path = os.curdir
 
     run(path, pattern, arguments.sequential)
 
