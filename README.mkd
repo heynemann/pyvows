@@ -1,5 +1,7 @@
 pyVows is the python version of the [Vows.JS](http://vowsjs.org) testing framework.
 
+For more info go to [pyVows website](http://heynemann.github.com/pyvows/).
+
 It allows for parallel execution of topic-oriented vows. Big words, huh?
 
 It's pretty simple. Imagine we are testing a method that sums up two integers, like this:
@@ -14,7 +16,6 @@ def test_sum_returns_42():
 ```
 
 Even in a VERY simple scenario like this, we have three assertions in this test. Not too good if we want a single assertion per test, so we could do it like this:
-
 
 ```python
 def test_sum_returns_result():
@@ -68,3 +69,10 @@ Running Vows
 ============
 
 Running vows (after it has been installed in the above step) is as easy as `pyvows vows/`. To check the arguments available to pyvows, type `pyvows --help`.
+
+Contributions
+=============
+
+Major contribution by [Rafael Carício](https://github.com/rafaelcaricio) in
+many areas such as running vows and topics.
+

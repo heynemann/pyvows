@@ -21,15 +21,19 @@ pyVows is a test engine based in Vows JS and features topic-based testing as wel
     keywords = 'testing vows test tdd',
     author = 'Bernardo Heynemann',
     author_email = 'heynemann@gmail.com',
-    url = 'https://github.com/heynemann/pyvows',
+    #Contributors
+    #contributor = 'Rafael Carício',
+    #contributor_email = 'rafael@caricio.com',
+    url = 'http://heynemann.github.com/pyvows/',
     license = 'MIT',
-    classifiers = ['Development Status :: 4 - Beta',
+    classifiers = ['Development Status :: 3 - Alpha',
                    'Intended Audience :: Developers',
                    'License :: OSI Approved :: MIT License',
                    'Natural Language :: English',
                    'Operating System :: MacOS',
                    'Operating System :: POSIX :: Linux',
-                   'Programming Language :: Python :: 2.6'
+                   'Programming Language :: Python :: 2.6',
+                   'Topic :: Software Development :: Testing'
     ],
     packages = ['pyvows', 'pyvows.assertions'],
     package_dir = {"pyvows": "pyvows"},
