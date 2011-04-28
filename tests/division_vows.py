@@ -22,5 +22,5 @@ class DivisionTests(Vows.Context):
             expect(topic).to_be_numeric()
 
         def WeGet42(self, topic):
-            expect(topic).to_be_equal_to(42)
+            expect(topic).to_be_equal(42)
 

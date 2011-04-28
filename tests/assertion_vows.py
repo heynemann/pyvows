@@ -24,10 +24,10 @@ class Assertion(Vows.Context):
             return "test"
 
         def we_get_test(self, topic):
-            expect(topic).to_be_equal_to('test')
+            expect(topic).to_be_equal('test')
 
         def we_do_not_get_else(self, topic):
-            expect(topic).Not.to_be_equal_to('else')
+            expect(topic).Not.to_be_equal('else')
 
         class WhenHaveASubClassThatHaveAExtraParamInTopic(Vows.Context):
 
@@ -35,7 +35,7 @@ class Assertion(Vows.Context):
                 return last
 
             def we_get_the_last_topic_value_without_modifications(self, topic):
-                expect(topic).to_be_equal_to('test')
+                expect(topic).to_be_equal('test')
 
     class IsInstance(Vows.Context):
         def topic(self):

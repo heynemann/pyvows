@@ -11,9 +11,9 @@
 from pyvows import Vows
 
 @Vows.assertion
-def to_be_equal_to(topic, expected):
+def to_be_equal(topic, expected):
     assert expected == topic, "Expected topic to be %s, but it was %s" % (expected, topic)
 
 @Vows.assertion
-def not_to_be_equal_to(topic, expected):
+def not_to_be_equal(topic, expected):
     assert expected != topic, "Expected topic not to be %s, but it was" % (expected)
