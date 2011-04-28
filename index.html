@@ -373,7 +373,7 @@ class AnotherContext(Vows.Context):
         <p>Here&rsquo;s an annotated example:</p>
 
         <pre class="brush:python">
-@Vows.batch                                             # Defines this context as batch
+@Vows.batch                                             # Batch
 class Array(Vows.Context):                              # Context
     class AnArray(Vows.Context):                        # Sub-Context
         class WithThreeElements(Vows.Context):
@@ -510,7 +510,7 @@ class ReadFile(Vows.Context):
             expect(topic).to_be_like('some string')
         </pre>
 
-        <p>In the example above, we make use of nested contexts to mimic nested callbacks. As you can tell, the result of the parent topic is passed down to its children, as arguments.</p>
+        <p>In the example above, we make use of nested contexts. As you can tell, the result of the parent topic is passed down to its children, as arguments.</p>
 
         <p>This example as a whole is therefore mostly sequential, while remaining asynchronous.</p>
 
@@ -543,48 +543,61 @@ class Exists(Vows.Context):
             expect(topic).to_be_true()
 </pre>
 
-<p>So in this case, the tests can finish in any order, and must not rely on each other. The test suite will exit when the last I/O call completes, and the assertions for it are run.</p>
+        <p>So in this case, the tests can finish in any order, and must not rely on each other. The test suite will exit when the last I/O call completes, and the assertions for it are run.</p>
 
-<p>In other words, <em>sibling contexts</em> are executed in parallel, while <em>nested contexts</em> are executed sequentially. Note that this all happens asynchronously, so while some contexts may be waiting for a parent context to finish, sibling contexts can still execute in the meantime.</p>
+        <p>In other words, <em>sibling contexts</em> are executed in parallel, while <em>nested contexts</em> are executed sequentially. Note that this all happens asynchronously, so while some contexts may be waiting for a parent context to finish, sibling contexts can still execute in the meantime.</p>
 
-<h2>Assertions</h2>
+        <h2>Assertions</h2>
 
-<p>pyVows features an extensible assertion model, with many useful functions, as well as error reporting.</p>
+        <p>pyVows features an extensible assertion model, with many useful functions, as well as error reporting.</p>
 
-<p>It&rsquo;s always best to use the more specific assertion functions when testing a value, you&rsquo;ll get much better error reporting, because your intention is clearer.</p>
+        <p>It&rsquo;s always best to use the more specific assertion functions when testing a value, you&rsquo;ll get much better error reporting, because your intention is clearer.</p>
 
-<p>Let&rsquo;s say we have the following array:</p>
+        <p>Let&rsquo;s say we have the following array:</p>
 
-<pre class="brush:python">
-    ary = [1, 2, 3]
-</pre>
+        <pre class="brush:python">
+ary = [1, 2, 3]
+        </pre>
 
-<p>and try to assert that it has 5 elements. With the built-in <code>assert</code>, we would do something like this:</p>
+        <p>and try to assert that it has 5 elements. With the built-in <code>assert</code>, we would do something like this:</p>
 
-<pre class="brush:python">
-    assert len(ary) == 5
-</pre>
+        <pre class="brush:python">
+assert len(ary) == 5
+        </pre>
 
-<p>And get the following error:</p>
+        <p>And get the following error:</p>
 
-<pre><code>
-AssertionError: 
-</code></pre>
+        <pre><code>AssertionError:</code></pre>
 
-<p>Now let&rsquo;s try that with one of our more specific assertion functions, <code>to_length</code>:</p>
+        <p>Now let&rsquo;s try that with one of our more specific assertion functions, <code>to_length</code>:</p>
 
-<pre class="brush:python">
+        <pre class="brush:python">
 expect(ary).to_length(5);
-</pre>
+        </pre>
 
-<p>This reports the following error:</p>
+        <p>This reports the following error:</p>
 
-<pre><code>Expected topic([1, 2, 3]) to have 5 of length, but it had 3 %s
-</code></pre>
+        <pre><code>Expected topic([1, 2, 3]) to have 5 of length, but it had 3</code></pre>
 
-<p>Other useful assertion functions bundled with pyVows include <code>to_match</code>, <code>to_be_instance_of</code>,
-<code>to_include</code> and <code>to_be_empty</code>&mdash;head over to the <a href="/#reference">reference</a> to get the full list.</p>
+        <p>Other useful assertion functions bundled with pyVows include <code>to_match</code>, <code>to_be_instance_of</code>,
+        <code>to_include</code> and <code>to_be_empty</code>&mdash;head over to the <a href="/#reference">reference</a> to get the full list.</p>
 
+        <h3>Custom Assertions</h3>
+        <p>Creating new assertions to be used with expect is as simple as using the <code>Vows.assertion</code> decorator on a function that gets topic as the first argument:</p>
+        <pre class="brush:python">
+@Vows.assertion
+def to_be_greater_than(topic, expected):
+    assert topic > expected, "Expected %s to be greather than %s, but it wasn't" % (topic, expected)
+
+@Vows.assertion
+def not_to_be_greater_than(topic, expected):
+    assert topic <= expected, "Expected %s not to be greater than %s, but it was" % (topic, expected)
+        </pre>
+        <p>It is really important to always declare the assertion and the 'not_' assertion, so they can be used like this:</p>
+        <pre class="brush:python">
+        expect(5).to_be_greater_than(3)
+        expect(3).Not.to_be_greater_than(5)
+        </pre>
 </section>
 
 <section id="reference">
