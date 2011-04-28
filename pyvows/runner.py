@@ -47,12 +47,15 @@ class VowsRunner(object):
         value_instance = value()
 
         topic = None
-        if hasattr(value_instance, 'topic'):
-            topic_func = getattr(value_instance, 'topic')
-            if topic_func.func_code.co_argcount > 1:
-                topic = topic_func(copy.deepcopy(last_topic))
-            else:
-                topic = topic_func()
+        try:
+            if hasattr(value_instance, 'topic'):
+                topic_func = getattr(value_instance, 'topic')
+                if topic_func.func_code.co_argcount > 1:
+                    topic = topic_func(copy.deepcopy(last_topic))
+                else:
+                    topic = topic_func()
+        except Exception, err:
+            topic = err
 
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
