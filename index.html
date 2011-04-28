@@ -153,16 +153,14 @@ A nested context with no topics
       <a href="#installing">installing</a>
       <a href="#reference">reference</a>
       <a href="#about">about</a>
-      <a href="http://github.com/cloudhead/vows">source <img id="github" src="/images/github.ico"/></a>
+      <a href="http://github.com/heynemann/pyvows">source <img id="github" src="./media/github.ico"/></a>
     </nav>
     <div id="dropdown">
       <ul>
-        <li><a href="#-structure-of-a-test-suite">Structure of a Test Batch</a></li>
+        <li><a href="#-structure-of-a-test-batch">Structure of a Test Batch</a></li>
         <li><a href="#-how-topics-work">How topics work</a></li>
         <li><a href="#-running-a-suite">Running a Suite</a></li>
-        <li><a href="#-writing-asynchronous-tests">Asynchronous Testing</a></li>
         <li><a href="#-assertions">Assertions</a></li>
-        <li><a href="#-macros">Macros</a></li>
       </ul>
     </div>
   </div>
@@ -185,7 +183,7 @@ A nested context with no topics
 
         <p>Here&rsquo;s a simple example, describing &lsquo;division by zero&rsquo;:</p>
         <pre class="brush:python">
-# division-by-zero-vows.py
+# division_by_zero_vows.py
 
 from pyvows import Vows, expect
 
@@ -210,7 +208,7 @@ class Divisions(Vows.Context):
 
         <p>And run it:</p>
 
-        <pre><code>$ pyvows division-by-zero-vows.py</code></pre>
+        <pre><code>$ pyvows division_by_zero_vows.py</code></pre>
 
         <hr />
 
@@ -402,7 +400,7 @@ class Array(Vows.Context):                              # Context
 
         <h2>How topics work</h2>
 
-        <p><a href="http://vowsjs.org" target="blank">Vows</a> introduces an <strong>incredibly powerful</strong>, yet very simple way of writing your tests. pyVows leverages the same approach towards the same goals.</p>
+        <p><a href="http://vowsjs.org" target="_blank">Vows</a> introduces an <strong>incredibly powerful</strong>, yet very simple way of writing your tests. pyVows leverages the same approach towards the same goals.</p>
         <p>Understanding <em>topics</em> is one of the keys to understanding pyVows. Unlike other testing frameworks, pyVows forces a clear separation between the element which is tested, the <em>topic</em>, and the actual tests, the <em>vows</em>.</p>
 
         <p>Let&rsquo;s start with a simple example of a context:</p>
@@ -634,98 +632,105 @@ $ pyvows tests/
 
 <h3>equality</h3>
 
-<pre><code>
-expect(topic).to_equal(4)                   # Succeeds when 4
-expect(topic).Not.to_equal(4)               # Succeeds when anything other than 4
+<pre><code>expect(4).to_equal(4)
+
+expect(5).Not.to_equal(4)
 </code></pre>
 
 <h3>type</h3>
 
-<pre><code>
-expect(topic).to_be_a_function()            # Succeeds when function or method
-expect(topic).to_be_instance_of(Some)       # Succeeds when instance of Some
+<pre><code>expect(os.path).to_be_a_function()
 
-expect(topic).Not.to_be_a_function()        # Succeeds when not function or method
-expect(topic).Not.to_be_instance_of(Some)
-assert.isFunction (function () {});
-assert.isObject   ({goo:true});
-assert.isString   ('goo');
-assert.isArray    ([4, 2]);
-assert.isNumber   (42);
-assert.isBoolean  (true);
-
-assert.typeOf     (42, 'number');
-assert.instanceOf ([], Array);
+expect("some").Not.to_be_a_function()
 </code></pre>
 
 <h3>truth</h3>
 
-<pre><code>assert.isTrue  (true);
-assert.isFalse (false);
+<pre><code>expect(True).to_be_true()
+expect("some").to_be_true()
+expect([1, 2, 3]).to_be_true()
+expect({ "a": "b" }).to_be_true()
+expect(1).to_be_true()
+
+expect(False).to_be_false()
+expect(None).to_be_false()
+expect("").to_be_false()
+expect(0).to_be_false()
+expect([]).to_be_false()
+expect({}).to_be_false()
 </code></pre>
 
-<h3>null, undefined, NaN</h3>
+<h3>None</h3>
 
-<pre><code>assert.isNull      (null);
-assert.isNotNull   (undefined);
-
-assert.isUndefined ('goo'[9]);
-assert.isNaN       (0/0);
+<pre><code>expect(None).to_be_null()
+expect("some").Not.to_be_null()
 </code></pre>
 
 <h3>inclusion</h3>
 
-<pre><code>assert.include ([4, 2, 0], 2);
-assert.include ({goo:true}, 'goo');
-assert.include ('goo', 'o');
+<pre><code>expect([1, 2, 3]).to_include(2)
+expect((1, 2, 3)).to_include(2)
+expect("123").to_include("2")
+expect({ "a": 1, "b": 2, "c": 3}).to_include("b")
+
+expect([1, 3]).Not.to_include(2)
 </code></pre>
 
 <h3>regexp matching</h3>
 
-<pre><code>assert.match ('hello', /^[a-z]+/);
+<pre><code>expect('some').to_match(r'^[a-z]+')
+
+expect("Some").Not.to_match(r'^[a-z]+')
 </code></pre>
 
 <h3>length</h3>
 
-<pre><code>assert.length ([4, 2, 0], 3);
-assert.length ('goo', 3);
+<pre><code>expect([1, 2, 3]).to_length(3)
+expect((1, 2, 3)).to_length(3)
+expect("abc").to_length(3)
+expect({ "a": 1, "b": 2, "c": 3}).to_length(3)
+
+expect([1]).Not.to_length(3)
 </code></pre>
 
 <h3>emptiness</h3>
 
-<pre><code>assert.isEmpty ([]);
-assert.isEmpty ({});
-assert.isEmpty ("");
+<pre><code>expect([]).to_be_empty()
+expect(tuple()).to_be_empty()
+expect({}).to_be_empty()
+expect("").to_be_empty()
 </code></pre>
 
 <h3>exceptions</h3>
 
-<pre><code>assert.throws(function () { x + x }, ReferenceError);
-assert.doesNotThrow(function () { 1 + 1 }, Error);
+<pre><code>expect(RuntimeError()).to_be_an_error_like(RuntimeError)
+
+expect(ValueError("error")).to_have_an_error_message_of("error")
 </code></pre>
 
   </div>
 </section>
 
 <section id="about">
-  <div class="content">
-    <h1>About</h1>
+    <div class="content">
+        <h1>About</h1>
 
-<p>Vows was developed by <a href="http://cloudhead.io">Alexis Sellier</a>, more commonly known as <a href="http://cloudhead.io">cloudhead</a>.</p>
+        <p>Both pyVows and this website are <strong>HEAVILY</strong> inspired by the work done by <a href="http://cloudhead.io">Alexis Sellier</a>, more commonly known as <a href="http://cloudhead.io">cloudhead</a>. He is responsible for <a href="http://cloudhead.io/toto">toto</a>, <a href="http://github.com/cloudhead/less.js">LESS</a>, <a href="http://github.com/cloudhead/hijs">hijs</a>, and a lot more.</p>
 
-    <footer>
-        <p>powered by <a href="http://cloudhead.io/toto">toto</a>, <a href="http://github.com/cloudhead/less.js">LESS</a> and <a href="http://github.com/cloudhead/hijs">hijs</a></p>
-        <p id="copy">Copyright &copy; Alexis Sellier 2010</p>
-    </footer>
-  </div>
+        <p>More than that, he's responsible for a shift in the way we write tests. We have cleaner, leaner and meaner tests now. And they *ARE* fast.</p>
+
+        <p>pyVows was developed by <a href="http://blog.heynemann.com.br" target="_blank">Bernardo Heynemann</a>, and features contribution by <a href="https://github.com/rafaelcaricio" target="_blank">Rafael Carício.</a></p>
+
+        <p>The design for this website is the work of <a href="http://cloudhead.io">Alexis Sellier</a>, and this website is intended as a compliment and as recognition of his great work, not as a copy.</p>
+
+        <footer>
+            <p id="copy">Copyright &copy; Bernardo Heynemann 2011</p>
+        </footer>
+    </div>
 </section>
 
-    </section>
-    <a href="http://github.com/cloudhead/vows">
-      <img style="position: absolute; z-index: 5; top: 0; left: 0; border: 0;"
-           src="http://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png"
-           alt="Fork me on GitHub" />
-    </a>
+    <a href="http://github.com/heynemann/pyvows"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://d3nwyuy0nl342s.cloudfront.net/img/bec6c51521dcc8148146135149fe06a9cc737577/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub"></a>
+
     <script src="./media/shCore.js" type="text/javascript"></script>
     <script src="./media/shBrushPython.js" type="text/javascript"></script>
     <script src="./media/shAutoloader.js" type="text/javascript"></script>
