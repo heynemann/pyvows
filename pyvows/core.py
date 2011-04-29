@@ -70,6 +70,15 @@ class Vows(object):
             self.parent = parent
             self.topic_value = None
 
+        def _get_first_available_topic(self):
+            if self.topic_value:
+                return self.topic_value
+
+            if not self.parent:
+                return None
+
+            return self.parent._get_first_available_topic()
+
     Assert = VowsAssertion()
 
     @staticmethod

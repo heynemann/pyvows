@@ -70,7 +70,7 @@ class Assertion(Vows.Context):
             def topic(self, older):
                 return older
 
-            def cant_percept_the_motifications(self, topic):
+            def cant_perceive_the_motifications(self, topic):
                 expect(hasattr(topic, 'coisa')).to_be_false()
 
     class IsEmpty(Vows.Context):

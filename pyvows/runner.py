@@ -148,7 +148,7 @@ class VowsParallelRunner(object):
             except Exception, err:
                 topic = err
         else:
-            topic = None
+            topic = copy.deepcopy(value_instance._get_first_available_topic())
 
         value_instance.topic_value = topic
 
@@ -160,7 +160,7 @@ class VowsParallelRunner(object):
             if inspect.ismethod(member) and member_name == 'topic':
                 continue
 
-            if inspect.ismethod(member):
+            if not member_name.startswith('_') and inspect.ismethod(member):
                 self.queue.put(('vow', context_col[key]['tests'], topic, value_instance, member, member_name))
 
     def run_vow(self, item):
@@ -215,7 +215,7 @@ class VowsParallelRunner(object):
         for i in range(expected_args):
             if not context.parent:
                 break
-            topics.append(context.topic_value)
+            topics.append(copy.deepcopy(context.topic_value))
             context = context.parent
 
         return topics
