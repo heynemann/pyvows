@@ -115,13 +115,13 @@ class VowsParallelRunner(object):
         start_time = time.time()
         result = VowsResult()
 
-        for i in range(4):
+        for i in range(1):
             t = Thread(target=self.worker)
             t.daemon = True
             t.start()
 
         for name, context in self.vows.iteritems():
-            self.queue.put(('context', result.contexts, name, context, []))
+            self.queue.put(('context', result.contexts, name, context, None))
 
         self.queue.join()
 
@@ -130,31 +130,31 @@ class VowsParallelRunner(object):
         return result
 
     def run_context(self, item):
-        operation, context_col, key, value, topics = item
+        operation, context_col, key, value, parent = item
 
         context_col[key] = {
             'contexts': {},
             'tests': []
         }
 
-        value_instance = value()
+        value_instance = value(parent)
 
         topic = None
-        try:
-            if hasattr(value_instance, 'topic'):
+        if hasattr(value_instance, 'topic'):
+            try:
                 topic_func = getattr(value_instance, 'topic')
-                topic = topic_func(*copy.deepcopy(self.pop_topics(topics, num=topic_func.func_code.co_argcount - 1)))
-                topics.append(topic)
-            else:
-                last_topic = copy.deepcopy(self.pop_topics(topics))
-                topic = last_topic[0] if len(last_topic) else None
-                topics.append(None)
-        except Exception, err:
-            topic = err
+                topic_list = self.get_topics_for(topic_func, value_instance)
+                topic = topic_func(*topic_list)
+            except Exception, err:
+                topic = err
+        else:
+            topic = None
+
+        value_instance.topic_value = topic
 
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
-                self.queue.put(('context', context_col[key]['contexts'], member_name, member, topics))
+                self.queue.put(('context', context_col[key]['contexts'], member_name, member, value_instance))
                 continue
 
             if inspect.ismethod(member) and member_name == 'topic':
@@ -194,11 +194,29 @@ class VowsParallelRunner(object):
 
         return filename, lineno
 
-    def pop_topics(self, topics, num=1):
-        older_topics = []
-        if topics:
-            for topic in topics[::-1]:
-                if topic and len(older_topics) < num:
-                    older_topics.append(topic)
-        return older_topics
+    def get_topics_for(self, topic_function, context_instance):
+        if not context_instance.parent:
+            return []
+
+        if hasattr(topic_function, '__code__'):
+            code = topic_function.__code__
+        elif hasattr(topic_function, '__func__'):
+            code = topic_function.__func__.__code__
+
+        if not code:
+            raise RuntimeError('Function %s does not have a code property')
+
+        expected_args = code.co_argcount - 1
+        print expected_args
+
+        topics = []
+
+        context = context_instance.parent
+        for i in range(expected_args):
+            if not context.parent:
+                break
+            topics.append(context.topic_value)
+            context = context.parent
+
+        return topics
 

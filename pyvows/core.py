@@ -66,7 +66,9 @@ class Vows(object):
     contexts = {}
 
     class Context(object):
-        pass
+        def __init__(self, parent):
+            self.parent = parent
+            self.topic_value = None
 
     Assert = VowsAssertion()
 
