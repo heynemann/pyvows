@@ -44,7 +44,7 @@ class VowsRunner(object):
             'tests': []
         }
 
-        value_instance = value()
+        value_instance = value(None)
 
         topic = None
         try:
@@ -215,7 +215,7 @@ class VowsParallelRunner(object):
         for i in range(expected_args):
             if not context.parent:
                 break
-            topics.append(context.topic_value)
+            topics.append(copy.deepcopy(context.topic_value))
             context = context.parent
 
         return topics
