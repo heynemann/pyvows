@@ -44,7 +44,7 @@ class VowsRunner(object):
             'tests': []
         }
 
-        value_instance = value()
+        value_instance = value(None)
 
         topic = None
         try:
