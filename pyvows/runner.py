@@ -61,7 +61,7 @@ class VowsRunner(object):
 
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
-                self.run_context(context_col[key]['contexts'], member_name, member, topics)
+                self.run_context(context_col[key]['contexts'], member_name, member, copy.deepcopy(topics))
                 continue
 
             if inspect.ismethod(member) and member_name == 'topic':
@@ -154,7 +154,7 @@ class VowsParallelRunner(object):
 
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
-                self.queue.put(('context', context_col[key]['contexts'], member_name, member, topics))
+                self.queue.put(('context', context_col[key]['contexts'], member_name, member, copy.deepcopy(topics)))
                 continue
 
             if inspect.ismethod(member) and member_name == 'topic':
