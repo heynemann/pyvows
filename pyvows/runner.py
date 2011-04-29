@@ -207,7 +207,6 @@ class VowsParallelRunner(object):
             raise RuntimeError('Function %s does not have a code property')
 
         expected_args = code.co_argcount - 1
-        print expected_args
 
         topics = []
 
