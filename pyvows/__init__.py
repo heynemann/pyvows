@@ -11,4 +11,4 @@
 from pyvows.core import Vows, expect
 from pyvows.assertions import *
 
-__version__ = (0, 1, 0)
+__version__ = (0, 1, 1)
