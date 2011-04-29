@@ -450,7 +450,7 @@ class DataStore(Vows.Context):
 
     class CallingGet(Vows.Context):
         def topic(self, store):
-            return datastore.get(42)
+            return store.get(42)
 
         def should_return_the_object_with_id_42(self, topic):
             expect(topic.id).toEqual(42)
