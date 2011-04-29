@@ -179,9 +179,57 @@ A nested context with no topics
         <p>As its node.js counterpart, pyVows executes your tests in parallel when it makes sense,
         and sequentially when there are dependencies.</p>
 
-        <p>Emphasis was put on speed of execution, clarity and user experience.</p>
+        <p>Imagine we are testing a method that sums up two integers, like this:</p>
 
-        <p>Here&rsquo;s a simple example, describing &lsquo;division by zero&rsquo;:</p>
+        <pre class="brush:python">
+def test_sum_returns_42():
+    result = add_two_numbers(41, 1)
+
+    assert result
+    assert int(result)
+    assert result == 42
+        </pre>
+
+        <p>Even in a VERY simple scenario like this, we have three assertions in this test. Not too good if we want a single assertion per test, so we could do it like this:</p>
+
+        <pre class="brush:python">
+def test_sum_returns_result():
+    result = add_two_numbers(41, 1)
+    assert result
+
+def test_sum_returns_a_number():
+    result = add_two_numbers(41, 1)
+    assert int(result)
+
+def test_sum_returns_42():
+    result = add_two_numbers(41, 1)
+    assert result == 42
+        </pre>
+
+        <p>This is all fine and dandy, except that we are executing the add_two_numbers function three times. In this simple scenario we don't really care if it gets executed many times, but with real code we want to minimize calls so our tests are always as fast as possible.</p>
+
+        <p>This is how the above test would look like in pyVows:</p>
+
+        <pre class="brush:python">
+class SumContext(Vows.Context):
+
+    def topic(self):
+        return add_two_numbers(41, 1)
+
+    def we_get_a_result(self, topic):
+        expect(topic).Not.to_be_null()
+
+    def we_get_a_number(self, topic):
+        expect(topic).to_be_numeric()
+
+    def we_get_42(self, topic):
+        expect(topic).to_equal(42)
+        </pre>
+
+        <p>Don't worry if you don't understand all of it. We'll see it more thoroughly in the next sections.</p>
+
+        <p>Here&rsquo;s another example, this time describing &lsquo;division by zero&rsquo;:</p>
+
         <pre class="brush:python">
 # division_by_zero_vows.py
 
@@ -202,7 +250,7 @@ class Divisions(Vows.Context):
             return 42 / 1
 
         def we_get_the_same_number(self, topic):
-            expect(topic).to_be_equal_to(42)
+            expect(topic).to_equal(42)
 
         </pre>
 
@@ -246,7 +294,7 @@ class TheGoodThings(Vows.Context):
             return Strawberry()
 
         def is_red(self, topic):
-            expect(topic.color).to_be_equal_to('#ff0000')
+            expect(topic.color).to_equal('#ff0000')
 
         def and_tasty(self, topic):
             expect(topic.isTasty()).to_be_true()
@@ -645,21 +693,46 @@ $ pyvows tests/
 
 <h3>equality</h3>
 
-<pre><code>expect(4).to_equal(4)
+<pre class="brush:python">
+expect(4).to_equal(4)
 
 expect(5).Not.to_equal(4)
-</code></pre>
+</pre>
+
+<h3>similarity</h3>
+
+<pre class="brush:python">
+expect("sOmE RandOm     CAse StRiNG").to_be_like('some random case string')
+
+expect(1).to_be_like(1)
+expect(1).to_be_like(1.0)
+expect(1).to_be_like(long(1))
+
+expect([1, 2, 3]).to_be_like([3, 2, 1])
+expect([1, 2, 3]).to_be_like((3, 2, 1))
+expect([[1, 2], [3,4]]).to_be_like([4, 3], [2, 1]])
+
+expect({ 'some': 1, 'key': 2 }).to_be_like({ 'key': 2, 'some': 1 })
+
+expect("sOmE RandOm     CAse StRiNG").Not.to_be_like('other string')
+expect(1).Not_to_be_like(2)
+expect([[1, 2], [3,4]]).Not.to_be_like([4, 4], [2, 1]])
+expect({ 'some': 1, 'key': 2 }).Not.to_be_like({ 'key': 3, 'some': 4 })
+</pre>
+
 
 <h3>type</h3>
 
-<pre><code>expect(os.path).to_be_a_function()
+<pre class="brush:python">expect(os.path).to_be_a_function()
+expect(1).to_be_numeric()
 
 expect("some").Not.to_be_a_function()
-</code></pre>
+expect("some").Not.to_be_numeric()
+</pre>
 
 <h3>truth</h3>
 
-<pre><code>expect(True).to_be_true()
+<pre class="brush:python">expect(True).to_be_true()
 expect("some").to_be_true()
 expect([1, 2, 3]).to_be_true()
 expect({ "a": "b" }).to_be_true()
@@ -671,55 +744,63 @@ expect("").to_be_false()
 expect(0).to_be_false()
 expect([]).to_be_false()
 expect({}).to_be_false()
-</code></pre>
+</pre>
 
 <h3>None</h3>
 
-<pre><code>expect(None).to_be_null()
+<pre class="brush:python">expect(None).to_be_null()
 expect("some").Not.to_be_null()
-</code></pre>
+</pre>
 
 <h3>inclusion</h3>
 
-<pre><code>expect([1, 2, 3]).to_include(2)
+<pre class="brush:python">expect([1, 2, 3]).to_include(2)
 expect((1, 2, 3)).to_include(2)
 expect("123").to_include("2")
 expect({ "a": 1, "b": 2, "c": 3}).to_include("b")
 
 expect([1, 3]).Not.to_include(2)
-</code></pre>
+</pre>
 
 <h3>regexp matching</h3>
 
-<pre><code>expect('some').to_match(r'^[a-z]+')
+<pre class="brush:python">expect('some').to_match(r'^[a-z]+')
 
 expect("Some").Not.to_match(r'^[a-z]+')
-</code></pre>
+</pre>
 
 <h3>length</h3>
 
-<pre><code>expect([1, 2, 3]).to_length(3)
+<pre class="brush:python">expect([1, 2, 3]).to_length(3)
 expect((1, 2, 3)).to_length(3)
 expect("abc").to_length(3)
 expect({ "a": 1, "b": 2, "c": 3}).to_length(3)
 
 expect([1]).Not.to_length(3)
-</code></pre>
+</pre>
 
 <h3>emptiness</h3>
 
-<pre><code>expect([]).to_be_empty()
+<pre class="brush:python">expect([]).to_be_empty()
 expect(tuple()).to_be_empty()
 expect({}).to_be_empty()
 expect("").to_be_empty()
-</code></pre>
+</pre>
 
 <h3>exceptions</h3>
 
-<pre><code>expect(RuntimeError()).to_be_an_error_like(RuntimeError)
+<pre class="brush:python">expect(RuntimeError()).to_be_an_error()
+
+expect(RuntimeError()).to_be_an_error_like(RuntimeError)
 
 expect(ValueError("error")).to_have_an_error_message_of("error")
-</code></pre>
+
+expect(RuntimeError()).Not.to_be_an_error()
+
+expect(RuntimeError()).Not.to_be_an_error_like(RuntimeError)
+
+expect(ValueError("error")).Not.to_have_an_error_message_of("error")
+</pre>
 
   </div>
 </section>
