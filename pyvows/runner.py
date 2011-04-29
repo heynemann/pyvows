@@ -38,7 +38,7 @@ class VowsRunner(object):
         result.ellapsed_time = float(end_time - start_time)
         return result
 
-    def run_context(self, context_col, key, value, last_topic=None):
+    def run_context(self, context_col, key, value, topics=[]):
         context_col[key] = {
             'contexts': {},
             'tests': []
@@ -50,16 +50,18 @@ class VowsRunner(object):
         try:
             if hasattr(value_instance, 'topic'):
                 topic_func = getattr(value_instance, 'topic')
-                if topic_func.func_code.co_argcount > 1:
-                    topic = topic_func(copy.deepcopy(last_topic))
-                else:
-                    topic = topic_func()
+                topic = topic_func(*copy.deepcopy(self.pop_topics(topics, num=topic_func.func_code.co_argcount - 1)))
+                topics.append(topic)
+            else:
+                last_topic = copy.deepcopy(self.pop_topics(topics))
+                topic = last_topic[0] if len(last_topic) else None
+                topics.append(None)
         except Exception, err:
             topic = err
 
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
-                self.run_context(context_col[key]['contexts'], member_name, member, topic)
+                self.run_context(context_col[key]['contexts'], member_name, member, topics)
                 continue
 
             if inspect.ismethod(member) and member_name == 'topic':
@@ -83,6 +85,14 @@ class VowsRunner(object):
 
     def run_topic(self, value_instance, last_topic=None):
         return topic
+
+    def pop_topics(self, topics, num=1):
+        older_topics = []
+        if topics:
+            for topic in topics[::-1]:
+                if topic and len(older_topics) < num:
+                    older_topics.append(topic)
+        return older_topics
 
 class VowsParallelRunner(object):
     def __init__(self, vows, context_class):
@@ -111,7 +121,7 @@ class VowsParallelRunner(object):
             t.start()
 
         for name, context in self.vows.iteritems():
-            self.queue.put(('context', result.contexts, name, context, None))
+            self.queue.put(('context', result.contexts, name, context, []))
 
         self.queue.join()
 
@@ -120,7 +130,7 @@ class VowsParallelRunner(object):
         return result
 
     def run_context(self, item):
-        operation, context_col, key, value, last_topic = item
+        operation, context_col, key, value, topics = item
 
         context_col[key] = {
             'contexts': {},
@@ -133,16 +143,18 @@ class VowsParallelRunner(object):
         try:
             if hasattr(value_instance, 'topic'):
                 topic_func = getattr(value_instance, 'topic')
-                if topic_func.func_code.co_argcount > 1:
-                    topic = topic_func(copy.deepcopy(last_topic))
-                else:
-                    topic = topic_func()
+                topic = topic_func(*copy.deepcopy(self.pop_topics(topics, num=topic_func.func_code.co_argcount - 1)))
+                topics.append(topic)
+            else:
+                last_topic = copy.deepcopy(self.pop_topics(topics))
+                topic = last_topic[0] if len(last_topic) else None
+                topics.append(None)
         except Exception, err:
             topic = err
 
         for member_name, member in inspect.getmembers(value):
             if inspect.isclass(member) and issubclass(member, self.context_class):
-                self.queue.put(('context', context_col[key]['contexts'], member_name, member, topic))
+                self.queue.put(('context', context_col[key]['contexts'], member_name, member, topics))
                 continue
 
             if inspect.ismethod(member) and member_name == 'topic':
@@ -181,4 +193,12 @@ class VowsParallelRunner(object):
         lineno = code.co_firstlineno
 
         return filename, lineno
+
+    def pop_topics(self, topics, num=1):
+        older_topics = []
+        if topics:
+            for topic in topics[::-1]:
+                if topic and len(older_topics) < num:
+                    older_topics.append(topic)
+        return older_topics
 

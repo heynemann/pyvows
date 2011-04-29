@@ -18,6 +18,10 @@ Assert = Vows.Assert
 @Vows.batch
 class Assertion(Vows.Context):
 
+    class WhenNotHaveTopic(Vows.Context):
+        def we_can_see_topic_as_none(self, topic):
+            expect(topic).to_be_null()
+
     class Equal(Vows.Context):
 
         def topic(self):
@@ -284,7 +288,7 @@ class Assertion(Vows.Context):
 
         class TheExceptionClass(Vows.Context):
             def topic(self, error):
-                return type(error)
+                return ValueError
 
             def we_can_see_that_is_an_error_class(self, topic):
                 expect(topic).to_be_an_error()
