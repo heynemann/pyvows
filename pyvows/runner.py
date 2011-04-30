@@ -17,11 +17,14 @@ import eventlet
 from pyvows.result import VowsResult
 
 class VowsParallelRunner(object):
-    def __init__(self, vows, context_class, async_topic_class):
+    def __init__(self, vows, context_class, async_topic_class, vow_successful_event, vow_error_event):
         self.vows = vows
         self.context_class = context_class
         self.async_topic_class = async_topic_class
         self.pool = eventlet.GreenPool()
+        self.async_topics= []
+        self.vow_successful_event = vow_successful_event
+        self.vow_error_event = vow_error_event
 
     def run(self):
         start_time = time.time()
@@ -29,6 +32,11 @@ class VowsParallelRunner(object):
 
         for name, context in self.vows.iteritems():
             self.run_context(result.contexts, name, context, None)
+
+        self.pool.waitall()
+
+        while self.async_topics:
+            time.sleep(0.01)
 
         self.pool.waitall()
 
@@ -71,10 +79,17 @@ class VowsParallelRunner(object):
                         self.run_vow(context_col[name]['tests'], topic, context_instance, member, member_name)
 
             if isinstance(topic, self.async_topic_class):
-                args = topic.args + (run_with_topic, )
-                self.pool.spawn(topic.func, *args, **topic.kw)
+                def handle_callback(topic_value):
+                    run_with_topic(topic_value)
+                    self.async_topics.pop()
+
+                args = topic.args + (handle_callback, )
+
+                self.async_topics.append(topic)
+                self.pool.spawn_n(topic.func, *args, **topic.kw)
             else:
                 run_with_topic(topic)
+
 
         self.pool.spawn_n(async_run_context, self, context_col, name, context, parent)
 
@@ -93,9 +108,13 @@ class VowsParallelRunner(object):
                 result = member(context_instance, topic)
                 result_obj['result'] = result
                 result_obj['succeeded'] = True
+                if self.vow_successful_event:
+                    self.vow_successful_event(result_obj)
             except Exception, err:
                 result_obj['error'] = err
-
+                if self.vow_error_event:
+                    self.vow_error_event(result_obj)
+ 
             tests_col.append(result_obj)
 
         self.pool.spawn_n(async_run_vow, self, tests_col, topic, context_instance, member, member_name)

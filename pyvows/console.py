@@ -19,7 +19,6 @@ except ImportError:
     from optparse import OptionParser
 
 from pyvows.reporting import VowsDefaultReporter
-from pyvows.runner import VowsParallelRunner
 from pyvows.core import Vows
 
 def __get_arguments():
@@ -51,7 +50,7 @@ def __get_arguments():
 def run(path, pattern):
     Vows.gather(path, pattern)
 
-    result = Vows.ensure(VowsParallelRunner)
+    result = Vows.ensure(VowsDefaultReporter.handle_success, VowsDefaultReporter.handle_error)
 
     reporter = VowsDefaultReporter(result)
 

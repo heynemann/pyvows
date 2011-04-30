@@ -8,6 +8,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+import sys
 import re
 
 from colorama import init, Fore, Style
@@ -28,7 +29,17 @@ class VowsDefaultReporter(object):
     def under_split(self, string):
         return ' '.join(string.split('_'))
 
+    @classmethod
+    def handle_success(cls, vow):
+        sys.stdout.write(cls.honored)
+
+    @classmethod
+    def handle_error(cls, vow):
+        sys.stdout.write(cls.broken)
+
     def pretty_print(self):
+        print
+        print
         if not self.result:
             print " %s No vows found! » 0 honored • 0 broken (0.0s)" % self.broken
             return

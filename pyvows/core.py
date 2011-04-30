@@ -108,8 +108,8 @@ class Vows(object):
         return method_name
 
     @classmethod
-    def ensure(cls, runner=VowsParallelRunner):
-        runner = runner(Vows.contexts, Vows.Context, Vows.AsyncTopic)
+    def ensure(cls, vow_success_event, vow_error_event):
+        runner = VowsParallelRunner(Vows.contexts, Vows.Context, Vows.AsyncTopic, vow_success_event, vow_error_event)
 
         result = runner.run()
 
