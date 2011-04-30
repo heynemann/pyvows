@@ -1,3 +1,5 @@
 pyVows is the python version of the [Vows.JS](http://vowsjs.org) testing framework.
 
 For more info go to [pyVows website](http://heynemann.github.com/pyvows/).
+
+If you are using tornado you are VERY advised to check the Tornado_pyVows project by Rafael Carício at https://github.com/rafaelcaricio/tornado_pyvows
