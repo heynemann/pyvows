@@ -17,7 +17,7 @@ setup(
     description = "pyVows is a test engine based in VowsJS(http://vowsjs.org/).",
     long_description = """
 pyVows is a test engine based in Vows JS and features topic-based testing as well as parallel running of tests.
-""",    
+""",
     keywords = 'testing vows test tdd',
     author = 'Bernardo Heynemann',
     author_email = 'heynemann@gmail.com',
@@ -37,6 +37,10 @@ pyVows is a test engine based in Vows JS and features topic-based testing as wel
     ],
     packages = ['pyvows', 'pyvows.assertions'],
     package_dir = {"pyvows": "pyvows"},
+
+    install_requires=[
+        "eventlet",
+    ],
 
     entry_points = {
         'console_scripts': [
