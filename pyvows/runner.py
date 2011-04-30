@@ -71,8 +71,8 @@ class VowsParallelRunner(object):
                         self.run_vow(context_col[name]['tests'], topic, context_instance, member, member_name)
 
             if isinstance(topic, self.async_topic_class):
-                kw = { 'callback': run_with_topic }
-                self.pool.spawn_n(topic.func, *topic.args, **kw)
+                args = topic.args + (run_with_topic, )
+                self.pool.spawn(topic.func, *args, **topic.kw)
             else:
                 run_with_topic(topic)
 
