@@ -56,18 +56,25 @@ class VowsParallelRunner(object):
             else:
                 topic = copy.deepcopy(context_instance._get_first_available_topic())
 
-            context_instance.topic_value = topic
+            def run_with_topic(topic):
+                context_instance.topic_value = topic
 
-            for member_name, member in inspect.getmembers(context):
-                if inspect.isclass(member) and issubclass(member, self.context_class):
-                    self.pool.spawn_n(async_run_context, self, context_col[name]['contexts'], member_name, member, context_instance)
-                    continue
+                for member_name, member in inspect.getmembers(context):
+                    if inspect.isclass(member) and issubclass(member, self.context_class):
+                        self.pool.spawn_n(async_run_context, self, context_col[name]['contexts'], member_name, member, context_instance)
+                        continue
 
-                if inspect.ismethod(member) and member_name == 'topic':
-                    continue
+                    if inspect.ismethod(member) and member_name == 'topic':
+                        continue
 
-                if not member_name.startswith('_') and inspect.ismethod(member):
-                    self.run_vow(context_col[name]['tests'], topic, context_instance, member, member_name)
+                    if not member_name.startswith('_') and inspect.ismethod(member):
+                        self.run_vow(context_col[name]['tests'], topic, context_instance, member, member_name)
+
+            if isinstance(topic, self.async_topic_class):
+                kw = { 'callback': run_with_topic }
+                self.pool.spawn_n(topic.func, *topic.args, **kw)
+            else:
+                run_with_topic(topic)
 
         self.pool.spawn_n(async_run_context, self, context_col, name, context, parent)
 
