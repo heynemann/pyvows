@@ -8,6 +8,4 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-from pyvows.core import Vows, expect
-from pyvows.assertions import *
-
+__version__ = (0, 3, 3)

@@ -9,7 +9,7 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 from setuptools import setup
-from pyvows import __version__
+from pyvows.version import __version__
 
 setup(
     name = 'pyVows',
