@@ -12,176 +12,86 @@ import inspect
 import time
 import copy
 
-try:
-    from Queue import Queue
-    from threading import Thread
-    HAS_PARALLEL = True
-except ImportError:
-    HAS_PARALLEL = False
+import eventlet
 
 from pyvows.result import VowsResult
 
-class VowsRunner(object):
-    def __init__(self, vows, context_class):
-        self.vows = vows
-        self.context_class = context_class
-
-    def run(self):
-        start_time = time.time()
-        result = VowsResult()
-        context_col = result.contexts
-
-        for key, value in self.vows.iteritems():
-            self.run_context(context_col, key, value)
-
-        end_time = time.time()
-        result.ellapsed_time = float(end_time - start_time)
-        return result
-
-    def run_context(self, context_col, key, value, topics=[]):
-        context_col[key] = {
-            'contexts': {},
-            'tests': []
-        }
-
-        value_instance = value(None)
-
-        topic = None
-        try:
-            if hasattr(value_instance, 'topic'):
-                topic_func = getattr(value_instance, 'topic')
-                topic = topic_func(*copy.deepcopy(self.pop_topics(topics, num=topic_func.func_code.co_argcount - 1)))
-                topics.append(topic)
-            else:
-                last_topic = copy.deepcopy(self.pop_topics(topics))
-                topic = last_topic[0] if len(last_topic) else None
-                topics.append(None)
-        except Exception, err:
-            topic = err
-
-        for member_name, member in inspect.getmembers(value):
-            if inspect.isclass(member) and issubclass(member, self.context_class):
-                self.run_context(context_col[key]['contexts'], member_name, member, copy.deepcopy(topics))
-                continue
-
-            if inspect.ismethod(member) and member_name == 'topic':
-                continue
-
-            if inspect.ismethod(member):
-                result_obj = {
-                    'name': member_name,
-                    'result': None,
-                    'error': None,
-                    'succeeded': False
-                }
-                try:
-                    result = member(value_instance, topic)
-                    result_obj['result'] = result
-                    result_obj['succeeded'] = True
-                except Exception, err:
-                    result_obj['error'] = err
-
-                context_col[key]['tests'].append(result_obj)
-
-    def run_topic(self, value_instance, last_topic=None):
-        return topic
-
-    def pop_topics(self, topics, num=1):
-        older_topics = []
-        if topics:
-            for topic in topics[::-1]:
-                if topic and len(older_topics) < num:
-                    older_topics.append(topic)
-        return older_topics
-
 class VowsParallelRunner(object):
-    def __init__(self, vows, context_class):
+    def __init__(self, vows, context_class, async_topic_class):
         self.vows = vows
         self.context_class = context_class
-        self.queue = Queue()
-
-    def worker(self):
-        while True:
-            item = self.queue.get()
-
-            if item[0] == 'context':
-                self.run_context(item)
-            elif item[0] == 'vow':
-                self.run_vow(item)
-
-            self.queue.task_done()
+        self.async_topic_class = async_topic_class
+        self.pool = eventlet.GreenPool()
 
     def run(self):
         start_time = time.time()
         result = VowsResult()
-
-        for i in range(1):
-            t = Thread(target=self.worker)
-            t.daemon = True
-            t.start()
 
         for name, context in self.vows.iteritems():
-            self.queue.put(('context', result.contexts, name, context, None))
+            self.run_context(result.contexts, name, context, None)
 
-        self.queue.join()
+        self.pool.waitall()
 
         end_time = time.time()
         result.ellapsed_time = float(end_time - start_time)
         return result
 
-    def run_context(self, item):
-        operation, context_col, key, value, parent = item
+    def run_context(self, context_col, name, context, parent):
+        def async_run_context(self, context_col, name, context, parent):
+            context_col[name] = {
+                'contexts': {},
+                'tests': []
+            }
 
-        context_col[key] = {
-            'contexts': {},
-            'tests': []
-        }
+            context_instance = context(parent)
 
-        value_instance = value(parent)
+            topic = None
+            if hasattr(context_instance, 'topic'):
+                try:
+                    topic_func = getattr(context_instance, 'topic')
+                    topic_list = self.get_topics_for(topic_func, context_instance)
+                    topic = topic_func(*topic_list)
+                except Exception, err:
+                    topic = err
+            else:
+                topic = copy.deepcopy(context_instance._get_first_available_topic())
 
-        topic = None
-        if hasattr(value_instance, 'topic'):
+            context_instance.topic_value = topic
+
+            for member_name, member in inspect.getmembers(context):
+                if inspect.isclass(member) and issubclass(member, self.context_class):
+                    self.pool.spawn_n(async_run_context, self, context_col[name]['contexts'], member_name, member, context_instance)
+                    continue
+
+                if inspect.ismethod(member) and member_name == 'topic':
+                    continue
+
+                if not member_name.startswith('_') and inspect.ismethod(member):
+                    self.run_vow(context_col[name]['tests'], topic, context_instance, member, member_name)
+
+        self.pool.spawn_n(async_run_context, self, context_col, name, context, parent)
+
+    def run_vow(self, tests_col, topic, context_instance, member, member_name):
+        def async_run_vow(self, tests_col, topic, context_instance, member, member_name):
+            filename, lineno = self.file_info_for(member)
+            result_obj = {
+                'name': member_name,
+                'result': None,
+                'error': None,
+                'succeeded': False,
+                'file': filename,
+                'lineno': lineno
+            }
             try:
-                topic_func = getattr(value_instance, 'topic')
-                topic_list = self.get_topics_for(topic_func, value_instance)
-                topic = topic_func(*topic_list)
+                result = member(context_instance, topic)
+                result_obj['result'] = result
+                result_obj['succeeded'] = True
             except Exception, err:
-                topic = err
-        else:
-            topic = copy.deepcopy(value_instance._get_first_available_topic())
+                result_obj['error'] = err
 
-        value_instance.topic_value = topic
+            tests_col.append(result_obj)
 
-        for member_name, member in inspect.getmembers(value):
-            if inspect.isclass(member) and issubclass(member, self.context_class):
-                self.queue.put(('context', context_col[key]['contexts'], member_name, member, value_instance))
-                continue
-
-            if inspect.ismethod(member) and member_name == 'topic':
-                continue
-
-            if not member_name.startswith('_') and inspect.ismethod(member):
-                self.queue.put(('vow', context_col[key]['tests'], topic, value_instance, member, member_name))
-
-    def run_vow(self, item):
-        operation, tests_col, topic, value_instance, member, member_name = item
-        filename, lineno = self.file_info_for(member)
-        result_obj = {
-            'name': member_name,
-            'result': None,
-            'error': None,
-            'succeeded': False,
-            'file': filename,
-            'lineno': lineno
-        }
-        try:
-            result = member(value_instance, topic)
-            result_obj['result'] = result
-            result_obj['succeeded'] = True
-        except Exception, err:
-            result_obj['error'] = err
-
-        tests_col.append(result_obj)
+        self.pool.spawn_n(async_run_vow, self, tests_col, topic, context_instance, member, member_name)
 
     def file_info_for(self, member):
         if hasattr(member, '__code__'):

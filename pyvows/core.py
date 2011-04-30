@@ -51,6 +51,12 @@ class expect(object):
 
         return assert_topic
 
+class VowsAsyncTopic(object):
+    def __init__(self, func, *args, **kw):
+        self.func = func
+        self.args = args
+        self.kw = kw
+
 class VowsAssertion(object):
     class AssertionNotFoundError(AttributeError):
         def __init__(self, name):
@@ -79,6 +85,8 @@ class Vows(object):
 
             return self.parent._get_first_available_topic()
 
+    AsyncTopic = VowsAsyncTopic
+
     Assert = VowsAssertion()
 
     @staticmethod
@@ -101,7 +109,7 @@ class Vows(object):
 
     @classmethod
     def ensure(cls, runner=VowsParallelRunner):
-        runner = runner(Vows.contexts, Vows.Context)
+        runner = runner(Vows.contexts, Vows.Context, Vows.AsyncTopic)
 
         result = runner.run()
 

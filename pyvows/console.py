@@ -19,7 +19,7 @@ except ImportError:
     from optparse import OptionParser
 
 from pyvows.reporting import VowsDefaultReporter
-from pyvows.runner import VowsRunner, VowsParallelRunner
+from pyvows.runner import VowsParallelRunner
 from pyvows.core import Vows
 
 def __get_arguments():
@@ -29,7 +29,6 @@ def __get_arguments():
         parser = argparse.ArgumentParser(description='Runs pyVows.')
 
         parser.add_argument('-p', '--pattern', default='*_vows.py', help='Pattern of vows files. Defaults to *_vows.py.')
-        parser.add_argument('-s', '--sequential', action="store_true", default=False, help='Indicates that vows should be run sequentially. Defaults to parallel running.')
 
         parser.add_argument('path', default=current_dir, nargs='?', help='Directory to look for vows recursively. If a file is passed, the file will be the target for vows. Defaults to current dir.')
 
@@ -37,26 +36,22 @@ def __get_arguments():
     else:
         parser = OptionParser()
         parser.add_option("-p", "--pattern", dest="pattern", default='*_vows.py', help='Pattern of vows files. Defaults to *_vows.py.')
-        parser.add_option("-s", "--sequential",
-                          action="store_true", dest="sequential", default=False,
-                          help="Indicates that vows should be run sequentially. Defaults to parallel running.")
 
         (options, args) = parser.parse_args()
 
         class Args(object):
-            def __init__(self, pattern, sequential, path):
+            def __init__(self, pattern, path):
                 self.pattern = pattern
-                self.sequential = sequential
                 self.path = path
 
-        arguments = Args(options.pattern, options.sequential, args[0] if args else None)
+        arguments = Args(options.pattern, args[0] if args else None)
 
     return arguments
 
-def run(path, pattern, sequential):
+def run(path, pattern):
     Vows.gather(path, pattern)
 
-    result = Vows.ensure(VowsRunner if sequential else VowsParallelRunner)
+    result = Vows.ensure(VowsParallelRunner)
 
     reporter = VowsDefaultReporter(result)
 
@@ -73,7 +68,7 @@ def main():
     if not path:
         path = os.curdir
 
-    run(path, pattern, arguments.sequential)
+    run(path, pattern)
 
 if __name__ == '__main__':
     main()
