@@ -72,40 +72,16 @@ def __get_arguments():
 
     return arguments
 
-def run(path, pattern, cover, cover_packages, cover_threshold):
+def run(path, pattern):
     Vows.gather(path, pattern)
 
-    if cover and COVERAGE_AVAILABLE:
-        cov = coverage(source=cover_packages)
-        cov.erase()
-        cov.start()
-
     result = Vows.ensure(VowsDefaultReporter.handle_success, VowsDefaultReporter.handle_error)
-
-    if cover and COVERAGE_AVAILABLE:
-        cov.stop()
 
     reporter = VowsDefaultReporter(result)
 
     reporter.pretty_print()
 
-    if cover and COVERAGE_AVAILABLE:
-        print
-        print
-
-        xml = ''
-        with tempfile.NamedTemporaryFile() as tmp:
-            cov.xml_report(outfile=tmp.name)
-            tmp.seek(0)
-            xml = tmp.read()
-        reporter.print_coverage(xml, cover_threshold)
-
-    if cover and not COVERAGE_AVAILABLE:
-        init(autoreset=True)
-        print
-        print Fore.YELLOW + "WARNING: Cover disabled because coverage or lxml could not be found."
-        print Fore.YELLOW + "Make sure both are installed and accessible"
-        print
+    return result, reporter
 
 def main():
     arguments = __get_arguments()
@@ -118,7 +94,33 @@ def main():
     if not path:
         path = os.curdir
 
-    run(path, pattern, arguments.cover, arguments.cover_package, arguments.cover_threshold)
+    if arguments.cover and COVERAGE_AVAILABLE:
+        cov = coverage(source=arguments.cover_package)
+        cov.erase()
+        cov.start()
+
+    result, reporter = run(path, pattern)
+
+    if arguments.cover and COVERAGE_AVAILABLE:
+        cov.stop()
+
+    if arguments.cover and COVERAGE_AVAILABLE:
+        print
+        print
+
+        xml = ''
+        with tempfile.NamedTemporaryFile() as tmp:
+            cov.xml_report(outfile=tmp.name)
+            tmp.seek(0)
+            xml = tmp.read()
+        reporter.print_coverage(xml, arguments.cover_threshold)
+
+    if arguments.cover and not COVERAGE_AVAILABLE:
+        init(autoreset=True)
+        print
+        print Fore.YELLOW + "WARNING: Cover disabled because coverage or lxml could not be found."
+        print Fore.YELLOW + "Make sure both are installed and accessible"
+        print
 
 if __name__ == '__main__':
     main()
