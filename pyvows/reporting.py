@@ -14,6 +14,8 @@ import re
 from lxml import etree
 from colorama import init, Fore, Style
 
+PROGRESS_SIZE = 50
+
 class VowsDefaultReporter(object):
     honored = Fore.GREEN + Style.BRIGHT + '✓' + Fore.RESET + Style.RESET_ALL
     broken = Fore.RED + Style.BRIGHT + '✗' + Fore.RESET + Style.RESET_ALL
@@ -84,7 +86,7 @@ class VowsDefaultReporter(object):
         klasses = root.xpath('//class')
         names = ['.'.join([klass.getparent().getparent().attrib['name'], klass.attrib['name']]) for klass in klasses]
         max_length = max([len(klass_name) for klass_name in names])
-        max_coverage = max([int(round(float(klass.attrib['line-rate']) * 100, 0)) for klass in klasses])
+        max_coverage = max([int(round(float(klass.attrib['line-rate']) * PROGRESS_SIZE, 0)) for klass in klasses])
 
         print ' ' + '=' * len('Code Coverage')
         print Fore.GREEN + Style.BRIGHT + " Code Coverage" + Style.RESET_ALL + Fore.RESET
@@ -105,21 +107,23 @@ class VowsDefaultReporter(object):
             uncovered_lines = [line.attrib['number'] for line in klass.find('lines') if line.attrib['hits'] == '0']
 
             coverage = int(round(coverage, 0))
+            progress = int(round(coverage / 100.0 * PROGRESS_SIZE, 0))
             offset = coverage == 0 and 2 or (coverage < 10 and 1 or 0)
             print " %s %s%s\t%s%s%%%s %s" % (cover_character,
                                         write_blue(klass_name),
                                         ' ' * (max_length - len(klass_name)),
-                                        '•' * coverage,
+                                        '•' * progress,
                                         write_white((coverage > 0 and ' ' or '') + '%.2f' % coverage),
-                                        ' ' * (max_coverage - coverage + offset),
+                                        ' ' * (PROGRESS_SIZE - progress + offset),
                                         self.get_uncovered_lines(uncovered_lines))
 
         print
         total_coverage = float(root.xpath('//coverage')[0].attrib['line-rate']) * 100
+        progress = int(round(total_coverage / 100.0 * PROGRESS_SIZE, 0))
         print " %s %s%s\t%s %s%%" % (self.broken,
                                     write_blue('OVERALL'),
                                     ' ' * (max_length - len('OVERALL')),
-                                    '•' * int(round(total_coverage, 0)),
+                                    '•' * progress,
                                     write_white('%.2f' % total_coverage))
 
         print
