@@ -12,6 +12,8 @@ import os
 from os.path import isfile, split
 import tempfile
 
+from colorama import init, Fore, Style
+
 try:
     import argparse
     ARGPARSE = True
@@ -21,6 +23,7 @@ except ImportError:
 
 try:
     from coverage import coverage
+    from lxml import etree
     COVERAGE_AVAILABLE = True
 except ImportError:
     COVERAGE_AVAILABLE = False
@@ -96,6 +99,13 @@ def run(path, pattern, cover, cover_packages, cover_threshold):
             tmp.seek(0)
             xml = tmp.read()
         reporter.print_coverage(xml, cover_threshold)
+
+    if cover and not COVERAGE_AVAILABLE:
+        init(autoreset=True)
+        print
+        print Fore.YELLOW + "WARNING: Cover disabled because coverage or lxml could not be found."
+        print Fore.YELLOW + "Make sure both are installed and accessible"
+        print
 
 def main():
     arguments = __get_arguments()
