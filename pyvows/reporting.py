@@ -86,7 +86,6 @@ class VowsDefaultReporter(object):
         klasses = root.xpath('//class')
         names = ['.'.join([klass.getparent().getparent().attrib['name'], klass.attrib['name']]) for klass in klasses]
         max_length = max([len(klass_name) for klass_name in names])
-        max_coverage = max([int(round(float(klass.attrib['line-rate']) * PROGRESS_SIZE, 0)) for klass in klasses])
 
         print ' ' + '=' * len('Code Coverage')
         print Fore.GREEN + Style.BRIGHT + " Code Coverage" + Style.RESET_ALL + Fore.RESET
@@ -95,6 +94,7 @@ class VowsDefaultReporter(object):
 
         klasses = sorted(klasses, key=lambda klass: float(klass.attrib['line-rate']))
 
+        max_coverage = 0
         for klass in klasses:
             package_name = klass.getparent().getparent().attrib['name']
             klass_name = '.'.join([package_name, klass.attrib['name']])
@@ -103,6 +103,11 @@ class VowsDefaultReporter(object):
                 cover_character = self.broken
             else:
                 cover_character = self.honored
+
+            if coverage > max_coverage and max_coverage < 100.0:
+                max_coverage = coverage
+                if max_coverage == 100.0:
+                    print
 
             uncovered_lines = [line.attrib['number'] for line in klass.find('lines') if line.attrib['hits'] == '0']
 

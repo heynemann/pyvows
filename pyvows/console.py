@@ -66,7 +66,8 @@ def __get_arguments():
                 self.pattern = pattern
                 self.path = path
                 self.cover = cover
-                self.cover_threshold
+                self.cover_package = cover_package
+                self.cover_threshold = cover_threshold
 
         arguments = Args(options.pattern, args[0] if args else None, options.cover, options.cover_package, options.cover_threshold)
 
