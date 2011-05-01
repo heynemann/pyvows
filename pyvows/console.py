@@ -36,6 +36,7 @@ class Messages(object):
     cover = 'Indicates that coverage of code should be shown. Defaults to True.'
     path = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. Defaults to current dir.'
     cover_package = 'Package to verify coverage. May be specified many times. Defaults to all packages.'
+    cover_omit = 'Path of file to exclude from coverage. May be specified many times. Defaults to no files.'
     cover_threshold = 'Coverage number below which coverage is considered failing. Defaults to 80.0.'
 
 def __get_arguments():
@@ -47,6 +48,7 @@ def __get_arguments():
         parser.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern)
         parser.add_argument('-c', '--cover', action="store_true", default=False, help=Messages.cover)
         parser.add_argument('-l', '--cover_package', action="append", default=[], help=Messages.cover_package)
+        parser.add_argument('-o', '--cover_omit', action="append", default=[], help=Messages.cover_omit)
         parser.add_argument('-t', '--cover_threshold', default=80.0, type=float, help=Messages.cover_threshold)
 
         parser.add_argument('path', default=current_dir, nargs='?', help=Messages.path)
@@ -57,19 +59,21 @@ def __get_arguments():
         parser.add_option("-p", "--pattern", dest="pattern", default='*_vows.py', help=Messages.pattern)
         parser.add_option("-c", "--cover", dest="cover", action="store_true", default=False, help=Messages.cover)
         parser.add_option('-l', '--cover_package', dest='cover_package', action="append", default=[], help=Messages.cover_package)
+        parser.add_option('-o', '--cover_omit', dest='cover_omit', action="append", default=[], help=Messages.cover_omit)
         parser.add_option('-t', '--cover_threshold', dest='cover_threshold', type=float, default=80.0, help=Messages.cover_threshold)
 
         (options, args) = parser.parse_args()
 
         class Args(object):
-            def __init__(self, pattern, path, cover, cover_package, cover_threshold):
+            def __init__(self, pattern, path, cover, cover_package, cover_omit, cover_threshold):
                 self.pattern = pattern
                 self.path = path
                 self.cover = cover
                 self.cover_package = cover_package
+                self.cover_omit = cover_omit
                 self.cover_threshold = cover_threshold
 
-        arguments = Args(options.pattern, args[0] if args else None, options.cover, options.cover_package, options.cover_threshold)
+        arguments = Args(options.pattern, args[0] if args else None, options.cover, options.cover_package, options.cover_omit, options.cover_threshold)
 
     return arguments
 
@@ -96,7 +100,7 @@ def main():
         path = os.curdir
 
     if arguments.cover and COVERAGE_AVAILABLE:
-        cov = coverage(source=arguments.cover_package)
+        cov = coverage(source=arguments.cover_package, omit=arguments.cover_omit)
         cov.erase()
         cov.start()
 
