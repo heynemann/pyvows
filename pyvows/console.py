@@ -42,7 +42,7 @@ def __get_arguments():
         parser = argparse.ArgumentParser(description='Runs pyVows.')
 
         parser.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern)
-        parser.add_argument('-c', '--cover', action="store_true", default=True, help=Messages.cover)
+        parser.add_argument('-c', '--cover', action="store_true", default=False, help=Messages.cover)
         parser.add_argument('-l', '--cover_package', action="append", default=[], help=Messages.cover_package)
         parser.add_argument('-t', '--cover_threshold', default=80.0, type=float, help=Messages.cover_threshold)
 
@@ -52,7 +52,7 @@ def __get_arguments():
     else:
         parser = OptionParser()
         parser.add_option("-p", "--pattern", dest="pattern", default='*_vows.py', help=Messages.pattern)
-        parser.add_option("-c", "--cover", dest="cover", action="store_true", default=True, help=Messages.cover)
+        parser.add_option("-c", "--cover", dest="cover", action="store_true", default=False, help=Messages.cover)
         parser.add_option('-l', '--cover_package', dest='cover_package', action="append", default=[], help=Messages.cover_package)
         parser.add_option('-t', '--cover_threshold', dest='cover_threshold', type=float, default=80.0, help=Messages.cover_threshold)
 
