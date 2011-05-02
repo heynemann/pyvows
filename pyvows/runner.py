@@ -8,6 +8,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+import sys
 import inspect
 import time
 import copy
@@ -110,8 +111,14 @@ class VowsParallelRunner(object):
                 result_obj['succeeded'] = True
                 if self.vow_successful_event:
                     self.vow_successful_event(result_obj)
-            except Exception, err:
-                result_obj['error'] = err
+            except Exception:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+
+                result_obj['error'] = {
+                    'type': exc_type,
+                    'value': exc_value,
+                    'traceback': exc_traceback
+                }
                 if self.vow_error_event:
                     self.vow_error_event(result_obj)
  

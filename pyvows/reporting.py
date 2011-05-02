@@ -10,6 +10,7 @@
 
 import sys
 import re
+import traceback
 
 from lxml import etree
 from colorama import init, Fore, Style
@@ -69,7 +70,11 @@ class VowsDefaultReporter(object):
                 print print_test(VowsDefaultReporter.honored, test['name'])
             else:
                 print print_test(VowsDefaultReporter.broken, test['name'])
-                print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + str(test['error']) + Fore.RESET)
+                error = test['error']
+                exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
+                error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                error_msg = (self.tab * (self.indent + 2)).join(error_msg)
+                print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + error_msg + Fore.RESET)
                 if 'file' in test:
                     print "%s%s" % (self.tab * (self.indent + 3), Fore.RED + "(found in %s at line %s)" % (test['file'], test['lineno']) + Fore.RESET)
         for name, context in context['contexts'].iteritems():
