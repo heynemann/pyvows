@@ -74,9 +74,11 @@ class VowsDefaultReporter(object):
                 exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
                 error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
                 error_msg = (self.tab * (self.indent + 2)).join(error_msg)
-                print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + error_msg + Fore.RESET)
+                print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + str(exc_value) + Fore.RESET)
+                print
+                print "%s%s" % (self.tab * (self.indent + 2), error_msg)
                 if 'file' in test:
-                    print "%s%s" % (self.tab * (self.indent + 3), Fore.RED + "(found in %s at line %s)" % (test['file'], test['lineno']) + Fore.RESET)
+                    print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + "(found in %s at line %s)" % (test['file'], test['lineno']) + Fore.RESET)
         for name, context in context['contexts'].iteritems():
             self.print_context(name, context)
 
