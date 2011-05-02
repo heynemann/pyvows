@@ -77,8 +77,20 @@ class VowsDefaultReporter(object):
                 print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + str(exc_value) + Fore.RESET)
                 print
                 print "%s%s" % (self.tab * (self.indent + 2), error_msg)
+
+                if isinstance(test['topic'], Exception):
+                    print
+                    print "%s%s" % (self.tab * (self.indent + 3), Fore.RED + 'Original Exception' + Fore.RESET)
+                    print
+                    exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
+                    print "%s%s" % (self.tab * (self.indent + 3), Fore.RED + str(exc_value) + Fore.RESET)
+                    error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                    error_msg = (self.tab * (self.indent + 3)).join(error_msg)
+                    print "%s%s" % (self.tab * (self.indent + 3), error_msg)
+ 
                 if 'file' in test:
                     print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + "(found in %s at line %s)" % (test['file'], test['lineno']) + Fore.RESET)
+
         for name, context in context['contexts'].iteritems():
             self.print_context(name, context)
 

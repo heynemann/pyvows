@@ -60,8 +60,10 @@ class VowsParallelRunner(object):
                     topic_func = getattr(context_instance, 'topic')
                     topic_list = self.get_topics_for(topic_func, context_instance)
                     topic = topic_func(*topic_list)
-                except Exception, err:
-                    topic = err
+                except Exception:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    topic = exc_value
+                    context_instance.topic_error = (exc_type, exc_value, exc_traceback)
             else:
                 topic = copy.deepcopy(context_instance._get_first_available_topic())
 
@@ -98,8 +100,10 @@ class VowsParallelRunner(object):
         def async_run_vow(self, tests_col, topic, context_instance, member, member_name):
             filename, lineno = self.file_info_for(member)
             result_obj = {
+                'context_instance': context_instance,
                 'name': member_name,
                 'result': None,
+                'topic': topic,
                 'error': None,
                 'succeeded': False,
                 'file': filename,
