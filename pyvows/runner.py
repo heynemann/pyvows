@@ -67,16 +67,16 @@ class VowsParallelRunner(object):
             else:
                 topic = copy.deepcopy(context_instance._get_first_available_topic())
 
-            def run_with_topic(topic, enumerated=False):
+            def run_with_topic(topic):
                 context_instance.topic_value = topic
 
-                def iterate_members(topic):
+                def iterate_members(topic, enumerated=False):
                     for member_name, member in inspect.getmembers(context):
                         if inspect.ismethod(member) and member_name == 'topic':
                             continue
 
                         if not member_name.startswith('_') and inspect.ismethod(member):
-                            self.run_vow(context_col[name]['tests'], topic, context_instance, member, member_name, enumerated=True)
+                            self.run_vow(context_col[name]['tests'], topic, context_instance, member, member_name, enumerated=enumerated)
 
                     for member_name, member in inspect.getmembers(context):
                         if inspect.ismethod(member) and member_name == 'topic':
@@ -89,13 +89,13 @@ class VowsParallelRunner(object):
 
                 if inspect.isgenerator(topic):
                     for topic_value in topic:
-                        iterate_members(topic_value)
+                        iterate_members(topic_value, enumerated=True)
                 else:
                     iterate_members(topic)
 
             if isinstance(topic, self.async_topic_class):
                 def handle_callback(topic_value):
-                    run_with_topic(topic_value, enumerated=True)
+                    run_with_topic(topic_value)
                     self.async_topics.pop()
 
                 args = topic.args + (handle_callback, )
