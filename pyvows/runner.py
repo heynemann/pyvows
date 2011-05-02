@@ -67,23 +67,35 @@ class VowsParallelRunner(object):
             else:
                 topic = copy.deepcopy(context_instance._get_first_available_topic())
 
-            def run_with_topic(topic):
+            def run_with_topic(topic, enumerated=False):
                 context_instance.topic_value = topic
 
-                for member_name, member in inspect.getmembers(context):
-                    if inspect.isclass(member) and issubclass(member, self.context_class):
-                        self.pool.spawn_n(async_run_context, self, context_col[name]['contexts'], member_name, member, context_instance)
-                        continue
+                def iterate_members(topic):
+                    for member_name, member in inspect.getmembers(context):
+                        if inspect.ismethod(member) and member_name == 'topic':
+                            continue
 
-                    if inspect.ismethod(member) and member_name == 'topic':
-                        continue
+                        if not member_name.startswith('_') and inspect.ismethod(member):
+                            self.run_vow(context_col[name]['tests'], topic, context_instance, member, member_name, enumerated=True)
 
-                    if not member_name.startswith('_') and inspect.ismethod(member):
-                        self.run_vow(context_col[name]['tests'], topic, context_instance, member, member_name)
+                    for member_name, member in inspect.getmembers(context):
+                        if inspect.ismethod(member) and member_name == 'topic':
+                            continue
+
+                        if inspect.isclass(member) and issubclass(member, self.context_class):
+                            self.pool.spawn_n(async_run_context, self, context_col[name]['contexts'], member_name, member, context_instance)
+                            continue
+
+
+                if inspect.isgenerator(topic):
+                    for topic_value in topic:
+                        iterate_members(topic_value)
+                else:
+                    iterate_members(topic)
 
             if isinstance(topic, self.async_topic_class):
                 def handle_callback(topic_value):
-                    run_with_topic(topic_value)
+                    run_with_topic(topic_value, enumerated=True)
                     self.async_topics.pop()
 
                 args = topic.args + (handle_callback, )
@@ -96,12 +108,12 @@ class VowsParallelRunner(object):
 
         self.pool.spawn_n(async_run_context, self, context_col, name, context, parent)
 
-    def run_vow(self, tests_col, topic, context_instance, member, member_name):
+    def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
         def async_run_vow(self, tests_col, topic, context_instance, member, member_name):
             filename, lineno = self.file_info_for(member)
             result_obj = {
                 'context_instance': context_instance,
-                'name': member_name,
+                'name': member_name if not enumerated else '%s - %s' % (str(topic), member_name),
                 'result': None,
                 'topic': topic,
                 'error': None,
