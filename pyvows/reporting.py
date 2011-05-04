@@ -48,8 +48,8 @@ class VowsDefaultReporter(object):
             print " %s No vows found! » 0 honored • 0 broken (0.0s)" % self.broken
             return
 
-        for name, context in self.result.contexts.iteritems():
-            self.print_context(name, context)
+        for context in self.result.contexts:
+            self.print_context(context['name'], context)
         print
         print "%s%s OK » %d honored • %d broken (%.6fs)" % (
                 self.tab * self.indent,
@@ -91,8 +91,8 @@ class VowsDefaultReporter(object):
                 if 'file' in test:
                     print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + "(found in %s at line %s)" % (test['file'], test['lineno']) + Fore.RESET)
 
-        for name, context in context['contexts'].iteritems():
-            self.print_context(name, context)
+        for context in context['contexts']:
+            self.print_context(context['name'], context)
 
         self.indent -= 1
 

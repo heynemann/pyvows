@@ -10,7 +10,7 @@
 
 class VowsResult(object):
     def __init__(self):
-        self.contexts = {}
+        self.contexts = []
         self.ellapsed_time = 0.0
 
     @property
@@ -35,7 +35,7 @@ class VowsResult(object):
         if first:
             contexts = self.contexts
 
-        for context in contexts.values():
+        for context in contexts:
             test_count += sum(map(count_func, context['tests']))
             test_count += self.count_tests(contexts=context['contexts'], first=False, count_func=count_func)
 
@@ -43,12 +43,11 @@ class VowsResult(object):
 
     def __eval_context(self, context):
         succeeded = True
-        for context in context['contexts'].values():
+        for context in context['contexts']:
             succeeded = succeeded and self.__eval_context(context)
 
         for test in context['tests']:
             succeeded = succeeded and test['succeeded']
 
         return succeeded
-
 

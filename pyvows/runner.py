@@ -46,13 +46,16 @@ class VowsParallelRunner(object):
         return result
 
     def run_context(self, context_col, name, context, parent):
-        def async_run_context(self, context_col, name, context, parent):
-            context_col[name] = {
-                'contexts': {},
+        def async_run_context(self, context_col, name, context, parent, index=-1):
+            context_obj = {
+                'name': name,
+                'contexts': [],
                 'tests': []
             }
+            context_col.append(context_obj)
 
             context_instance = context(parent)
+            context_instance.index = index
 
             topic = None
             if hasattr(context_instance, 'topic'):
@@ -65,31 +68,38 @@ class VowsParallelRunner(object):
                     topic = exc_value
                     context_instance.topic_error = (exc_type, exc_value, exc_traceback)
             else:
-                topic = copy.deepcopy(context_instance._get_first_available_topic())
+                topic = context_instance._get_first_available_topic(index)
 
             def run_with_topic(topic):
                 context_instance.topic_value = topic
+                is_generator = False
+                if inspect.isgenerator(topic):
+                    is_generator = True
+                    context_instance.topic_value = list(topic)
+                    context_instance.generated_topic = True
+                context_instance.topic_value = copy.deepcopy(context_instance.topic_value)
+                topic = context_instance.topic_value
 
-                def iterate_members(topic, enumerated=False):
+                def iterate_members(topic, index=-1, enumerated=False):
                     for member_name, member in inspect.getmembers(context):
                         if inspect.ismethod(member) and member_name == 'topic':
                             continue
 
                         if not member_name.startswith('_') and inspect.ismethod(member):
-                            self.run_vow(context_col[name]['tests'], topic, context_instance, member, member_name, enumerated=enumerated)
+                            self.run_vow(context_obj['tests'], topic, context_instance, member, member_name, enumerated=enumerated)
 
                     for member_name, member in inspect.getmembers(context):
                         if inspect.ismethod(member) and member_name == 'topic':
                             continue
 
                         if inspect.isclass(member) and issubclass(member, self.context_class):
-                            self.pool.spawn_n(async_run_context, self, context_col[name]['contexts'], member_name, member, context_instance)
+                            self.pool.spawn_n(async_run_context, self, context_obj['contexts'], member_name, member, context_instance, index)
                             continue
 
 
-                if inspect.isgenerator(topic):
-                    for topic_value in topic:
-                        iterate_members(topic_value, enumerated=True)
+                if is_generator:
+                    for index, topic_value in enumerate(topic):
+                        iterate_members(topic_value, index, enumerated=True)
                 else:
                     iterate_members(topic)
 
@@ -104,7 +114,6 @@ class VowsParallelRunner(object):
                 self.pool.spawn_n(topic.func, *args, **topic.kw)
             else:
                 run_with_topic(topic)
-
 
         self.pool.spawn_n(async_run_context, self, context_col, name, context, parent)
 
@@ -171,7 +180,10 @@ class VowsParallelRunner(object):
 
         context = context_instance.parent
         for i in range(expected_args):
-            topics.append(copy.deepcopy(context.topic_value))
+            if context.generated_topic:
+                topics.append(copy.deepcopy(context.topic_value[context.index]))
+            else:
+                topics.append(copy.deepcopy(context.topic_value))
 
             if not context.parent:
                 break
