@@ -675,7 +675,7 @@ class Add(Vows.Context):
 
         <p>Let's rewrite the above using generative testing:</p>
 
-<pre class="brush:python">
+        <pre class="brush:python">
 def add(a, b):
     return a + b
 
@@ -702,6 +702,41 @@ class Add(Vows.Context):
         </pre>
 
         <p>This means that <code>should_be_numeric</code> and <code>should_equal_to_expected</code> will be executed four times each with a tuple of two items: the result of adding a and b, and the expected result.</p>
+
+        <p>Let's take this a step further and check against even more scenarios:</p>
+
+        <pre class="brush:python">
+ def add(a, b):
+    return a + b
+
+a_samples = range(10)
+b_samples = range(10)
+
+class Add(Vows.Context):
+    class ATopic(Vows.Context):
+        def topic(self):
+            for a in a_samples:
+                yield a
+
+        class BTopic(Vows.Context):
+            def topic(self, a):
+                for b in b_samples:
+                    yield b
+
+            class Sum(Vows.Context):
+                def topic(self, b, a):
+                    yield (add(a, b), a + b)
+
+                def should_be_numeric(self, topic):
+                    sum, expected = topic
+                    expect(sum).to_be_numeric()
+
+                def should_equal_to_expected(self, topic):
+                    sum, expected = topic
+                    expect(sum).to_equal(expected)
+        </pre>
+
+        <p>This way we are verifying against the sum of all combinations of 0 to 9 plus 0 to 9, yet it is still very simple.</p>
 
         <p>Now we can add as many scenarios as we may think of, and won't have to write a single other vow.</p>
 
