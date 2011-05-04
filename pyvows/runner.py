@@ -178,10 +178,11 @@ class VowsParallelRunner(object):
 
         topics = []
 
+        child = context_instance
         context = context_instance.parent
         for i in range(expected_args):
             if context.generated_topic:
-                topics.append(copy.deepcopy(context.topic_value[context.index]))
+                topics.append(copy.deepcopy(context.topic_value[child.index]))
             else:
                 topics.append(copy.deepcopy(context.topic_value))
 
@@ -189,6 +190,7 @@ class VowsParallelRunner(object):
                 break
  
             context = context.parent
+            child = child.parent
 
         return topics
 
