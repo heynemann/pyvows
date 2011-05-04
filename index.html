@@ -160,6 +160,8 @@ A nested context with no topics
         <li><a href="#-structure-of-a-test-batch">Structure of a Test Batch</a></li>
         <li><a href="#-how-topics-work">How topics work</a></li>
         <li><a href="#-running-a-suite">Running a Suite</a></li>
+        <li><a href="#-context-inheritance">Context Inheritance</a></li>
+        <li><a href="#-using-generative-testing">Generative Testing</a></li>
         <li><a href="#-assertions">Assertions</a></li>
       </ul>
     </div>
@@ -553,7 +555,7 @@ class ReadFile(Vows.Context):
             if exists:
                 return open('some_file.txt').read()
             return None
-        
+
         def if_exists_we_can_read_the_contents(self, topic):
             expect(topic).to_be_like('some string')
         </pre>
@@ -594,6 +596,114 @@ class Exists(Vows.Context):
         <p>So in this case, the tests can finish in any order, and must not rely on each other. The test suite will exit when the last I/O call completes, and the assertions for it are run.</p>
 
         <p>In other words, <em>sibling contexts</em> are executed in parallel, while <em>nested contexts</em> are executed sequentially. Note that this all happens asynchronously, so while some contexts may be waiting for a parent context to finish, sibling contexts can still execute in the meantime.</p>
+
+        <h2>Context inheritance</h2>
+
+        <p>pyVows context model allows for some interesting inheritance scenarios. Imagine we have the following method to test:</p>
+
+        <pre class="brush:python">
+def add(a, b):
+    return a + b
+        </pre>
+
+        <p>We would write some vows as such:</p>
+
+        <pre class="brush:python">
+class Add(Vows.Context):
+    def topic(self):
+        return add(1, 2)
+
+    def should_be_numeric(self, topic):
+        expect(topic).to_be_numeric()
+
+    def should_equal_to_three(self, topic):
+        expect(topic).to_equal(3)
+        </pre>
+
+        <p>We might be writing redundant tests, but again, this is just an example. Now imagine we want to test for <strong>MANY</strong> different combinations. It would be very painful to write the exact same contexts and vows over and over just to test different values. Let's try writing the above in a different way:</p>
+
+        <pre class="brush:python">
+def addctx(a, b):
+    class Context(Vows.Context):
+        def topic(self):
+            return add(a, b)
+
+        def should_be_numeric(self, topic):
+            expect(topic).to_be_numeric()
+
+        def should_equal_to_three(self, topic):
+            expect(topic).to_equal(a + b)
+
+class AddEquals3(addctx(1,2)):
+    pass
+
+class AddEquals8(addctx(5,3)):
+    pass
+
+class AddEquals10(addctx(6,4)):
+    pass
+
+# and so on, and so forth
+        </pre>
+
+        <p>In the above test we are taking advantage of the functional nature of Python and returning a dynamic Context class as the result of <code>addctx</code>. This means that every time <code>addctx</code> is called it's returning a different Context that's aware of the values <code>a</code> and <code>b</code>.</p>
+
+        <p>Context inheritance can also be a powerful tool to initialize database connections, web servers and any other resources your vows may rely on. A pretty good example of this is <a href="https://github.com/rafaelcaricio/tornado_pyvows">the tornado pyvows project</a> by <a href="https://github.com/rafaelcaricio">Rafael Carício</a>.</p>
+
+        <h2>Using generative testing</h2>
+
+        <p>Generative testing can be a great ally in having clean, lean tests. Let's get back to our old friend, the add two numbers example:</p>
+
+        <pre class="brush:python">
+def add(a, b):
+    return a + b
+
+class Add(Vows.Context):
+    def topic(self):
+        return add(1, 2)
+
+    def should_be_numeric(self, topic):
+        expect(topic).to_be_numeric()
+
+    def should_equal_to_three(self, topic):
+        expect(topic).to_equal(3)
+        </pre>
+
+        <p>Even though we can simplify this a lot by using context inheritance, like demonstrated in the previous section, we'll try something different now. We'll use generative testing.</p>
+
+        <p>Generative testing is having a test (or in our case vows and contexts) be executed one or more times, but with different arguments (topics) in each pass.</p>
+
+        <p>Let's rewrite the above using generative testing:</p>
+
+<pre class="brush:python">
+def add(a, b):
+    return a + b
+
+test_data = [
+    (1, 2, 3),
+    (2, 5, 7),
+    (3, 4, 7),
+    (5, 6, 11)
+]
+
+class Add(Vows.Context):
+    def topic(self):
+        for item in test_data:
+            a, b, c = item
+            yield (add(a, b), c)
+
+    def should_be_numeric(self, topic):
+        sum, expected = topic
+        expect(sum).to_be_numeric()
+
+    def should_equal_to_expected(self, topic):
+        sum, expected = topic
+        expect(sum).to_equal(expected)
+        </pre>
+
+        <p>This means that <code>should_be_numeric</code> and <code>should_equal_to_expected</code> will be executed four times each with a tuple of two items: the result of adding a and b, and the expected result.</p>
+
+        <p>Now we can add as many scenarios as we may think of, and won't have to write a single other vow.</p>
 
         <h2>Assertions</h2>
 
@@ -676,15 +786,27 @@ $ pyvows tests/
 
 <table cellspacing="10">
   <tr>
-    <td><code>-p</code>, <code>--pattern</code></td>
+    <td class="usage"><code>-p</code>, <code>--pattern</code></td>
     <td>Pattern of files to run as vows. Defaults to "*_vows.py".</td>
   </tr>
   <tr>
-    <td><code>-s</code>, <code>--sequential</code></td>
-    <td>Runs tests in sequential mode. Not recommended.</td>
+    <td class="usage"><code>-c</code>, <code>--cover</code></td>
+    <td>Indicates that coverage of code should be shown. Defaults to True.</td>
   </tr>
   <tr>
-    <td><code>--help</code></td>
+    <td class="usage"><code>-l</code>, <code>--cover-package</code></td>
+    <td>Package to verify coverage. May be specified many times. Defaults to all packages.</td>
+  </tr>
+  <tr>
+    <td class="usage"><code>-o</code>, <code>--cover-omit</code></td>
+    <td>Path of file to exclude from coverage. May be specified many times. Defaults to no files.</td>
+  </tr>
+  <tr>
+    <td class="usage"><code>-t</code>, <code>--cover-threshold</code></td>
+    <td>Coverage number below which coverage is considered failing. Defaults to 80.0.</td>
+  </tr>
+  <tr>
+    <td class="usage"><code>--help</code></td>
     <td>Show help</td>
   </tr>
 </table>
