@@ -956,7 +956,7 @@ expect("I'm not an error").Not.to_be_an_error()
 
 expect(ValueError()).Not.to_be_an_error_like(RuntimeError)
 
-expect(ValueError("some other error")).Not.to_have_an_error_message_of("error")
+expect(ValueError("some")).Not.to_have_an_error_message_of("error")
 </pre>
 
   </div>
