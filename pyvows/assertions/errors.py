@@ -22,7 +22,7 @@ def to_have_an_error_message_of(topic, expected):
 
 @Vows.assertion
 def to_be_an_error(topic):
-    assert topic and (isinstance(topic, Exception) or issubclass(topic, Exception)), "Expected topic(%s) to be an error, but it was't" % topic
+    assert topic and (isinstance(topic, Exception) or (inspect.isclass(topic) and issubclass(topic, Exception))), "Expected topic(%s) to be an error, but it was't" % topic
 
 @Vows.assertion
 def not_to_be_an_error(topic):

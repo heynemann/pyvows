@@ -148,7 +148,7 @@ class VowsDefaultReporter(object):
         print
         total_coverage = float(root.xpath('//coverage')[0].attrib['line-rate']) * 100
         progress = int(round(total_coverage / 100.0 * PROGRESS_SIZE, 0))
-        print " %s %s%s\t%s %s%%" % (self.broken,
+        print " %s %s%s\t%s %s%%" % ((total_coverage >= cover_threshold) and self.honored or self.broken,
                                     write_blue('OVERALL'),
                                     ' ' * (max_length - len('OVERALL')),
                                     '•' * progress,

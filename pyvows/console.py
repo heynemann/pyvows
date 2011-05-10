@@ -12,7 +12,7 @@ import os
 from os.path import isfile, split
 import tempfile
 
-from colorama import init, Fore, Style
+from colorama import init, Fore
 
 try:
     import argparse
