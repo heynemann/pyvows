@@ -133,6 +133,10 @@ class VowsDefaultReporter(object):
             coverage = int(round(coverage, 0))
             progress = int(round(coverage / 100.0 * PROGRESS_SIZE, 0))
             offset = coverage == 0 and 2 or (coverage < 10 and 1 or 0)
+
+            if coverage == 0 and not uncovered_lines:
+                continue
+
             print " %s %s%s\t%s%s%%%s %s" % (cover_character,
                                         write_blue(klass_name),
                                         ' ' * (max_length - len(klass_name)),
