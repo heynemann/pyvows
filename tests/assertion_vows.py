@@ -22,7 +22,7 @@ class Assertion(Vows.Context):
         def topic(self):
             return 42
 
-    class NotEmptyContext(Vows.NotErrorContext):
+    class NotEmptyContext(Vows.NotEmptyContext):
         def topic(self):
             return "harmless"
 

@@ -94,7 +94,7 @@ class Vows(object):
 
     class NotEmptyContext(Context):
         def should_not_be_empty(self, topic):
-            expect(topic).not_be_empty()
+            expect(topic).not_to_be_empty()
 
     AsyncTopic = VowsAsyncTopic
 
