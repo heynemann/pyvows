@@ -18,6 +18,14 @@ Assert = Vows.Assert
 @Vows.batch
 class Assertion(Vows.Context):
 
+    class NonErrorContext(Vows.NotErrorContext):
+        def topic(self):
+            return 42
+
+    class NotEmptyContext(Vows.NotErrorContext):
+        def topic(self):
+            return "harmless"
+
     class WhenNotHaveTopic(Vows.Context):
         def we_can_see_topic_as_none(self, topic):
             expect(topic).to_be_null()

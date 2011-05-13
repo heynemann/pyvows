@@ -67,7 +67,6 @@ class VowsAssertion(object):
             raise VowsAssertion.AssertionNotFoundError(name)
         return super(VowsAssertion, self).__getattr__(name)
 
-
 class Vows(object):
     contexts = {}
 
@@ -88,6 +87,14 @@ class Vows(object):
                 return None
 
             return self.parent._get_first_available_topic(index)
+
+    class NotErrorContext(Context):
+        def should_not_be_an_error(self, topic):
+            expect(topic).not_to_be_an_error()
+
+    class NotEmptyContext(Context):
+        def should_not_be_empty(self, topic):
+            expect(topic).not_be_empty()
 
     AsyncTopic = VowsAsyncTopic
 
