@@ -64,23 +64,6 @@ class Assertion(Vows.Context):
         def we_do_not_get_an_instance_of_otherclass(self, topic):
             expect(topic).Not.to_be_instance_of(OtherClass)
 
-        class WeCanModifyATopicValue(Vows.Context):
-
-            def topic(self, older):
-                older.coisa = 1
-                return older
-
-            def we_get_a_mod_instance_from_my_topic(self, topic):
-                expect(hasattr(topic, 'coisa')).to_be_true()
-
-        class TheOtherContext(Vows.Context):
-
-            def topic(self, older):
-                return older
-
-            def cant_perceive_the_motifications(self, topic):
-                expect(hasattr(topic, 'coisa')).to_be_false()
-
     class IsEmpty(Vows.Context):
         class WhenEmpty(Vows.Context):
             class WhenString(Vows.Context):

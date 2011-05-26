@@ -11,7 +11,6 @@
 import sys
 import inspect
 import time
-import copy
 
 import eventlet
 
@@ -77,7 +76,7 @@ class VowsParallelRunner(object):
                     is_generator = True
                     context_instance.topic_value = list(topic)
                     context_instance.generated_topic = True
-                context_instance.topic_value = copy.deepcopy(context_instance.topic_value)
+                context_instance.topic_value = context_instance.topic_value
                 topic = context_instance.topic_value
 
                 def iterate_members(topic, index=-1, enumerated=False):
@@ -182,9 +181,9 @@ class VowsParallelRunner(object):
         context = context_instance.parent
         for i in range(expected_args):
             if context.generated_topic:
-                topics.append(copy.deepcopy(context.topic_value[child.index]))
+                topics.append(context.topic_value[child.index])
             else:
-                topics.append(copy.deepcopy(context.topic_value))
+                topics.append(context.topic_value)
 
             if not context.parent:
                 break
