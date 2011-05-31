@@ -18,6 +18,13 @@ Assert = Vows.Assert
 @Vows.batch
 class Assertion(Vows.Context):
 
+    class WhenUTF8Topic(Vows.Context):
+        def topic(self):
+            return u"some á é í ó ç"
+
+        def should_not_fail(self, topic):
+            expect(topic).to_equal(u'some á é í ó ç')
+
     class NonErrorContext(Vows.NotErrorContext):
         def topic(self):
             return 42
