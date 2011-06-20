@@ -26,6 +26,8 @@ def compare_alike(expected, topic, modifier, message):
     assert modifier(match_alike(expected, topic)), message % (topic, expected)
 
 def match_alike(expected, topic):
+    if topic is None:
+        return expected is None
     if isinstance(topic, basestring):
         return compare_strings(expected, topic)
     elif isinstance(topic, numbers.Number):

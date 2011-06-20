@@ -499,6 +499,9 @@ class Assertion(Vows.Context):
             def we_can_compare_to_a_dict_in_other_order(self, topic):
                 expect(topic).to_be_like({ 'other': 'value', 'some': 'key' })
 
+            def we_can_compare_to_a_dict_with_a_key_that_has_value_none(self, topic):
+                expect(topic).not_to_be_like({ 'other': 'value', 'some': None })
+
             class OfDicts(Vows.Context):
 
                 def topic(self):
