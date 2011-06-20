@@ -6,3 +6,6 @@ test:
 
 setup:
 	@pip install --requirement=REQUIREMENTS
+
+publish:
+	python setup.py sdist upload
