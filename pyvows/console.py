@@ -38,6 +38,7 @@ class Messages(object):
     cover_package = 'Package to verify coverage. May be specified many times. Defaults to all packages.'
     cover_omit = 'Path of file to exclude from coverage. May be specified many times. Defaults to no files.'
     cover_threshold = 'Coverage number below which coverage is considered failing. Defaults to 80.0.'
+    cover_report = 'Store the coverage report as the specified file'
 
 def __get_arguments():
     current_dir = os.curdir
@@ -50,6 +51,7 @@ def __get_arguments():
         parser.add_argument('-l', '--cover_package', action="append", default=[], help=Messages.cover_package)
         parser.add_argument('-o', '--cover_omit', action="append", default=[], help=Messages.cover_omit)
         parser.add_argument('-t', '--cover_threshold', default=80.0, type=float, help=Messages.cover_threshold)
+        parser.add_argument('-r', '--cover_report', action="store", default=None, help=Messages.cover_report)
 
         parser.add_argument('path', default=current_dir, nargs='?', help=Messages.path)
 
@@ -61,19 +63,21 @@ def __get_arguments():
         parser.add_option('-l', '--cover_package', dest='cover_package', action="append", default=[], help=Messages.cover_package)
         parser.add_option('-o', '--cover_omit', dest='cover_omit', action="append", default=[], help=Messages.cover_omit)
         parser.add_option('-t', '--cover_threshold', dest='cover_threshold', type=float, default=80.0, help=Messages.cover_threshold)
+        parser.add_option('-r', '--cover_report', dest='cover_report', action="store", default=None, help=Messages.cover_report)
 
         (options, args) = parser.parse_args()
 
         class Args(object):
-            def __init__(self, pattern, path, cover, cover_package, cover_omit, cover_threshold):
+            def __init__(self, pattern, path, cover, cover_package, cover_omit, cover_threshold, cover_report):
                 self.pattern = pattern
                 self.path = path
                 self.cover = cover
                 self.cover_package = cover_package
                 self.cover_omit = cover_omit
                 self.cover_threshold = cover_threshold
+                self.cover_report = cover_report
 
-        arguments = Args(options.pattern, args[0] if args else None, options.cover, options.cover_package, options.cover_omit, options.cover_threshold)
+        arguments = Args(options.pattern, args[0] if args else None, options.cover, options.cover_package, options.cover_omit, options.cover_threshold, options.cover_report)
 
     return arguments
 
@@ -118,6 +122,11 @@ def main():
             cov.xml_report(outfile=tmp.name)
             tmp.seek(0)
             xml = tmp.read()
+
+        if arguments.cover_report:
+            with open(arguments.cover_report, 'w') as report:
+                report.write(xml)
+
         reporter.print_coverage(xml, arguments.cover_threshold)
 
     if arguments.cover and not COVERAGE_AVAILABLE:
