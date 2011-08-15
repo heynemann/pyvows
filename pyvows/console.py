@@ -8,6 +8,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+import sys
 import os
 from os.path import isfile, split
 import tempfile
@@ -148,6 +149,11 @@ def main():
     if arguments.xunit_output:
         xunit = XUnitReporter(result, arguments.xunit_file)
         xunit.write_report()
+
+    if result.successful:
+        sys.exit(0)
+    else:
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
