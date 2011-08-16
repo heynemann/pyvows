@@ -8,11 +8,11 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-import sys
 import os
-from os.path import join, abspath, splitext
 import fnmatch
 import glob
+import re
+import sys
 
 from pyvows.runner import VowsParallelRunner
 
@@ -26,7 +26,7 @@ def locate(pattern, root=os.curdir, recursive=True):
                 return_files.append(os.path.join(path, filename))
         return return_files
     else:
-        return glob(join(root_path, pattern))
+        return glob(os.path.join(root_path, pattern))
 
 class expect(object):
 
@@ -119,6 +119,29 @@ class Vows(object):
         return method_name
 
     @classmethod
+    def create_assertions(cls, method):
+        humanized_method_name = re.sub(r'_+', ' ', method.__name__)
+
+        def method_name(*args, **kw):
+            return method(*args, **kw)
+
+        def exec_assertion(*args):
+            msg = 'Expected topic(%s) %s' % (args[0], humanized_method_name)
+            if len(args) == 2:
+                msg += ' %s' % (args[1],)
+            assert method(*args), "%s, but it wasn't" % msg
+        def exec_not_assertion(*args):
+            msg = 'Expected topic(%s) not %s' % (args[0], humanized_method_name)
+            if len(args) == 2:
+                msg += ' %s' % (args[1],)
+            assert not method(*args), "%s, but it was" % msg
+
+        setattr(Vows.Assert, method.__name__, exec_assertion)
+        setattr(Vows.Assert, 'not_%s' % method.__name__, exec_not_assertion)
+
+        return method_name
+
+    @classmethod
     def ensure(cls, vow_success_event, vow_error_event):
         runner = VowsParallelRunner(Vows.contexts, Vows.Context, Vows.AsyncTopic, vow_success_event, vow_error_event)
 
@@ -128,12 +151,12 @@ class Vows(object):
 
     @classmethod
     def gather(cls, path, pattern):
-        path = abspath(path)
+        path = os.path.abspath(path)
 
         files = locate(pattern, path)
         sys.path.insert(0, path)
         for module_path in files:
-            module_name = splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
+            module_name = os.path.splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
             __import__(module_name)
 
 
