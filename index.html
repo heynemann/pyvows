@@ -12,7 +12,7 @@
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-23196100-1']);
       _gaq.push(['_trackPageview']);
-    
+
       (function() {
         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -796,20 +796,54 @@ expect(ary).to_length(5);
         <code>to_include</code> and <code>to_be_empty</code>&mdash;head over to the <a href="/#reference">reference</a> to get the full list.</p>
 
         <h3>Custom Assertions</h3>
-        <p>Creating new assertions to be used with expect is as simple as using the <code>Vows.assertion</code> decorator on a function that gets topic as the first argument:</p>
+
+        <p>Creating new assertions to be user with expect is as simples as using the <code>Vows.create_assertions</code> decorator on a function that gets the topic as first parameter and the expectation as second:</p>
+
         <pre class="brush:python">
-@Vows.assertion
+@Vows.create_assertions
 def to_be_greater_than(topic, expected):
-    assert topic > expected, "Expected %s to be greather than %s, but it wasn't" % (topic, expected)
+    return topic > expected
+        </pre>
+
+        <p>Now doing the following expectation:</p>
+
+        <pre class="brush:python">
+expect(2).to_be_greater_than(3);
+        </pre>
+
+        <p>Will report:</p>
+
+        <pre><code>Expected topic(2) to be be greater than 3, but it wasn't</code></pre>
+
+        <p>It will also create the corresponding 'not_' assertion:</p>
+
+        <pre class="brush:python">
+expect(4).not_to_be_greater_than(3);
+        </pre>
+
+        <p>Will report:</p>
+
+        <pre><code>Expected topic(4) not to be be greater than 3, but it was</code></pre>
+
+        <p>If you need more control over your error message or your assertion doesn't have a corresponding 'not_', you can use the more lower level <code>Vows.assertion</code> decorator:</p>
+
+        <pre class="brush:python">
+# attention, this is not a recommendation, just an example of what could be done
+@Vows.assertion
+def to_be_a_positive_integer(topic):
+    assert type(topic) == int, "Expected %s to be a positive integer, but it's not even an integer" % (topic,)
+    assert topic != 0, "Expected %s to be a positive integer, but it's 0" % (topic,)
+    assert topic > 0, "Expected %s to be a positive integer, but it is a negative integer" % (topic,)
 
 @Vows.assertion
-def not_to_be_greater_than(topic, expected):
-    assert topic <= expected, "Expected %s not to be greater than %s, but it was" % (topic, expected)
+def not_to_be_a_positive_integer(topic):
+    assert topic <= 0, "Expected %s not to be a positive integer, but it was" % (topic,)
         </pre>
-        <p>It is really important to always declare the assertion and the 'not_' assertion, so they can be used like this:</p>
+
+        <p>It is really recommended to always declare the assertion and the 'not_' assertion (if applied), so they can be used like this:</p>
         <pre class="brush:python">
-        expect(5).to_be_greater_than(3)
-        expect(3).Not.to_be_greater_than(5)
+        expect(5).to_be_a_positive_integer()
+        expect(-3).Not.to_be_a_positive_integer()
         </pre>
 </section>
 
