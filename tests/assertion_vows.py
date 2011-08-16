@@ -12,6 +12,7 @@ from pyvows import Vows, expect
 
 class SomeClass(object): pass
 class OtherClass(object): pass
+def a_function(): pass
 
 Assert = Vows.Assert
 
@@ -38,18 +39,36 @@ class Assertion(Vows.Context):
             expect(topic).to_be_null()
 
     class Equal(Vows.Context):
-
         def topic(self):
             return "test"
 
-        def we_get_test(self, topic):
-            expect(topic).to_equal('test')
+        class WhenIsEqual(Vows.Context):
 
-        def we_do_not_get_else(self, topic):
-            expect(topic).Not.to_equal('else')
+            def we_get_test(self, topic):
+                expect(topic).to_equal('test')
+
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self, last):
+                    expect(1).to_equal(2)
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of("Expected topic(1) to equal 2, but it wasn't")
+
+        class WhenIsNotEqual(Vows.Context):
+
+            def we_do_not_get_else(self, topic):
+                expect(topic).Not.to_equal('else')
+
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self, last):
+                    expect(1).not_to_equal(1)
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of("Expected topic(1) not to equal 1, but it was")
 
         class WhenHaveASubClassThatHaveAExtraParamInTopic(Vows.Context):
-
             def topic(self, last):
                 return last
 
@@ -65,11 +84,34 @@ class Assertion(Vows.Context):
         def topic(self):
             return SomeClass()
 
-        def we_get_an_instance_of_someclass(self, topic):
-            expect(topic).to_be_instance_of(SomeClass)
+        class WhenIsInstance(Vows.Context):
 
-        def we_do_not_get_an_instance_of_otherclass(self, topic):
-            expect(topic).Not.to_be_instance_of(OtherClass)
+            def we_get_an_instance_of_someclass(self, topic):
+                expect(topic).to_be_instance_of(SomeClass)
+
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self, last):
+                    expect(2).to_be_instance_of(str)
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of(
+                            "Expected topic(2) to be an instance of %s, but it was a %s" % (str(str), str(int)))
+
+        class WhenIsNotInstance(Vows.Context):
+
+            def we_do_not_get_an_instance_of_otherclass(self, topic):
+                expect(topic).Not.to_be_instance_of(OtherClass)
+
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self, last):
+                    expect(2).not_to_be_instance_of(int)
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of(
+                            "Expected topic(2) not to be an instance of %s, but it was" % str(int))
+
 
     class IsEmpty(Vows.Context):
         class WhenEmpty(Vows.Context):
@@ -101,6 +143,14 @@ class Assertion(Vows.Context):
                 def we_get_an_empty_dict(self, topic):
                     expect(topic).to_be_empty()
 
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self, last):
+                    expect([1]).to_be_empty()
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of("Expected topic([1]) to be empty, but it wasn't")
+
         class WhenNotEmpty(Vows.Context):
             class WhenString(Vows.Context):
                 def topic(self):
@@ -130,6 +180,14 @@ class Assertion(Vows.Context):
                 def we_get_a_not_empty_dict(self, topic):
                     expect(topic).Not.to_be_empty()
 
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self, last):
+                    expect([]).not_to_be_empty()
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of("Expected topic([]) not to be empty, but it was")
+
     class IsNull(Vows.Context):
 
         class WhenItIsNull(Vows.Context):
@@ -139,12 +197,27 @@ class Assertion(Vows.Context):
             def we_get_to_check_for_nullability_in_None(self, topic):
                 expect(topic).to_be_null()
 
+            class WhenWeGetAnError(Vows.Context):
+                def topic(self, last):
+                    expect(1).to_be_null()
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of("Expected topic(1) to be None, but it wasn't")
+
         class WhenItIsNotNull(Vows.Context):
             def topic(self):
                 return "something"
 
             def we_see_string_is_not_null(self, topic):
                 expect(topic).not_to_be_null()
+
+            class WhenWeGetAnError(Vows.Context):
+                def topic(self, last):
+                    expect(None).not_to_be_null()
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of("Expected topic(None) not to be None, but it was")
+
 
     class IsTrue(Vows.Context):
 
@@ -182,6 +255,15 @@ class Assertion(Vows.Context):
 
             def we_can_assert_dict_is_true(self, topic):
                 expect(topic).to_be_true()
+
+        class WhenWeGetAnError(Vows.Context):
+
+            def topic(self, last):
+                expect(False).to_be_true()
+
+            def we_get_an_understandable_message(self, topic):
+                expect(topic).to_have_an_error_message_of("Expected topic(False) to be truthy, but it wasn't")
+
 
     class IsFalse(Vows.Context):
 
@@ -227,6 +309,15 @@ class Assertion(Vows.Context):
             def we_can_assert_empty_dict_is_false(self, topic):
                 expect(topic).to_be_false()
 
+        class WhenWeGetAnError(Vows.Context):
+
+            def topic(self):
+                expect(True).to_be_false()
+
+            def we_get_an_understandable_message(self, topic):
+                expect(topic).to_have_an_error_message_of("Expected topic(True) to be falsy, but it wasn't")
+
+
     class IsNumeric(Vows.Context):
 
         class WhenItIsANumber(Vows.Context):
@@ -236,12 +327,30 @@ class Assertion(Vows.Context):
             def we_assert_it_is_numeric(self, topic):
                 expect(topic).to_be_numeric()
 
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self):
+                    expect('s').to_be_numeric()
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of("Expected topic(s) to be numeric, but it wasn't")
+
+
         class WhenItIsNotANumber(Vows.Context):
             def topic(self):
                 return 'test'
 
             def we_assert_it_is_not_numeric(self, topic):
                 expect(topic).Not.to_be_numeric()
+
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self):
+                    expect(2).not_to_be_numeric()
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of("Expected topic(2) not to be numeric, but it was")
+
 
     class IsFunction(Vows.Context):
 
@@ -254,78 +363,189 @@ class Assertion(Vows.Context):
             def we_assert_it_is_a_function(self, topic):
                 expect(topic).to_be_a_function()
 
-        class WhenItIsANumber(Vows.Context):
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self):
+                    expect(4).to_be_a_function()
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of(
+                            "Expected topic(4) to be a function or a method, but it was a %s" % str(int))
+
+
+        class WhenItNotAFunction(Vows.Context):
             def topic(self):
                 return 42
 
             def we_assert_it_is_not_a_function(self, topic):
                 expect(topic).Not.to_be_a_function()
 
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self):
+                    expect(a_function).not_to_be_a_function()
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of(
+                            "Expected topic(%s) not to be a function or a method, but it was" % str(a_function))
+
+
     class Regexp(Vows.Context):
         def topic(self):
             return "some string"
 
-        def we_assert_it_matches_regexp(self, topic):
-            expect(topic).to_match(r'^some.+$')
+        class WhenItMatches(Vows.Context):
 
-        def we_assert_it_does_not_match_regexp(self, topic):
-            expect(topic).Not.to_match(r'^other.+$')
+            def we_assert_it_matches_regexp(self, topic):
+                expect(topic).to_match(r'^some.+$')
 
-    class HasThrown(Vows.Context):
-        def topic(self):
-            raise ValueError("some bogus error")
+            class WhenWeGetAnError(Vows.Context):
 
-        def we_can_see_it_was_a_value_error(self, topic):
-            expect(topic).to_be_an_error_like(ValueError)
+                def topic(self, last):
+                    expect(last).to_match(r'^other.+$')
 
-        def we_can_see_that_is_has_error_message_of(self, topic):
-            expect(topic).to_have_an_error_message_of("some bogus error")
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of(
+                            "Expected topic(some string) to match the regular expression ^other.+$, but it didn't")
 
-        def we_can_see_that_is_an_error_instance(self, topic):
-            expect(topic).to_be_an_error()
+        class WhenItDoesntMatches(Vows.Context):
 
-        class TheExceptionClass(Vows.Context):
-            def topic(self, error):
-                return ValueError
+            def we_assert_it_does_not_match_regexp(self, topic):
+                expect(topic).Not.to_match(r'^other.+$')
 
-            def we_can_see_that_is_an_error_class(self, topic):
-                expect(topic).to_be_an_error()
+            class WhenWeGetAnError(Vows.Context):
 
-    class NotHasThrown(Vows.Context):
-        def topic(self):
-            return 0
+                def topic(self, last):
+                    expect(last).not_to_match(r'^some.+$')
 
-        def we_can_see_that_is_not_an_error(self, topic):
-            expect(topic).Not.to_be_an_error()
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of(
+                            "Expected topic(some string) not to match the regular expression ^some.+$, but it did")
+
+
+    class Errors(Vows.Context):
+        class WhenRaises(Vows.Context):
+            def topic(self):
+                raise ValueError("some bogus error")
+
+            class BeAnErrorLike(Vows.Context):
+
+                def we_can_see_it_was_a_value_error(self, topic):
+                    expect(topic).to_be_an_error_like(ValueError)
+
+                class WhenWeGetAnError(Vows.Context):
+
+                    def topic(self, last):
+                        expect(NotImplementedError('no')).to_be_an_error_like(OSError)
+
+                    def we_get_an_understandable_message(self, topic):
+                        expect(topic).to_have_an_error_message_of(
+                                "Expected topic(%s) to be an error of type %s, but it was a %s" % (
+                                    NotImplementedError('no'), OSError, NotImplementedError))
+
+            class HaveErrorMessageOf(Vows.Context):
+
+                def we_can_see_that_is_has_error_message_of(self, topic):
+                    expect(topic).to_have_an_error_message_of("some bogus error")
+
+                class WhenWeGetAnError(Vows.Context):
+
+                    def topic(self, last):
+                        expect(last).to_have_an_error_message_of('some bogus')
+
+                    def we_get_an_understandable_message(self, topic):
+                        expect(topic).to_have_an_error_message_of(
+                                "Expected topic(%s) to be an error with message '%s', but it had a different message" % (
+                                    'some bogus error', 'some bogus'))
+
+            class ToBeAnError(Vows.Context):
+
+                def we_can_see_that_is_an_error_instance(self, topic):
+                    expect(topic).to_be_an_error()
+
+                class WhenWeGetAnError(Vows.Context):
+
+                    def topic(self, last):
+                        expect(2).to_be_an_error()
+
+                    def we_get_an_understandable_message(self, topic):
+                        expect(topic).to_have_an_error_message_of("Expected topic(2) to be an error, but it wasn't")
+
+            class NotToBeAnError(Vows.Context):
+                def topic(self):
+                    return 2
+
+                def we_can_see_that_is_not_an_error_instance(self, topic):
+                    expect(topic).not_to_be_an_error()
+
+                class WhenWeGetAnError(Vows.Context):
+
+                    def topic(self, last):
+                        expect(ValueError).not_to_be_an_error()
+
+                    def we_get_an_understandable_message(self, topic):
+                        expect(topic).to_have_an_error_message_of("Expected topic(%s) not to be an error, but it was" % str(ValueError))
+            class TheExceptionClass(Vows.Context):
+                def topic(self, error):
+                    return ValueError
+
+                def we_can_see_that_is_an_error_class(self, topic):
+                    expect(topic).to_be_an_error()
+
+
+        class WhenDontRaise(Vows.Context):
+            def topic(self):
+                return 0
+
+            def we_can_see_that_is_not_an_error(self, topic):
+                expect(topic).Not.to_be_an_error()
 
     class Length(Vows.Context):
-        class WithString(Vows.Context):
-            def topic(self):
-                return "some string"
+        class ToLength(Vows.Context):
+            class WithString(Vows.Context):
+                def topic(self):
+                    return "some string"
 
-            def we_can_see_it_has_11_characters(self, topic):
-                expect(topic).to_length(11)
+                def we_can_see_it_has_11_characters(self, topic):
+                    expect(topic).to_length(11)
 
-        class WithList(Vows.Context):
-            def topic(self):
-                return ["some", "list"]
+            class WithList(Vows.Context):
+                def topic(self):
+                    return ["some", "list"]
 
-            def we_can_see_it_has_2_items(self, topic):
-                expect(topic).to_length(2)
+                def we_can_see_it_has_2_items(self, topic):
+                    expect(topic).to_length(2)
 
-        class WithTuple(Vows.Context):
-            def topic(self):
-                return tuple(["some", "list"])
+            class WithTuple(Vows.Context):
+                def topic(self):
+                    return tuple(["some", "list"])
 
-            def we_can_see_it_has_2_items(self, topic):
-                expect(topic).to_length(2)
+                def we_can_see_it_has_2_items(self, topic):
+                    expect(topic).to_length(2)
 
-        class WithDict(Vows.Context):
-            def topic(self):
-                return { "some": "item", "other": "item" }
+            class WithDict(Vows.Context):
+                def topic(self):
+                    return { "some": "item", "other": "item" }
 
-            def we_can_see_it_has_2_items(self, topic):
-                expect(topic).to_length(2)
+                def we_can_see_it_has_2_items(self, topic):
+                    expect(topic).to_length(2)
+
+            class WhenWeGetAnError(Vows.Context):
+
+                def topic(self, last):
+                    expect('a').to_length(2)
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of("Expected topic(a) to have 2 of length, but it has 1")
+
+        class NotToLength(Vows.Context):
+            class WhenWeGetAnError(Vows.Context):
+                def topic(self, last):
+                    expect('a').not_to_length(1)
+
+                def we_get_an_understandable_message(self, topic):
+                    expect(topic).to_have_an_error_message_of("Expected topic(a) not to have 1 of length, but it has")
+
 
     class Include(Vows.Context):
 
@@ -392,6 +612,20 @@ class Assertion(Vows.Context):
 
             def we_cant_find_else(self, topic):
                 expect(topic).Not.to_include('else')
+
+        class WhenWeGetAnError(Vows.Context):
+            def topic(self, last):
+                expect('a').to_include('b')
+
+            def we_get_an_understandable_message(self, topic):
+                expect(topic).to_have_an_error_message_of("Expected topic(a) to include b, but it didn't")
+
+        class WhenWeGetAnErrorOnNot(Vows.Context):
+            def topic(self, last):
+                expect('a').not_to_include('a')
+
+            def we_get_an_understandable_message(self, topic):
+                expect(topic).to_have_an_error_message_of("Expected topic(a) not to include a, but it did")
 
     class IsLike(Vows.Context):
 
@@ -519,3 +753,18 @@ class Assertion(Vows.Context):
                             'key': 'value'
                         }
                     })
+
+        class WhenWeGetAnError(Vows.Context):
+            def topic(self, last):
+                expect('a').to_be_like('b')
+
+            def we_get_an_understandable_message(self, topic):
+                expect(topic).to_have_an_error_message_of("Expected topic(a) to be like b, but it wasn't")
+
+        class WhenWeGetAnErrorOnNot(Vows.Context):
+            def topic(self, last):
+                expect('a').not_to_be_like('a')
+
+            def we_get_an_understandable_message(self, topic):
+                expect(topic).to_have_an_error_message_of("Expected topic(a) not to be like a, but it was")
+

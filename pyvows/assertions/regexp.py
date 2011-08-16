@@ -18,5 +18,5 @@ def to_match(topic, expected):
 
 @Vows.assertion
 def not_to_match(topic, expected):
-    assert not re.match(expected, topic), "Expected topic(%s) to not match the regular expression %s, but it did" % (topic, expected)
+    assert not re.match(expected, topic), "Expected topic(%s) not to match the regular expression %s, but it did" % (topic, expected)
 

@@ -10,15 +10,7 @@
 
 from pyvows import Vows
 
-@Vows.assertion
+@Vows.create_assertions
 def to_be_empty(topic):
-    message = "Expected topic(%s) to be empty, but it wasn't" % (topic, )
-
-    assert len(topic) == 0, message
-
-@Vows.assertion
-def not_to_be_empty(topic):
-    message = "Expected topic(%s) not to be empty, but it was" % (topic, )
-
-    assert len(topic) > 0, message
+    return len(topic) == 0
 

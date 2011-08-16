@@ -145,7 +145,7 @@ class VowsParallelRunner(object):
                 }
                 if self.vow_error_event:
                     self.vow_error_event(result_obj)
- 
+
             tests_col.append(result_obj)
 
         self.pool.spawn_n(async_run_vow, self, tests_col, topic, context_instance, member, member_name)
@@ -187,7 +187,7 @@ class VowsParallelRunner(object):
 
             if not context.parent:
                 break
- 
+
             context = context.parent
             child = child.parent
 

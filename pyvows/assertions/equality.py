@@ -10,10 +10,6 @@
 
 from pyvows import Vows
 
-@Vows.assertion
+@Vows.create_assertions
 def to_equal(topic, expected):
-    assert expected == topic, "Expected topic to be %s, but it was %s" % (expected, topic)
-
-@Vows.assertion
-def not_to_equal(topic, expected):
-    assert expected != topic, "Expected topic not to be %s, but it was" % (expected)
+    return expected == topic

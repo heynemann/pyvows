@@ -12,15 +12,9 @@ import numbers
 
 from pyvows import Vows
 
-@Vows.assertion
+@Vows.create_assertions
 def to_be_like(topic, expected):
-    message = "Expected topic(%s) to be like %s, but it wasn't"
-    compare_alike(expected, topic, lambda result: result, message)
-
-@Vows.assertion
-def not_to_be_like(topic, expected):
-    message = 'Expected topic(%s) not to be like %s, but it was'
-    compare_alike(expected, topic, lambda result: not result, message)
+    return match_alike(expected, topic)
 
 def compare_alike(expected, topic, modifier, message):
     assert modifier(match_alike(expected, topic)), message % (topic, expected)

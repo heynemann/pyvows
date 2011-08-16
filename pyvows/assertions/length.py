@@ -12,5 +12,8 @@ from pyvows import Vows
 
 @Vows.assertion
 def to_length(topic, expected):
-    assert len(topic) == expected, "Expected topic(%s) to have %s of length, but it had %s" % (topic, expected, len(topic))
+    assert len(topic) == expected, "Expected topic(%s) to have %s of length, but it has %s" % (topic, expected, len(topic))
 
+@Vows.assertion
+def not_to_length(topic, expected):
+    assert len(topic) != expected, "Expected topic(%s) not to have %s of length, but it has" % (topic, expected)

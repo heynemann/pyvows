@@ -20,13 +20,7 @@ def to_be_an_error_like(topic, expected):
 def to_have_an_error_message_of(topic, expected):
     assert str(topic) == expected, "Expected topic(%s) to be an error with message '%s', but it had a different message" % (topic, expected)
 
-@Vows.assertion
+@Vows.create_assertions
 def to_be_an_error(topic):
-    assert topic and (isinstance(topic, Exception) or (inspect.isclass(topic) and issubclass(topic, Exception))), "Expected topic(%s) to be an error, but it was't" % topic
+    return topic and (isinstance(topic, Exception) or (inspect.isclass(topic) and issubclass(topic, Exception)))
 
-@Vows.assertion
-def not_to_be_an_error(topic):
-    is_exception_instance = isinstance(topic, Exception)
-    is_exception_class = inspect.isclass(topic) and issubclass(topic, Exception) or False
-
-    assert not is_exception_instance and not is_exception_class, "Expected topic(%s) not to be an error, but it was" % topic
