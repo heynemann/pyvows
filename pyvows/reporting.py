@@ -70,14 +70,6 @@ class VowsDefaultReporter(object):
                 print print_test(VowsDefaultReporter.honored, test['name'])
             else:
                 print print_test(VowsDefaultReporter.broken, test['name'])
-                error = test['error']
-                exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
-                error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
-                error_msg = (self.tab * (self.indent + 2)).join(error_msg)
-                print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + exc_value.message.encode('utf-8') + Fore.RESET)
-                print
-                print "%s%s" % (self.tab * (self.indent + 2), error_msg)
-
                 if isinstance(test['topic'], Exception):
                     print
                     print "%s%s" % (self.tab * (self.indent + 3), Fore.RED + 'Original Exception' + Fore.RESET)
@@ -87,7 +79,15 @@ class VowsDefaultReporter(object):
                     error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
                     error_msg = (self.tab * (self.indent + 3)).join(error_msg)
                     print "%s%s" % (self.tab * (self.indent + 3), error_msg)
- 
+                else:
+                    error = test['error']
+                    exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
+                    error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                    error_msg = (self.tab * (self.indent + 2)).join(error_msg)
+                    print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + exc_value.message.encode('utf-8') + Fore.RESET)
+                    print
+                    print "%s%s" % (self.tab * (self.indent + 2), error_msg)
+
                 if 'file' in test:
                     print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + "(found in %s at line %s)" % (test['file'], test['lineno']) + Fore.RESET)
 
