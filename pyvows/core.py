@@ -76,6 +76,7 @@ class Vows(object):
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
+            self.ignored_members = ['topic', 'setup', 'teardown']
 
         def _get_first_available_topic(self, index=-1):
             if self.topic_value:
@@ -87,6 +88,10 @@ class Vows(object):
                 return None
 
             return self.parent._get_first_available_topic(index)
+
+        def ignore(self, *args):
+            for arg in args:
+                self.ignored_members.append(arg)
 
         def setup(self):
             pass
