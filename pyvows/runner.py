@@ -55,6 +55,7 @@ class VowsParallelRunner(object):
 
             context_instance = context(parent)
             context_instance.index = index
+            context_instance.setup()
 
             topic = None
             if hasattr(context_instance, 'topic'):
@@ -80,15 +81,16 @@ class VowsParallelRunner(object):
                 topic = context_instance.topic_value
 
                 def iterate_members(topic, index=-1, enumerated=False):
+                    special_names = ('setup', 'teardown', 'topic')
                     for member_name, member in inspect.getmembers(context):
-                        if inspect.ismethod(member) and member_name == 'topic':
+                        if inspect.ismethod(member) and member_name in special_names:
                             continue
 
                         if not member_name.startswith('_') and inspect.ismethod(member):
                             self.run_vow(context_obj['tests'], topic, context_instance, member, member_name, enumerated=enumerated)
 
                     for member_name, member in inspect.getmembers(context):
-                        if inspect.ismethod(member) and member_name == 'topic':
+                        if inspect.ismethod(member) and member_name in special_names:
                             continue
 
                         if inspect.isclass(member) and issubclass(member, self.context_class):
@@ -113,6 +115,8 @@ class VowsParallelRunner(object):
                 self.pool.spawn_n(topic.func, *args, **topic.kw)
             else:
                 run_with_topic(topic)
+
+            context_instance.teardown()
 
         self.pool.spawn_n(async_run_context, self, context_col, name, context, parent)
 

@@ -88,6 +88,12 @@ class Vows(object):
 
             return self.parent._get_first_available_topic(index)
 
+        def setup(self):
+            pass
+
+        def teardown(self):
+            pass
+
     class NotErrorContext(Context):
         def should_not_be_an_error(self, topic):
             expect(topic).not_to_be_an_error()
