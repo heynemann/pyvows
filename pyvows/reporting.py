@@ -72,8 +72,6 @@ class VowsDefaultReporter(object):
                 print print_test(VowsDefaultReporter.broken, test['name'])
                 if isinstance(test['topic'], Exception):
                     print
-                    print "%s%s" % (self.tab * (self.indent + 3), Fore.RED + 'Original Exception' + Fore.RESET)
-                    print
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
                     print "%s%s" % (self.tab * (self.indent + 3), Fore.RED + str(exc_value) + Fore.RESET)
                     error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
