@@ -88,6 +88,7 @@ class VowsDefaultReporter(object):
 
                 if 'file' in test:
                     print "%s%s" % (self.tab * (self.indent + 2), Fore.RED + "(found in %s at line %s)" % (test['file'], test['lineno']) + Fore.RESET)
+                    print
 
         for context in context['contexts']:
             self.print_context(context['name'], context)
