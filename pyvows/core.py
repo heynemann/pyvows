@@ -76,7 +76,7 @@ class Vows(object):
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
-            self.ignored_members = ['topic', 'setup', 'teardown']
+            self.ignored_members = ['topic', 'setup', 'teardown', 'ignore']
 
         def _get_first_available_topic(self, index=-1):
             if self.topic_value:
