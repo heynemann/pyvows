@@ -70,7 +70,9 @@ class VowsDefaultReporter(object):
                 print print_test(VowsDefaultReporter.honored, test['name'])
             else:
                 print print_test(VowsDefaultReporter.broken, test['name'])
-                if isinstance(test['topic'], Exception):
+                if isinstance(test['topic'], Exception) and \
+                   'context_instance' in test and \
+                   hasattr(test['context_instance'], 'topic_error'):
                     print
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
                     print "%s%s" % (self.tab * (self.indent + 3), Fore.RED + str(exc_value) + Fore.RESET)
