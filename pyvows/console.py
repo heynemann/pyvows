@@ -123,7 +123,6 @@ def main():
     if arguments.cover and COVERAGE_AVAILABLE:
         cov.stop()
 
-    if arguments.cover and COVERAGE_AVAILABLE:
         print
         print
 
