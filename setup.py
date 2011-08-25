@@ -11,6 +11,9 @@
 from setuptools import setup
 from pyvows.version import __version__
 
+
+dependencies = open('REQUIREMENTS').read().strip().split('\n')
+
 setup(
     name = 'pyVows',
     version = '.'.join([str(item) for item in __version__]),
@@ -38,11 +41,7 @@ pyVows is a test engine based in Vows JS and features topic-based testing as wel
     packages = ['pyvows', 'pyvows.assertions'],
     package_dir = {"pyvows": "pyvows"},
 
-    install_requires=[
-        "eventlet",
-        "colorama",
-        "lxml"
-    ],
+    install_requires = dependencies,
 
     entry_points = {
         'console_scripts': [
