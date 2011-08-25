@@ -116,10 +116,7 @@ def main():
         xunit = XUnitReporter(result, arguments.xunit_file)
         xunit.write_report()
 
-    if result.successful:
-        sys.exit(0)
-    else:
-        sys.exit(1)
+    sys.exit(result.errored_tests)
 
 if __name__ == '__main__':
     main()
