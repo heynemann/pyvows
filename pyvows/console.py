@@ -13,14 +13,8 @@ import os
 from os.path import isfile, split
 import tempfile
 
+import argparse
 from colorama import init, Fore
-
-try:
-    import argparse
-    ARGPARSE = True
-except ImportError:
-    ARGPARSE = False
-    from optparse import OptionParser
 
 try:
     from coverage import coverage
@@ -47,47 +41,20 @@ class Messages(object):
 def __get_arguments():
     current_dir = os.curdir
 
-    if ARGPARSE:
-        parser = argparse.ArgumentParser(description='Runs pyVows.')
+    parser = argparse.ArgumentParser(description='Runs pyVows.')
 
-        parser.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern)
-        parser.add_argument('-c', '--cover', action="store_true", default=False, help=Messages.cover)
-        parser.add_argument('-l', '--cover_package', action="append", default=[], help=Messages.cover_package)
-        parser.add_argument('-o', '--cover_omit', action="append", default=[], help=Messages.cover_omit)
-        parser.add_argument('-t', '--cover_threshold', default=80.0, type=float, help=Messages.cover_threshold)
-        parser.add_argument('-r', '--cover_report', action="store", default=None, help=Messages.cover_report)
-        parser.add_argument('-x', '--xunit_output', action="store_true", default=False, help=Messages.xunit_output)
-        parser.add_argument('-f', '--xunit_file', action="store", default="pyvows.xml", help=Messages.xunit_file)
+    parser.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern)
+    parser.add_argument('-c', '--cover', action="store_true", default=False, help=Messages.cover)
+    parser.add_argument('-l', '--cover_package', action="append", default=[], help=Messages.cover_package)
+    parser.add_argument('-o', '--cover_omit', action="append", default=[], help=Messages.cover_omit)
+    parser.add_argument('-t', '--cover_threshold', default=80.0, type=float, help=Messages.cover_threshold)
+    parser.add_argument('-r', '--cover_report', action="store", default=None, help=Messages.cover_report)
+    parser.add_argument('-x', '--xunit_output', action="store_true", default=False, help=Messages.xunit_output)
+    parser.add_argument('-f', '--xunit_file', action="store", default="pyvows.xml", help=Messages.xunit_file)
 
-        parser.add_argument('path', default=current_dir, nargs='?', help=Messages.path)
+    parser.add_argument('path', default=current_dir, nargs='?', help=Messages.path)
 
-        arguments = parser.parse_args()
-    else:
-        parser = OptionParser()
-        parser.add_option("-p", "--pattern", dest="pattern", default='*_vows.py', help=Messages.pattern)
-        parser.add_option("-c", "--cover", dest="cover", action="store_true", default=False, help=Messages.cover)
-        parser.add_option('-l', '--cover_package', dest='cover_package', action="append", default=[], help=Messages.cover_package)
-        parser.add_option('-o', '--cover_omit', dest='cover_omit', action="append", default=[], help=Messages.cover_omit)
-        parser.add_option('-t', '--cover_threshold', dest='cover_threshold', type=float, default=80.0, help=Messages.cover_threshold)
-        parser.add_option('-r', '--cover_report', dest='cover_report', action="store", default=None, help=Messages.cover_report)
-        parser.add_option('-x', '--xunit_output', dest="xunit_output", action="store_true", default=False, help=Messages.xunit_output)
-        parser.add_option('-f', '--xunit_file', dest="xunit_file", action="store", default="pyvows.xml", help=Messages.xunit_file)
-
-        (options, args) = parser.parse_args()
-
-        class Args(object):
-            def __init__(self, pattern, path, cover, cover_package, cover_omit, cover_threshold, cover_report, xunit_output, xunit_file):
-                self.pattern = pattern
-                self.path = path
-                self.cover = cover
-                self.cover_package = cover_package
-                self.cover_omit = cover_omit
-                self.cover_threshold = cover_threshold
-                self.cover_report = cover_report
-                self.xunit_output = xunit_output
-                self.xunit_file = xunit_file
-
-        arguments = Args(options.pattern, args[0] if args else None, options.cover, options.cover_package, options.cover_omit, options.cover_threshold, options.cover_report, options.xunit_output, options.xunit_file)
+    arguments = parser.parse_args()
 
     return arguments
 
