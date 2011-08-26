@@ -17,12 +17,12 @@ import eventlet
 from pyvows.result import VowsResult
 
 class VowsParallelRunner(object):
-    def __init__(self, vows, context_class, async_topic_class, vow_successful_event, vow_error_event):
+    def __init__(self, vows, context_class, async_topic_class, async_topic_value_class, vow_successful_event, vow_error_event):
         self.vows = vows
         self.context_class = context_class
         self.async_topic_class = async_topic_class
+        self.async_topic_value_class = async_topic_value_class
         self.pool = eventlet.GreenPool()
-        self.async_topics= []
         self.vow_successful_event = vow_successful_event
         self.vow_error_event = vow_error_event
 
@@ -31,12 +31,7 @@ class VowsParallelRunner(object):
         result = VowsResult()
 
         for name, context in self.vows.iteritems():
-            self.run_context(result.contexts, name, context, None)
-
-        self.pool.waitall()
-
-        while self.async_topics:
-            time.sleep(0.01)
+            self.run_context(result.contexts, name, context)
 
         self.pool.waitall()
 
@@ -44,7 +39,7 @@ class VowsParallelRunner(object):
         result.ellapsed_time = float(end_time - start_time)
         return result
 
-    def run_context(self, context_col, name, context, parent):
+    def run_context(self, context_col, name, context, parent=None):
         def async_run_context(self, context_col, name, context, parent, index=-1):
             context_obj = {
                 'name': name,
@@ -77,8 +72,7 @@ class VowsParallelRunner(object):
                     is_generator = True
                     context_instance.topic_value = list(topic)
                     context_instance.generated_topic = True
-                context_instance.topic_value = context_instance.topic_value
-                topic = context_instance.topic_value
+                topic = context_instance.topic_value = context_instance.topic_value
 
                 def iterate_members(topic, index=-1, enumerated=False):
                     special_names = ['setup', 'teardown', 'topic']
@@ -89,7 +83,10 @@ class VowsParallelRunner(object):
                         if inspect.ismethod(member) and member_name in special_names:
                             continue
 
-                        if not member_name.startswith('_') and inspect.ismethod(member):
+                        if member_name.startswith('_'):
+                            continue
+
+                        if inspect.ismethod(member):
                             self.run_vow(context_obj['tests'], topic, context_instance, member, member_name, enumerated=enumerated)
 
                     for member_name, member in inspect.getmembers(context):
@@ -97,9 +94,9 @@ class VowsParallelRunner(object):
                             continue
 
                         if inspect.isclass(member) and issubclass(member, self.context_class):
-                            self.pool.spawn_n(async_run_context, self, context_obj['contexts'], member_name, member, context_instance, index)
+                            self.pool.spawn_n(async_run_context,
+                                    self, context_obj['contexts'], member_name, member, context_instance, index)
                             continue
-
 
                 if is_generator:
                     for index, topic_value in enumerate(topic):
@@ -107,21 +104,19 @@ class VowsParallelRunner(object):
                 else:
                     iterate_members(topic)
 
+
             if isinstance(topic, self.async_topic_class):
-                def handle_callback(topic_value):
-                    run_with_topic(topic_value)
-                    self.async_topics.pop()
+                def handle_callback(*args, **kw):
+                    run_with_topic(self.async_topic_value_class(args, kw))
 
-                args = topic.args + (handle_callback, )
-
-                self.async_topics.append(topic)
-                self.pool.spawn_n(topic.func, *args, **topic.kw)
+                topic(handle_callback)
             else:
                 run_with_topic(topic)
 
             context_instance.teardown()
 
         self.pool.spawn_n(async_run_context, self, context_col, name, context, parent)
+        self.pool.waitall()
 
     def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
         def async_run_vow(self, tests_col, topic, context_instance, member, member_name):
@@ -155,6 +150,8 @@ class VowsParallelRunner(object):
 
             tests_col.append(result_obj)
 
+            return result_obj
+
         self.pool.spawn_n(async_run_vow, self, tests_col, topic, context_instance, member, member_name)
 
     def file_info_for(self, member):
@@ -172,6 +169,11 @@ class VowsParallelRunner(object):
         if not context_instance.parent:
             return []
 
+        async = False
+        if hasattr(topic_function, '_original'):
+            topic_function = topic_function._original
+            async = True
+
         if hasattr(topic_function, '__code__'):
             code = topic_function.__code__
         elif hasattr(topic_function, '__func__'):
@@ -181,6 +183,10 @@ class VowsParallelRunner(object):
             raise RuntimeError('Function %s does not have a code property')
 
         expected_args = code.co_argcount - 1
+
+        # taking the callback argument into consideration
+        if async:
+            expected_args -= 1
 
         topics = []
 

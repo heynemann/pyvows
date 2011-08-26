@@ -51,11 +51,6 @@ class expect(object):
 
         return assert_topic
 
-class VowsAsyncTopic(object):
-    def __init__(self, func, *args, **kw):
-        self.func = func
-        self.args = args
-        self.kw = kw
 
 class VowsAssertion(object):
     class AssertionNotFoundError(AttributeError):
@@ -66,6 +61,24 @@ class VowsAssertion(object):
         if not hasattr(self, name):
             raise VowsAssertion.AssertionNotFoundError(name)
         return super(VowsAssertion, self).__getattr__(name)
+
+
+class VowsAsyncTopic(object):
+    def __init__(self, func, args, kw):
+        self.func = func
+        self.args = args
+        self.kw = kw
+
+    def __call__(self, callback):
+        args = (self.args[0], callback,) + self.args[1:]
+        self.func(*args, **self.kw)
+
+
+class VowsAsyncTopicValue(object):
+    def __init__(self, args, kw):
+        self.args = args
+        self.kw = kw
+
 
 class Vows(object):
     contexts = {}
@@ -108,8 +121,16 @@ class Vows(object):
             expect(topic).not_to_be_empty()
 
     AsyncTopic = VowsAsyncTopic
-
+    AsyncTopicValue = VowsAsyncTopicValue
     Assert = VowsAssertion()
+
+    @staticmethod
+    def asyncTopic(topic):
+        def wrapper(*args, **kw):
+            return VowsAsyncTopic(topic, args, kw)
+        wrapper._original = topic
+        wrapper.__name__ = topic.__name__
+        return wrapper
 
     @staticmethod
     def batch(method):
@@ -154,11 +175,9 @@ class Vows(object):
 
     @classmethod
     def ensure(cls, vow_success_event, vow_error_event):
-        runner = VowsParallelRunner(Vows.contexts, Vows.Context, Vows.AsyncTopic, vow_success_event, vow_error_event)
-
-        result = runner.run()
-
-        return result
+        runner = VowsParallelRunner(
+                Vows.contexts, Vows.Context, Vows.AsyncTopic, Vows.AsyncTopicValue, vow_success_event, vow_error_event)
+        return runner.run()
 
     @classmethod
     def gather(cls, path, pattern):
