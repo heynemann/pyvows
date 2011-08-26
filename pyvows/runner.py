@@ -33,7 +33,8 @@ class VowsParallelRunner(object):
         for name, context in self.vows.iteritems():
             self.run_context(result.contexts, name, context)
 
-        self.pool.waitall()
+        while self.pool.running():
+            self.pool.waitall()
 
         end_time = time.time()
         result.ellapsed_time = float(end_time - start_time)
@@ -116,7 +117,6 @@ class VowsParallelRunner(object):
             context_instance.teardown()
 
         self.pool.spawn_n(async_run_context, self, context_col, name, context, parent)
-        self.pool.waitall()
 
     def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
         def async_run_vow(self, tests_col, topic, context_instance, member, member_name):
