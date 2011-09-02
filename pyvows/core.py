@@ -79,6 +79,24 @@ class VowsAsyncTopicValue(object):
         self.args = args
         self.kw = kw
 
+    def __getitem__(self, attr):
+        if type(attr) is int:
+            return self.args[attr]
+
+        if attr in self.kw:
+            return self.kw[attr]
+
+        raise AttributeError
+
+    def __getattr__(self, attr):
+        if attr in self.kw:
+            return self.kw[attr]
+
+        if hasattr(self, attr):
+            return self.attr
+
+        raise AttributeError
+
 
 class Vows(object):
     contexts = {}

@@ -25,7 +25,7 @@ def asyncFunc(callback):
 
     def get_value(gt, callback):
         value = gt.wait()
-        callback(value, 20, kwarg=30)
+        callback(value, 20, kwarg=30, kw2=40)
 
     func.link(get_value, callback)
 
@@ -36,13 +36,20 @@ class AsyncTopic(Vows.Context):
         asyncFunc(callback)
 
     def should_check_the_first_parameter(self, topic):
-        expect(topic.args[0]).to_equal(10)
+        expect(topic[0]).to_equal(10)
 
     def should_check_the_second_parameter(self, topic):
         expect(topic.args[1]).to_equal(20)
 
     def should_check_the_kwarg_parameter(self, topic):
-        expect(topic.kw['kwarg']).to_equal(30)
+        expect(topic.kwarg).to_equal(30)
+
+    def should_check_the_kwarg_parameter_accesing_from_topic_as_dict(self, topic):
+        expect(topic['kwarg']).to_equal(30)
+
+    def should_check_the_kw2_parameter(self, topic):
+        expect(topic.kw['kw2']).to_equal(40)
+
 
     class SyncTopic(Vows.Context):
         def topic(self):
