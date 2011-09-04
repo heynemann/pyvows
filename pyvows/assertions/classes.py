@@ -16,5 +16,5 @@ def to_be_instance_of(topic, expected):
 
 @Vows.assertion
 def not_to_be_instance_of(topic, expected):
-    assert not isinstance(topic, expected), "Expected topic(%s) not to be an instance of %s, but it was" % (topic, expected)
+    assert not isinstance(topic, expected), "Expected topic(%s) not to be an instance of %s" % (topic, expected)
 

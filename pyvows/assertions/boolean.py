@@ -12,9 +12,9 @@ from pyvows import Vows
 
 @Vows.assertion
 def to_be_true(topic):
-    assert bool(topic), "Expected topic(%s) to be truthy, but it wasn't" % (topic, )
+    assert bool(topic), "Expected topic(%s) to be truthy" % (topic, )
 
 @Vows.assertion
 def to_be_false(topic):
-    assert not bool(topic), "Expected topic(%s) to be falsy, but it wasn't" % (topic, )
+    assert not bool(topic), "Expected topic(%s) to be falsy" % (topic, )
 

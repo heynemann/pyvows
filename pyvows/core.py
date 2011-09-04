@@ -172,24 +172,25 @@ class Vows(object):
     def create_assertions(cls, method):
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
 
-        def method_name(*args, **kw):
-            return method(*args, **kw)
-
         def exec_assertion(*args):
             msg = 'Expected topic(%s) %s' % (args[0], humanized_method_name)
             if len(args) == 2:
                 msg += ' %s' % (args[1],)
-            assert method(*args), "%s, but it wasn't" % msg
+            assert method(*args), msg
+
         def exec_not_assertion(*args):
             msg = 'Expected topic(%s) not %s' % (args[0], humanized_method_name)
             if len(args) == 2:
                 msg += ' %s' % (args[1],)
-            assert not method(*args), "%s, but it was" % msg
+            assert not method(*args), msg
 
         setattr(Vows.Assert, method.__name__, exec_assertion)
         setattr(Vows.Assert, 'not_%s' % method.__name__, exec_not_assertion)
 
-        return method_name
+        def wrapper(*args, **kw):
+            return method(*args, **kw)
+
+        return wrapper
 
     @classmethod
     def ensure(cls, vow_success_event, vow_error_event):

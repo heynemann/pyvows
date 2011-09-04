@@ -18,5 +18,5 @@ def to_be_a_function(topic):
 
 @Vows.assertion
 def not_to_be_a_function(topic):
-    assert not inspect.ismethod(topic) and not inspect.isfunction(topic), "Expected topic(%s) not to be a function or a method, but it was" % topic
+    assert not inspect.ismethod(topic) and not inspect.isfunction(topic), "Expected topic(%s) not to be a function or a method" % topic
 

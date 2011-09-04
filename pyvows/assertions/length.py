@@ -16,4 +16,4 @@ def to_length(topic, expected):
 
 @Vows.assertion
 def not_to_length(topic, expected):
-    assert len(topic) != expected, "Expected topic(%s) not to have %s of length, but it has" % (topic, expected)
+    assert len(topic) != expected, "Expected topic(%s) not to have %s of length" % (topic, expected)

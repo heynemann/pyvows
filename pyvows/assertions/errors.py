@@ -18,7 +18,7 @@ def to_be_an_error_like(topic, expected):
 
 @Vows.assertion
 def to_have_an_error_message_of(topic, expected):
-    assert str(topic) == expected, "Expected topic(%s) to be an error with message '%s', but it had a different message" % (topic, expected)
+    assert str(topic) == expected, "Expected topic(%s) to be an error with message '%s'" % (topic, expected)
 
 @Vows.create_assertions
 def to_be_an_error(topic):

@@ -10,14 +10,7 @@
 
 from pyvows import Vows
 
-@Vows.assertion
+
+@Vows.create_assertions
 def to_include(topic, expected):
-    message = "Expected topic(%s) to include %s, but it didn't" % (topic, expected)
-
-    assert expected in topic, message
-
-@Vows.assertion
-def not_to_include(topic, expected):
-    message = "Expected topic(%s) not to include %s, but it did" % (topic, expected)
-
-    assert expected not in topic, message
+    return expected in topic

@@ -12,9 +12,9 @@ from pyvows import Vows
 
 @Vows.assertion
 def to_be_null(topic):
-    assert topic is None, "Expected topic(%s) to be None, but it wasn't" % topic
+    assert topic is None, "Expected topic(%s) to be None" % topic
 
 @Vows.assertion
 def not_to_be_null(topic):
-    assert topic is not None, "Expected topic(%s) not to be None, but it was" % topic
+    assert topic is not None, "Expected topic(%s) not to be None" % topic
 

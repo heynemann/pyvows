@@ -53,7 +53,7 @@ class Assertion(Vows.Context):
                     expect(1).to_equal(2)
 
                 def we_get_an_understandable_message(self, topic):
-                    expect(topic).to_have_an_error_message_of("Expected topic(1) to equal 2, but it wasn't")
+                    expect(topic).to_have_an_error_message_of("Expected topic(1) to equal 2")
 
         class WhenIsNotEqual(Vows.Context):
 
@@ -66,7 +66,7 @@ class Assertion(Vows.Context):
                     expect(1).not_to_equal(1)
 
                 def we_get_an_understandable_message(self, topic):
-                    expect(topic).to_have_an_error_message_of("Expected topic(1) not to equal 1, but it was")
+                    expect(topic).to_have_an_error_message_of("Expected topic(1) not to equal 1")
 
         class WhenHaveASubClassThatHaveAExtraParamInTopic(Vows.Context):
             def topic(self, last):
@@ -110,7 +110,7 @@ class Assertion(Vows.Context):
 
                 def we_get_an_understandable_message(self, topic):
                     expect(topic).to_have_an_error_message_of(
-                            "Expected topic(2) not to be an instance of %s, but it was" % str(int))
+                            "Expected topic(2) not to be an instance of %s" % str(int))
 
 
     class IsEmpty(Vows.Context):
@@ -149,7 +149,7 @@ class Assertion(Vows.Context):
                     expect([1]).to_be_empty()
 
                 def we_get_an_understandable_message(self, topic):
-                    expect(topic).to_have_an_error_message_of("Expected topic([1]) to be empty, but it wasn't")
+                    expect(topic).to_have_an_error_message_of("Expected topic([1]) to be empty")
 
         class WhenNotEmpty(Vows.Context):
             class WhenString(Vows.Context):
@@ -186,7 +186,7 @@ class Assertion(Vows.Context):
                     expect([]).not_to_be_empty()
 
                 def we_get_an_understandable_message(self, topic):
-                    expect(topic).to_have_an_error_message_of("Expected topic([]) not to be empty, but it was")
+                    expect(topic).to_have_an_error_message_of("Expected topic([]) not to be empty")
 
     class IsNull(Vows.Context):
 
@@ -202,7 +202,7 @@ class Assertion(Vows.Context):
                     expect(1).to_be_null()
 
                 def we_get_an_understandable_message(self, topic):
-                    expect(topic).to_have_an_error_message_of("Expected topic(1) to be None, but it wasn't")
+                    expect(topic).to_have_an_error_message_of("Expected topic(1) to be None")
 
         class WhenItIsNotNull(Vows.Context):
             def topic(self):
@@ -216,7 +216,7 @@ class Assertion(Vows.Context):
                     expect(None).not_to_be_null()
 
                 def we_get_an_understandable_message(self, topic):
-                    expect(topic).to_have_an_error_message_of("Expected topic(None) not to be None, but it was")
+                    expect(topic).to_have_an_error_message_of("Expected topic(None) not to be None")
 
 
     class IsTrue(Vows.Context):
@@ -262,7 +262,7 @@ class Assertion(Vows.Context):
                 expect(False).to_be_true()
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(False) to be truthy, but it wasn't")
+                expect(topic).to_have_an_error_message_of("Expected topic(False) to be truthy")
 
 
     class IsFalse(Vows.Context):
@@ -315,7 +315,7 @@ class Assertion(Vows.Context):
                 expect(True).to_be_false()
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(True) to be falsy, but it wasn't")
+                expect(topic).to_have_an_error_message_of("Expected topic(True) to be falsy")
 
 
     class IsNumeric(Vows.Context):
@@ -333,7 +333,7 @@ class Assertion(Vows.Context):
                     expect('s').to_be_numeric()
 
                 def we_get_an_understandable_message(self, topic):
-                    expect(topic).to_have_an_error_message_of("Expected topic(s) to be numeric, but it wasn't")
+                    expect(topic).to_have_an_error_message_of("Expected topic(s) to be numeric")
 
 
         class WhenItIsNotANumber(Vows.Context):
@@ -349,7 +349,7 @@ class Assertion(Vows.Context):
                     expect(2).not_to_be_numeric()
 
                 def we_get_an_understandable_message(self, topic):
-                    expect(topic).to_have_an_error_message_of("Expected topic(2) not to be numeric, but it was")
+                    expect(topic).to_have_an_error_message_of("Expected topic(2) not to be numeric")
 
 
     class IsFunction(Vows.Context):
@@ -387,7 +387,7 @@ class Assertion(Vows.Context):
 
                 def we_get_an_understandable_message(self, topic):
                     expect(topic).to_have_an_error_message_of(
-                            "Expected topic(%s) not to be a function or a method, but it was" % str(a_function))
+                            "Expected topic(%s) not to be a function or a method" % str(a_function))
 
 
     class Regexp(Vows.Context):
@@ -406,7 +406,7 @@ class Assertion(Vows.Context):
 
                 def we_get_an_understandable_message(self, topic):
                     expect(topic).to_have_an_error_message_of(
-                            "Expected topic(some string) to match the regular expression ^other.+$, but it didn't")
+                            "Expected topic(some string) to match the regular expression ^other.+$")
 
         class WhenItDoesntMatches(Vows.Context):
 
@@ -420,7 +420,7 @@ class Assertion(Vows.Context):
 
                 def we_get_an_understandable_message(self, topic):
                     expect(topic).to_have_an_error_message_of(
-                            "Expected topic(some string) not to match the regular expression ^some.+$, but it did")
+                            "Expected topic(some string) not to match the regular expression ^some.+$")
 
 
     class Errors(Vows.Context):
@@ -455,7 +455,7 @@ class Assertion(Vows.Context):
 
                     def we_get_an_understandable_message(self, topic):
                         expect(topic).to_have_an_error_message_of(
-                                "Expected topic(%s) to be an error with message '%s', but it had a different message" % (
+                                "Expected topic(%s) to be an error with message '%s'" % (
                                     'some bogus error', 'some bogus'))
 
             class ToBeAnError(Vows.Context):
@@ -469,7 +469,7 @@ class Assertion(Vows.Context):
                         expect(2).to_be_an_error()
 
                     def we_get_an_understandable_message(self, topic):
-                        expect(topic).to_have_an_error_message_of("Expected topic(2) to be an error, but it wasn't")
+                        expect(topic).to_have_an_error_message_of("Expected topic(2) to be an error")
 
             class NotToBeAnError(Vows.Context):
                 def topic(self):
@@ -484,7 +484,7 @@ class Assertion(Vows.Context):
                         expect(ValueError).not_to_be_an_error()
 
                     def we_get_an_understandable_message(self, topic):
-                        expect(topic).to_have_an_error_message_of("Expected topic(%s) not to be an error, but it was" % str(ValueError))
+                        expect(topic).to_have_an_error_message_of("Expected topic(%s) not to be an error" % str(ValueError))
             class TheExceptionClass(Vows.Context):
                 def topic(self, error):
                     return ValueError
@@ -544,7 +544,7 @@ class Assertion(Vows.Context):
                     expect('a').not_to_length(1)
 
                 def we_get_an_understandable_message(self, topic):
-                    expect(topic).to_have_an_error_message_of("Expected topic(a) not to have 1 of length, but it has")
+                    expect(topic).to_have_an_error_message_of("Expected topic(a) not to have 1 of length")
 
 
     class Include(Vows.Context):
@@ -618,14 +618,14 @@ class Assertion(Vows.Context):
                 expect('a').to_include('b')
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(a) to include b, but it didn't")
+                expect(topic).to_have_an_error_message_of("Expected topic(a) to include b")
 
         class WhenWeGetAnErrorOnNot(Vows.Context):
             def topic(self, last):
                 expect('a').not_to_include('a')
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(a) not to include a, but it did")
+                expect(topic).to_have_an_error_message_of("Expected topic(a) not to include a")
 
     class IsLike(Vows.Context):
 
@@ -759,12 +759,12 @@ class Assertion(Vows.Context):
                 expect('a').to_be_like('b')
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(a) to be like b, but it wasn't")
+                expect(topic).to_have_an_error_message_of("Expected topic(a) to be like b")
 
         class WhenWeGetAnErrorOnNot(Vows.Context):
             def topic(self, last):
                 expect('a').not_to_be_like('a')
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(a) not to be like a, but it was")
+                expect(topic).to_have_an_error_message_of("Expected topic(a) not to be like a")
 
