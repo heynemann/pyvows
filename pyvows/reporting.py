@@ -24,7 +24,7 @@ class VowsDefaultReporter(object):
     def __init__(self, result):
         init(autoreset=True)
         self.result = result
-        self.tab = " " * 2
+        self.tab = ' ' * 2
         self.indent = 1
 
     def camel_split(self, string):
@@ -45,13 +45,13 @@ class VowsDefaultReporter(object):
         print
         print
         if not self.result:
-            print " %s No vows found! » 0 honored • 0 broken (0.0s)" % self.broken
+            print ' %s No vows found! » 0 honored • 0 broken (0.0s)' % self.broken
             return
 
         for context in self.result.contexts:
             self.print_context(context['name'], context)
         print
-        print "%s%s OK » %d honored • %d broken (%.6fs)" % (
+        print '%s%s OK » %d honored • %d broken (%.6fs)' % (
                 self.tab * self.indent,
                 self.honored if self.result.successful else self.broken,
                 self.result.successful_tests,
@@ -60,10 +60,10 @@ class VowsDefaultReporter(object):
         )
 
     def print_context(self, name, context):
-        print "%s%s" % (self.tab * self.indent, self.camel_split(name).capitalize())
+        print '%s%s' % (self.tab * self.indent, self.camel_split(name).capitalize())
         self.indent += 1
 
-        print_test = lambda icon, test_name: "%s%s %s" % (self.tab * self.indent, icon, self.camel_split(self.under_split(test_name)).capitalize())
+        print_test = lambda icon, test_name: '%s%s %s' % (self.tab * self.indent, icon, self.camel_split(self.under_split(test_name)).capitalize())
 
         indentation2 = self.tab * (self.indent + 2)
         indentation3 = self.tab * (self.indent + 3)
@@ -92,7 +92,7 @@ class VowsDefaultReporter(object):
                     print indentation2 + error_msg
 
                 if 'file' in test:
-                    print indentation2 + Fore.RED + "(found in %s at line %s)" % (test['file'], test['lineno']) + Fore.RESET
+                    print indentation2 + Fore.RED + '(found in %s at line %s)' % (test['file'], test['lineno']) + Fore.RESET
                     print
 
         for context in context['contexts']:
@@ -111,7 +111,7 @@ class VowsDefaultReporter(object):
         max_length = max([len(klass_name) for klass_name in names])
 
         print ' ' + '=' * len('Code Coverage')
-        print Fore.GREEN + Style.BRIGHT + " Code Coverage" + Style.RESET_ALL + Fore.RESET
+        print Fore.GREEN + Style.BRIGHT + ' Code Coverage' + Style.RESET_ALL + Fore.RESET
         print ' ' + '=' * len('Code Coverage')
         print
 
@@ -141,7 +141,7 @@ class VowsDefaultReporter(object):
             if coverage == 0 and not uncovered_lines:
                 continue
 
-            print " %s %s%s\t%s%s%%%s %s" % (cover_character,
+            print ' %s %s%s\t%s%s%%%s %s' % (cover_character,
                                         write_blue(klass_name),
                                         ' ' * (max_length - len(klass_name)),
                                         '•' * progress,
@@ -152,7 +152,7 @@ class VowsDefaultReporter(object):
         print
         total_coverage = float(root.xpath('//coverage')[0].attrib['line-rate']) * 100
         progress = int(round(total_coverage / 100.0 * PROGRESS_SIZE, 0))
-        print " %s %s%s\t%s %s%%" % ((total_coverage >= cover_threshold) and self.honored or self.broken,
+        print ' %s %s%s\t%s %s%%' % ((total_coverage >= cover_threshold) and self.honored or self.broken,
                                     write_blue('OVERALL'),
                                     ' ' * (max_length - len('OVERALL')),
                                     '•' * progress,
@@ -166,11 +166,11 @@ class VowsDefaultReporter(object):
             for i in range(number_of):
                 template_str.append(uncovered_lines[i])
                 if not i == number_of - 1:
-                    template_str += " ,"
+                    template_str += ' ,'
 
-            template_str.append(" and %d more" % (len(uncovered_lines) - number_of))
+            template_str.append(' and %d more' % (len(uncovered_lines) - number_of))
 
-            return "".join(template_str)
+            return ''.join(template_str)
 
-        return ", ".join(uncovered_lines)
+        return ', '.join(uncovered_lines)
 
