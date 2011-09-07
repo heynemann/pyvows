@@ -81,7 +81,8 @@ class VowsDefaultReporter(object):
 
                 if isinstance(test['topic'], Exception) and \
                    'context_instance' in test and \
-                   hasattr(test['context_instance'], 'topic_error'):
+                   hasattr(test['context_instance'], 'topic_error') and \
+                   not isinstance(test['context_instance'].topic_error[1], AssertionError):
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
                     error_msg = unicode(exc_value)
                 else:
