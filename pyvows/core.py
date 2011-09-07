@@ -98,6 +98,24 @@ class VowsAsyncTopicValue(object):
         raise AttributeError
 
 
+class VowsAssertionError(AssertionError):
+    def __init__(self, *args):
+        msg = args[0]
+        if not msg.endswith('.'):
+            msg += '.'
+        self.msg = msg
+        self.args = tuple(map(repr, args[1:]))
+
+    def __str__(self):
+        return self.msg % self.args
+
+    def __unicode__(self):
+        return self.__str__()
+
+    def __repr__(self):
+        return "VowsAssertionError('%s',)" % self.__str__()
+
+
 class Vows(object):
     contexts = {}
 
@@ -173,16 +191,20 @@ class Vows(object):
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
 
         def exec_assertion(*args):
-            msg = 'Expected topic(%s) %s' % (args[0], humanized_method_name)
+            raw_msg = 'Expected topic(%s) ' + humanized_method_name
             if len(args) == 2:
-                msg += ' %s' % (args[1],)
-            assert method(*args), msg
+                raw_msg += ' %s'
+
+            if not method(*args):
+                raise VowsAssertionError(raw_msg, *args)
 
         def exec_not_assertion(*args):
-            msg = 'Expected topic(%s) not %s' % (args[0], humanized_method_name)
+            raw_msg = 'Expected topic(%s) not ' + humanized_method_name
             if len(args) == 2:
-                msg += ' %s' % (args[1],)
-            assert not method(*args), msg
+                raw_msg += ' %s'
+
+            if method(*args):
+                raise VowsAssertionError(raw_msg, *args)
 
         setattr(Vows.Assert, method.__name__, exec_assertion)
         setattr(Vows.Assert, 'not_%s' % method.__name__, exec_not_assertion)

@@ -8,13 +8,15 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-from pyvows import Vows
+from pyvows import Vows, VowsAssertionError
 
 @Vows.assertion
 def to_be_true(topic):
-    assert bool(topic), "Expected topic(%s) to be truthy" % (topic, )
+    if not bool(topic):
+        raise VowsAssertionError("Expected topic(%s) to be truthy", topic)
 
 @Vows.assertion
 def to_be_false(topic):
-    assert not bool(topic), "Expected topic(%s) to be falsy" % (topic, )
+    if bool(topic):
+        raise VowsAssertionError("Expected topic(%s) to be falsy", topic)
 

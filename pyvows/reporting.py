@@ -15,6 +15,8 @@ import traceback
 from lxml import etree
 from colorama import init, Fore, Style
 
+from pyvows.core import VowsAssertionError
+
 PROGRESS_SIZE = 50
 
 class VowsDefaultReporter(object):
@@ -50,13 +52,14 @@ class VowsDefaultReporter(object):
 
         for context in self.result.contexts:
             self.print_context(context['name'], context)
+
         print
         print '%s%s OK » %d honored • %d broken (%.6fs)' % (
-                self.tab * self.indent,
-                self.honored if self.result.successful else self.broken,
-                self.result.successful_tests,
-                self.result.errored_tests,
-                self.result.ellapsed_time
+            self.tab * self.indent,
+            self.honored if self.result.successful else self.broken,
+            self.result.successful_tests,
+            self.result.errored_tests,
+            self.result.ellapsed_time
         )
 
     def humanized_print(self, msg):
@@ -80,15 +83,22 @@ class VowsDefaultReporter(object):
                    'context_instance' in test and \
                    hasattr(test['context_instance'], 'topic_error'):
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
+                    error_msg = unicode(exc_value)
                 else:
                     error = test['error']
                     exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
+                    if isinstance(exc_value, VowsAssertionError):
+                        exc_values_args = tuple(map(lambda arg: Fore.RESET + arg + Fore.RED, exc_value.args))
+                        error_msg = exc_value.msg % exc_values_args
+                    else:
+                        error_msg = unicode(exc_value)
 
-                error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
-                error_msg = indentation2.join(error_msg)
-                print indentation2 + Fore.RED + unicode(exc_value) + Fore.RESET
+                traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                traceback_msg = indentation2.join(traceback_msg)
+
+                print indentation2 + Fore.RED + error_msg + Fore.RESET
                 print
-                print indentation2 + error_msg
+                print indentation2 + traceback_msg
 
                 if 'file' in test:
                     print indentation2 + Fore.RED + '(found in %s at line %s)' % (test['file'], test['lineno']) + Fore.RESET

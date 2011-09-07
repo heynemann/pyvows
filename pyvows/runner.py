@@ -131,12 +131,14 @@ class VowsParallelRunner(object):
                 'file': filename,
                 'lineno': lineno
             }
+
             try:
                 result = member(context_instance, topic)
                 result_obj['result'] = result
                 result_obj['succeeded'] = True
                 if self.vow_successful_event:
                     self.vow_successful_event(result_obj)
+
             except Exception:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
 
