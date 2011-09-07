@@ -66,30 +66,26 @@ class VowsDefaultReporter(object):
         print_test = lambda icon, test_name: '%s%s %s' % (self.tab * self.indent, icon, self.camel_split(self.under_split(test_name)).capitalize())
 
         indentation2 = self.tab * (self.indent + 2)
-        indentation3 = self.tab * (self.indent + 3)
 
         for test in context['tests']:
             if test['succeeded']:
                 print print_test(VowsDefaultReporter.honored, test['name'])
             else:
                 print print_test(VowsDefaultReporter.broken, test['name'])
+
                 if isinstance(test['topic'], Exception) and \
                    'context_instance' in test and \
                    hasattr(test['context_instance'], 'topic_error'):
-                    print
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
-                    print indentation3 + Fore.RED + str(exc_value) + Fore.RESET
-                    error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
-                    error_msg = indentation3.join(error_msg)
-                    print indentation3 + error_msg
                 else:
                     error = test['error']
                     exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
-                    error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
-                    error_msg = indentation2.join(error_msg)
-                    print indentation2 + Fore.RED + exc_value.message.encode('utf-8') + Fore.RESET
-                    print
-                    print indentation2 + error_msg
+
+                error_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                error_msg = indentation2.join(error_msg)
+                print indentation2 + Fore.RED + unicode(exc_value) + Fore.RESET
+                print
+                print indentation2 + error_msg
 
                 if 'file' in test:
                     print indentation2 + Fore.RED + '(found in %s at line %s)' % (test['file'], test['lineno']) + Fore.RESET
