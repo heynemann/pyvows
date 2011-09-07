@@ -76,9 +76,9 @@ class VowsParallelRunner(object):
                 topic = context_instance.topic_value = context_instance.topic_value
 
                 def iterate_members(topic, index=-1, enumerated=False):
-                    special_names = ['setup', 'teardown', 'topic']
+                    special_names = set(('setup', 'teardown', 'topic'))
                     if hasattr(context_instance, 'ignored_members'):
-                        special_names += list(context_instance.ignored_members)
+                        special_names.update(context_instance.ignored_members)
 
                     for member_name, member in inspect.getmembers(context):
                         if inspect.ismethod(member) and member_name in special_names:
