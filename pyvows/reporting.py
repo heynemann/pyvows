@@ -59,19 +59,22 @@ class VowsDefaultReporter(object):
                 self.result.ellapsed_time
         )
 
-    def print_context(self, name, context):
-        print '%s%s' % (self.tab * self.indent, self.camel_split(name).capitalize())
-        self.indent += 1
+    def humanized_print(self, msg):
+        msg = self.under_split(msg)
+        msg = self.camel_split(msg)
+        print (self.tab * self.indent) + msg.capitalize()
 
-        print_test = lambda icon, test_name: '%s%s %s' % (self.tab * self.indent, icon, self.camel_split(self.under_split(test_name)).capitalize())
+    def print_context(self, name, context):
+        self.humanized_print(name)
+        self.indent += 1
 
         indentation2 = self.tab * (self.indent + 2)
 
         for test in context['tests']:
             if test['succeeded']:
-                print print_test(VowsDefaultReporter.honored, test['name'])
+                self.humanized_print(VowsDefaultReporter.honored + ' ' + test['name'])
             else:
-                print print_test(VowsDefaultReporter.broken, test['name'])
+                self.humanized_print(VowsDefaultReporter.broken + ' ' + test['name'])
 
                 if isinstance(test['topic'], Exception) and \
                    'context_instance' in test and \
