@@ -12,6 +12,7 @@ import sys
 import os
 from os.path import isfile, split
 import tempfile
+import inspect
 
 import argparse
 from colorama import init, Fore
@@ -23,20 +24,20 @@ try:
 except ImportError:
     COVERAGE_AVAILABLE = False
 
-from pyvows.reporting import VowsDefaultReporter
 from pyvows.xunit import XUnitReporter
-from pyvows.core import Vows
+
 
 class Messages(object):
     pattern = 'Pattern of vows files. Defaults to *_vows.py.'
     cover = 'Indicates that coverage of code should be shown. Defaults to True.'
     path = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. Defaults to current dir.'
-    xunit_output = 'Enable XUnit output'
-    xunit_file = 'Filename of the XUnit output (default: pyvows.xml)'
+    xunit_output = 'Enable XUnit output.'
+    xunit_file = 'Filename of the XUnit output (default: pyvows.xml).'
     cover_package = 'Package to verify coverage. May be specified many times. Defaults to all packages.'
     cover_omit = 'Path of file to exclude from coverage. May be specified many times. Defaults to no files.'
     cover_threshold = 'Coverage number below which coverage is considered failing. Defaults to 80.0.'
-    cover_report = 'Store the coverage report as the specified file'
+    cover_report = 'Store the coverage report as the specified file.'
+    no_colors = 'Does not colorize the output.'
 
 def __get_arguments():
     current_dir = os.curdir
@@ -51,6 +52,7 @@ def __get_arguments():
     parser.add_argument('-r', '--cover_report', action="store", default=None, help=Messages.cover_report)
     parser.add_argument('-x', '--xunit_output', action="store_true", default=False, help=Messages.xunit_output)
     parser.add_argument('-f', '--xunit_file', action="store", default="pyvows.xml", help=Messages.xunit_file)
+    parser.add_argument('-n', '--no_colors', action="store_true", default=False, help=Messages.no_colors)
 
     parser.add_argument('path', default=current_dir, nargs='?', help=Messages.path)
 
@@ -59,6 +61,9 @@ def __get_arguments():
     return arguments
 
 def run(path, pattern):
+    from pyvows.core import Vows
+    from pyvows.reporting import VowsDefaultReporter
+
     Vows.gather(path, pattern)
 
     result = Vows.ensure(VowsDefaultReporter.handle_success, VowsDefaultReporter.handle_error)
@@ -79,6 +84,12 @@ def main():
         path, pattern = split(path)
     if not path:
         path = os.curdir
+
+    if arguments.no_colors:
+        for color_name, value in inspect.getmembers(Fore):
+            if not color_name.startswith('_'):
+                setattr(Fore, color_name, '')
+
 
     if arguments.cover and COVERAGE_AVAILABLE:
         cov = coverage(source=arguments.cover_package, omit=arguments.cover_omit)
@@ -104,6 +115,7 @@ def main():
                 report.write(xml)
 
         reporter.print_coverage(xml, arguments.cover_threshold)
+
 
     if arguments.cover and not COVERAGE_AVAILABLE:
         init(autoreset=True)
