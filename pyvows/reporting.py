@@ -75,6 +75,21 @@ class VowsDefaultReporter(object):
 
         return map(indent, traceback_list)
 
+    def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
+        if isinstance(exc_value, VowsAssertionError):
+            exc_values_args = tuple(map(lambda arg: Fore.RESET + arg + Fore.RED, exc_value.args))
+            error_msg = exc_value.msg % exc_values_args
+        else:
+            error_msg = unicode(exc_value)
+
+        traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
+        traceback_msg = self.format_traceback(traceback_msg, indentation)
+        traceback_msg = indentation.join(traceback_msg)
+
+        print indentation + Fore.RED + error_msg + Fore.RESET
+        print
+        print indentation + traceback_msg
+
     def print_context(self, name, context):
         self.humanized_print(name)
         self.indent += 1
@@ -89,26 +104,14 @@ class VowsDefaultReporter(object):
 
                 if isinstance(test['topic'], Exception) and \
                    'context_instance' in test and \
-                   hasattr(test['context_instance'], 'topic_error') and \
-                   not isinstance(test['context_instance'].topic_error[1], AssertionError):
+                   hasattr(test['context_instance'], 'topic_error'):
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
-                else:
-                    error = test['error']
-                    exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
+                    self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
 
-                if isinstance(exc_value, VowsAssertionError):
-                    exc_values_args = tuple(map(lambda arg: Fore.RESET + arg + Fore.RED, exc_value.args))
-                    error_msg = exc_value.msg % exc_values_args
-                else:
-                    error_msg = unicode(exc_value)
+                error = test['error']
+                exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
 
-                traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
-                traceback_msg = self.format_traceback(traceback_msg, indentation2)
-                traceback_msg = indentation2.join(traceback_msg)
-
-                print indentation2 + Fore.RED + error_msg + Fore.RESET
-                print
-                print indentation2 + traceback_msg
+                self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
 
                 if 'file' in test:
                     print indentation2 + Fore.RED + '(found in %s at line %s)' % (test['file'], test['lineno']) + Fore.RESET
