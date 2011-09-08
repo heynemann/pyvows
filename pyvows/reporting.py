@@ -67,6 +67,14 @@ class VowsDefaultReporter(object):
         msg = self.camel_split(msg)
         print (self.tab * self.indent) + msg.capitalize()
 
+    def format_traceback(self, traceback_list, indentation):
+        def indent(msg):
+            if msg.startswith('  File'):
+                return msg.replace('\n ', '\n %s' % indentation)
+            return msg
+
+        return map(indent, traceback_list)
+
     def print_context(self, name, context):
         self.humanized_print(name)
         self.indent += 1
@@ -84,17 +92,18 @@ class VowsDefaultReporter(object):
                    hasattr(test['context_instance'], 'topic_error') and \
                    not isinstance(test['context_instance'].topic_error[1], AssertionError):
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
-                    error_msg = unicode(exc_value)
                 else:
                     error = test['error']
                     exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
-                    if isinstance(exc_value, VowsAssertionError):
-                        exc_values_args = tuple(map(lambda arg: Fore.RESET + arg + Fore.RED, exc_value.args))
-                        error_msg = exc_value.msg % exc_values_args
-                    else:
-                        error_msg = unicode(exc_value)
+
+                if isinstance(exc_value, VowsAssertionError):
+                    exc_values_args = tuple(map(lambda arg: Fore.RESET + arg + Fore.RED, exc_value.args))
+                    error_msg = exc_value.msg % exc_values_args
+                else:
+                    error_msg = unicode(exc_value)
 
                 traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                traceback_msg = self.format_traceback(traceback_msg, indentation2)
                 traceback_msg = indentation2.join(traceback_msg)
 
                 print indentation2 + Fore.RED + error_msg + Fore.RESET
