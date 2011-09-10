@@ -98,31 +98,32 @@ def main():
 
     result, reporter = run(path, pattern)
 
-    if arguments.cover and COVERAGE_AVAILABLE:
-        cov.stop()
+    if arguments.cover:
+        if COVERAGE_AVAILABLE:
+            cov.stop()
 
-        print
-        print
+            print
+            print
 
-        xml = ''
-        with tempfile.NamedTemporaryFile() as tmp:
-            cov.xml_report(outfile=tmp.name)
-            tmp.seek(0)
-            xml = tmp.read()
+            xml = ''
+            with tempfile.NamedTemporaryFile() as tmp:
+                cov.xml_report(outfile=tmp.name)
+                tmp.seek(0)
+                xml = tmp.read()
 
-        if arguments.cover_report:
-            with open(arguments.cover_report, 'w') as report:
-                report.write(xml)
+            if arguments.cover_report:
+                with open(arguments.cover_report, 'w') as report:
+                    report.write(xml)
 
-        reporter.print_coverage(xml, arguments.cover_threshold)
+            reporter.print_coverage(xml, arguments.cover_threshold)
 
+        else:
 
-    if arguments.cover and not COVERAGE_AVAILABLE:
-        init(autoreset=True)
-        print
-        print Fore.YELLOW + "WARNING: Cover disabled because coverage or lxml could not be found."
-        print Fore.YELLOW + "Make sure both are installed and accessible"
-        print
+            init(autoreset=True)
+            print
+            print Fore.YELLOW + "WARNING: Cover disabled because coverage or lxml could not be found."
+            print Fore.YELLOW + "Make sure both are installed and accessible"
+            print
 
     if arguments.xunit_output:
         xunit = XUnitReporter(result, arguments.xunit_file)
