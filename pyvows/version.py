@@ -9,3 +9,6 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 __version__ = (0, 6, 6)
+
+def to_str():
+    return '.'.join([str(item) for item in __version__])

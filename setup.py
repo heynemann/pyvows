@@ -9,11 +9,11 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 from setuptools import setup
-from pyvows.version import __version__
+from pyvows import version
 
 setup(
     name = 'pyVows',
-    version = '.'.join([str(item) for item in __version__]),
+    version = version.to_str(),
     description = "pyVows is a test engine based in VowsJS(http://vowsjs.org/).",
     long_description = """
 pyVows is a test engine based in Vows JS and features topic-based testing as well as parallel running of tests.

@@ -25,6 +25,7 @@ except ImportError:
     COVERAGE_AVAILABLE = False
 
 from pyvows.xunit import XUnitReporter
+from pyvows import version
 
 
 class Messages(object):
@@ -53,6 +54,7 @@ def __get_arguments():
     parser.add_argument('-x', '--xunit_output', action="store_true", default=False, help=Messages.xunit_output)
     parser.add_argument('-f', '--xunit_file', action="store", default="pyvows.xml", help=Messages.xunit_file)
     parser.add_argument('-n', '--no_colors', action="store_true", default=False, help=Messages.no_colors)
+    parser.add_argument('--version', action='version', version='pyVows %s' % version.to_str())
 
     parser.add_argument('path', default=current_dir, nargs='?', help=Messages.path)
 
