@@ -38,7 +38,7 @@ class Messages(object):
     cover_omit = 'Path of file to exclude from coverage. May be specified many times. Defaults to no files.'
     cover_threshold = 'Coverage number below which coverage is considered failing. Defaults to 80.0.'
     cover_report = 'Store the coverage report as the specified file.'
-    no_colors = 'Does not colorize the output.'
+    no_color = 'Does not colorize the output.'
 
 def __get_arguments():
     current_dir = os.curdir
@@ -53,7 +53,7 @@ def __get_arguments():
     parser.add_argument('-r', '--cover_report', action="store", default=None, help=Messages.cover_report)
     parser.add_argument('-x', '--xunit_output', action="store_true", default=False, help=Messages.xunit_output)
     parser.add_argument('-f', '--xunit_file', action="store", default="pyvows.xml", help=Messages.xunit_file)
-    parser.add_argument('-n', '--no_colors', action="store_true", default=False, help=Messages.no_colors)
+    parser.add_argument('--no_color', action="store_true", default=False, help=Messages.no_color)
     parser.add_argument('--version', action='version', version='pyVows %s' % version.to_str())
 
     parser.add_argument('path', default=current_dir, nargs='?', help=Messages.path)
@@ -87,7 +87,7 @@ def main():
     if not path:
         path = os.curdir
 
-    if arguments.no_colors:
+    if arguments.no_color:
         for color_name, value in inspect.getmembers(Fore):
             if not color_name.startswith('_'):
                 setattr(Fore, color_name, '')
