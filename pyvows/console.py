@@ -29,16 +29,16 @@ from pyvows import version
 
 
 class Messages(object):
-    pattern = 'Pattern of vows files. Defaults to *_vows.py.'
-    cover = 'Indicates that coverage of code should be shown. Defaults to True.'
-    path = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. Defaults to current dir.'
-    xunit_output = 'Enable XUnit output.'
-    xunit_file = 'Filename of the XUnit output (default: pyvows.xml).'
-    cover_package = 'Package to verify coverage. May be specified many times. Defaults to all packages.'
-    cover_omit = 'Path of file to exclude from coverage. May be specified many times. Defaults to no files.'
-    cover_threshold = 'Coverage number below which coverage is considered failing. Defaults to 80.0.'
-    cover_report = 'Store the coverage report as the specified file.'
-    no_color = 'Does not colorize the output.'
+    pattern = 'Pattern of vows files. (default: %(default)s).'
+    cover = 'Indicates that coverage of code should be shown. (default: %(default)s).'
+    path = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)s).'
+    xunit_output = 'Enable XUnit output. (default: %(default)s).'
+    xunit_file = 'Filename of the XUnit output (default: %(default)s).'
+    cover_package = 'Package to verify coverage. May be specified many times. (default: all packages).'
+    cover_omit = 'Path of file to exclude from coverage. May be specified many times. (default: no files).'
+    cover_threshold = 'Coverage number below which coverage is considered failing. (default: %(default)s).'
+    cover_report = 'Store the coverage report as the specified file. (default: %(default)s).'
+    no_color = 'Does not colorize the output. (default: %(default)s).'
 
 def __get_arguments():
     current_dir = os.curdir
