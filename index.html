@@ -791,7 +791,7 @@ expect(ary).to_length(5);
 
         <p>This reports the following error:</p>
 
-        <pre><code>Expected topic([1, 2, 3]) to have 5 of length, but it had 3</code></pre>
+        <pre><code>Expected topic([1, 2, 3]) to have 5 of length, but it had 3.</code></pre>
 
         <p>Other useful assertion functions bundled with pyVows include <code>to_match</code>, <code>to_be_instance_of</code>,
         <code>to_include</code> and <code>to_be_empty</code>&mdash;head over to the <a href="/#reference">reference</a> to get the full list.</p>
@@ -814,7 +814,7 @@ expect(2).to_be_greater_than(3);
 
         <p>Will report:</p>
 
-        <pre><code>Expected topic(2) to be greater than 3, but it wasn't</code></pre>
+        <pre><code>Expected topic(2) to be greater than 3.</code></pre>
 
         <p>It will also create the corresponding 'not_' assertion:</p>
 
@@ -824,7 +824,7 @@ expect(4).not_to_be_greater_than(3);
 
         <p>Will report:</p>
 
-        <pre><code>Expected topic(4) not to be greater than 3, but it was</code></pre>
+        <pre><code>Expected topic(4) not to be greater than 3.</code></pre>
 
         <p>If you need more control over your error message or your assertion doesn't have a corresponding 'not_', you can use the lower level <code>Vows.assertion</code> decorator:</p>
 
