@@ -41,10 +41,10 @@ class VowsResult(object):
 
         return test_count
 
-    def __eval_context(self, context):
+    def eval_context(self, context):
         succeeded = True
         for context in context['contexts']:
-            succeeded = succeeded and self.__eval_context(context)
+            succeeded = succeeded and self.eval_context(context)
 
         for test in context['tests']:
             succeeded = succeeded and test['succeeded']

@@ -19,12 +19,18 @@ from pyvows.core import VowsAssertionError
 
 PROGRESS_SIZE = 50
 
+# verbosity levels
+V_VERBOSE = 3
+V_NORMAL = 2
+V_SILENT = 1
+
 class VowsDefaultReporter(object):
     honored = Fore.GREEN + Style.BRIGHT + '✓' + Fore.RESET + Style.RESET_ALL
     broken = Fore.RED + Style.BRIGHT + '✗' + Fore.RESET + Style.RESET_ALL
 
-    def __init__(self, result):
+    def __init__(self, result, verbosity):
         init(autoreset=True)
+        self.verbosity = verbosity
         self.result = result
         self.tab = ' ' * 2
         self.indent = 1
@@ -44,11 +50,16 @@ class VowsDefaultReporter(object):
         sys.stdout.write(cls.broken)
 
     def pretty_print(self):
-        print
-        print
-        if not self.result:
-            print ' %s No vows found! » 0 honored • 0 broken (0.0s)' % self.broken
+        if not self.result.contexts:
+            print '%s%s No vows found! » 0 honored • 0 broken (0.0s)' % (
+                self.tab * self.indent,
+                self.broken,
+            )
             return
+
+        if self.verbosity >= V_VERBOSE or self.result.errored_tests:
+            print
+            print
 
         for context in self.result.contexts:
             self.print_context(context['name'], context)
@@ -62,10 +73,10 @@ class VowsDefaultReporter(object):
             self.result.ellapsed_time
         )
 
-    def humanized_print(self, msg):
+    def humanized_print(self, msg, indentation=None):
         msg = self.under_split(msg)
         msg = self.camel_split(msg)
-        print (self.tab * self.indent) + msg.capitalize()
+        print (indentation or (self.tab * self.indent)) + msg.capitalize()
 
     def format_traceback(self, traceback_list, indentation):
         def indent(msg):
@@ -73,7 +84,7 @@ class VowsDefaultReporter(object):
                 return msg.replace('\n ', '\n %s' % indentation)
             return msg
 
-        return map(indent, traceback_list)
+        return indentation.join(map(indent, traceback_list))
 
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
         if isinstance(exc_value, VowsAssertionError):
@@ -82,28 +93,30 @@ class VowsDefaultReporter(object):
         else:
             error_msg = unicode(exc_value)
 
-        traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
-        traceback_msg = self.format_traceback(traceback_msg, indentation)
-        traceback_msg = indentation.join(traceback_msg)
-
         print indentation + Fore.RED + error_msg + Fore.RESET
-        print
-        print indentation + traceback_msg
+
+        if self.verbosity >= V_NORMAL:
+            traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            traceback_msg = self.format_traceback(traceback_msg, indentation)
+            print
+            print indentation + traceback_msg
 
     def print_context(self, name, context):
-        self.humanized_print(name)
-        self.indent += 1
 
+        self.indent += 1
         indentation2 = self.tab * (self.indent + 2)
+
+        if self.verbosity >= V_VERBOSE or not self.result.eval_context(context):
+            self.humanized_print(name)
 
         for test in context['tests']:
             if test['succeeded']:
-                self.humanized_print(VowsDefaultReporter.honored + ' ' + test['name'])
+                if self.verbosity >= V_VERBOSE:
+                    self.humanized_print(VowsDefaultReporter.honored + ' ' + test['name'])
             else:
                 self.humanized_print(VowsDefaultReporter.broken + ' ' + test['name'])
 
                 if isinstance(test['topic'], Exception) and \
-                   'context_instance' in test and \
                    hasattr(test['context_instance'], 'topic_error'):
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
                     self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
@@ -114,7 +127,7 @@ class VowsDefaultReporter(object):
                 self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
 
                 if 'file' in test:
-                    print indentation2 + Fore.RED + '(found in %s at line %s)' % (test['file'], test['lineno']) + Fore.RESET
+                    print indentation2 + Fore.RED + 'found in %s at line %s' % (test['file'], test['lineno']) + Fore.RESET
                     print
 
         for context in context['contexts']:

@@ -38,6 +38,7 @@ class Messages(object):
     xunit_output = 'Enable XUnit output. (default: %(default)s).'
     xunit_file = 'Filename of the XUnit output (default: %(default)s).'
     no_color = 'Does not colorize the output. (default: %(default)s).'
+    verbosity = 'Verbosity. Can be supplied multiple times to increase verbosity (default: -vv)'
     path = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)r).'
 
 def __get_arguments():
@@ -60,6 +61,7 @@ def __get_arguments():
 
     parser.add_argument('--no_color', action="store_true", default=False, help=Messages.no_color)
     parser.add_argument('--version', action='version', version='%(prog)s ' + version.to_str())
+    parser.add_argument('-v', action='append_const', dest='verbosity', const=1, help=Messages.verbosity)
 
     parser.add_argument('path', default=current_dir, nargs='?', help=Messages.path)
 
@@ -67,7 +69,7 @@ def __get_arguments():
 
     return arguments
 
-def run(path, pattern):
+def run(path, pattern, verbosity):
     from pyvows.core import Vows
     from pyvows.reporting import VowsDefaultReporter
 
@@ -75,8 +77,7 @@ def run(path, pattern):
 
     result = Vows.ensure(VowsDefaultReporter.handle_success, VowsDefaultReporter.handle_error)
 
-    reporter = VowsDefaultReporter(result)
-
+    reporter = VowsDefaultReporter(result, verbosity)
     reporter.pretty_print()
 
     return result, reporter
@@ -97,13 +98,13 @@ def main():
             if not color_name.startswith('_'):
                 setattr(Fore, color_name, '')
 
-
     if arguments.cover and COVERAGE_AVAILABLE:
         cov = coverage(source=arguments.cover_package, omit=arguments.cover_omit)
         cov.erase()
         cov.start()
 
-    result, reporter = run(path, pattern)
+    verbosity = len(arguments.verbosity) if arguments.verbosity else 2
+    result, reporter = run(path, pattern, verbosity)
 
     if arguments.cover:
         if COVERAGE_AVAILABLE:
