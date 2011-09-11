@@ -826,7 +826,11 @@ expect(4).not_to_be_greater_than(3);
 
         <pre><code>Expected topic(4) not to be greater than 3.</code></pre>
 
-        <p>If you need more control over your error message or your assertion doesn't have a corresponding 'not_', you can use the lower level <code>Vows.assertion</code> decorator:</p>
+        <p>If you need more control over your error message or your assertion doesn't have a corresponding 'not_', you can use the lower level <code>Vows.assertion</code> decorator and raise a `VowsAssertionError`. There are lots of examples <a href="https://github.com/heynemann/pyvows/tree/master/pyvows/assertions">here</a>.</p>
+
+        <p>By raising a `VowsAssertionError` you get the benefit of highlighting the important values when your specs are giving error.</p>
+
+        <p>If you still just wanna raise a `AssertionError`, like the old times, they are supported:</p>
 
         <pre class="brush:python">
 # attention, this is not a recommendation, just an example of what could be done
