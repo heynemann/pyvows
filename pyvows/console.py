@@ -54,7 +54,7 @@ def __get_arguments():
     parser.add_argument('-x', '--xunit_output', action="store_true", default=False, help=Messages.xunit_output)
     parser.add_argument('-f', '--xunit_file', action="store", default="pyvows.xml", help=Messages.xunit_file)
     parser.add_argument('--no_color', action="store_true", default=False, help=Messages.no_color)
-    parser.add_argument('--version', action='version', version='pyVows %s' % version.to_str())
+    parser.add_argument('--version', action='version', version='%(prog)s ' + version.to_str())
 
     parser.add_argument('path', default=current_dir, nargs='?', help=Messages.path)
 
