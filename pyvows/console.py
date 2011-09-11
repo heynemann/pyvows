@@ -31,14 +31,14 @@ from pyvows import version
 class Messages(object):
     pattern = 'Pattern of vows files. (default: %(default)s).'
     cover = 'Indicates that coverage of code should be shown. (default: %(default)s).'
-    path = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)s).'
-    xunit_output = 'Enable XUnit output. (default: %(default)s).'
-    xunit_file = 'Filename of the XUnit output (default: %(default)s).'
     cover_package = 'Package to verify coverage. May be specified many times. (default: all packages).'
     cover_omit = 'Path of file to exclude from coverage. May be specified many times. (default: no files).'
     cover_threshold = 'Coverage number below which coverage is considered failing. (default: %(default)s).'
     cover_report = 'Store the coverage report as the specified file. (default: %(default)s).'
+    xunit_output = 'Enable XUnit output. (default: %(default)s).'
+    xunit_file = 'Filename of the XUnit output (default: %(default)s).'
     no_color = 'Does not colorize the output. (default: %(default)s).'
+    path = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)s).'
 
 def __get_arguments():
     current_dir = os.curdir
@@ -46,13 +46,18 @@ def __get_arguments():
     parser = argparse.ArgumentParser(description='Runs pyVows.')
 
     parser.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern)
-    parser.add_argument('-c', '--cover', action="store_true", default=False, help=Messages.cover)
-    parser.add_argument('-l', '--cover_package', action="append", default=[], help=Messages.cover_package)
-    parser.add_argument('-o', '--cover_omit', action="append", default=[], help=Messages.cover_omit)
-    parser.add_argument('-t', '--cover_threshold', default=80.0, type=float, help=Messages.cover_threshold)
-    parser.add_argument('-r', '--cover_report', action="store", default=None, help=Messages.cover_report)
-    parser.add_argument('-x', '--xunit_output', action="store_true", default=False, help=Messages.xunit_output)
-    parser.add_argument('-f', '--xunit_file', action="store", default="pyvows.xml", help=Messages.xunit_file)
+
+    cover_group = parser.add_argument_group('coverage arguments')
+    cover_group.add_argument('-c', '--cover', action="store_true", default=False, help=Messages.cover)
+    cover_group.add_argument('-l', '--cover_package', action="append", default=[], help=Messages.cover_package)
+    cover_group.add_argument('-o', '--cover_omit', action="append", default=[], help=Messages.cover_omit)
+    cover_group.add_argument('-t', '--cover_threshold', default=80.0, type=float, help=Messages.cover_threshold)
+    cover_group.add_argument('-r', '--cover_report', action="store", default=None, help=Messages.cover_report)
+
+    xunit_group = parser.add_argument_group('xunit arguments')
+    xunit_group.add_argument('-x', '--xunit_output', action="store_true", default=False, help=Messages.xunit_output)
+    xunit_group.add_argument('-f', '--xunit_file', action="store", default="pyvows.xml", help=Messages.xunit_file)
+
     parser.add_argument('--no_color', action="store_true", default=False, help=Messages.no_color)
     parser.add_argument('--version', action='version', version='%(prog)s ' + version.to_str())
 
