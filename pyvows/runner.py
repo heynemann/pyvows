@@ -41,120 +41,117 @@ class VowsParallelRunner(object):
         return result
 
     def run_context(self, context_col, name, context, parent=None):
-        def async_run_context(self, context_col, name, context, parent, index=-1):
-            context_obj = {
-                'name': name,
-                'contexts': [],
-                'tests': []
-            }
-            context_col.append(context_obj)
+        self.pool.spawn_n(self.async_run_context, context_col, name, context, parent)
 
-            context_instance = context(parent)
-            context_instance.index = index
-            context_instance.setup()
+    def async_run_context(self, context_col, name, context, parent, index=-1):
+        context_obj = {
+            'name': name,
+            'contexts': [],
+            'tests': []
+        }
+        context_col.append(context_obj)
 
-            topic = None
-            if hasattr(context_instance, 'topic'):
-                try:
-                    topic_func = getattr(context_instance, 'topic')
-                    topic_list = self.get_topics_for(topic_func, context_instance)
-                    topic = topic_func(*topic_list)
-                except Exception:
-                    exc_type, exc_value, exc_traceback = sys.exc_info()
-                    topic = exc_value
-                    context_instance.topic_error = (exc_type, exc_value, exc_traceback)
-            else:
-                topic = context_instance._get_first_available_topic(index)
+        context_instance = context(parent)
+        context_instance.index = index
+        context_instance.setup()
 
-            def run_with_topic(topic):
-                context_instance.topic_value = topic
-                is_generator = False
-                if inspect.isgenerator(topic):
-                    is_generator = True
-                    context_instance.topic_value = list(topic)
-                    context_instance.generated_topic = True
-                topic = context_instance.topic_value = context_instance.topic_value
-
-                def iterate_members(topic, index=-1, enumerated=False):
-                    special_names = set(('setup', 'teardown', 'topic'))
-                    if hasattr(context_instance, 'ignored_members'):
-                        special_names.update(context_instance.ignored_members)
-
-                    for member_name, member in inspect.getmembers(context):
-                        if inspect.ismethod(member) and member_name in special_names:
-                            continue
-
-                        if member_name.startswith('_'):
-                            continue
-
-                        if inspect.ismethod(member):
-                            self.run_vow(context_obj['tests'], topic, context_instance, member, member_name, enumerated=enumerated)
-
-                    for member_name, member in inspect.getmembers(context):
-                        if inspect.ismethod(member) and member_name in special_names:
-                            continue
-
-                        if inspect.isclass(member) and issubclass(member, self.context_class):
-                            self.pool.spawn_n(async_run_context,
-                                    self, context_obj['contexts'], member_name, member, context_instance, index)
-                            continue
-
-                if is_generator:
-                    for index, topic_value in enumerate(topic):
-                        iterate_members(topic_value, index, enumerated=True)
-                else:
-                    iterate_members(topic)
-
-
-            if isinstance(topic, self.async_topic_class):
-                def handle_callback(*args, **kw):
-                    run_with_topic(self.async_topic_value_class(args, kw))
-
-                topic(handle_callback)
-            else:
-                run_with_topic(topic)
-
-            context_instance.teardown()
-
-        self.pool.spawn_n(async_run_context, self, context_col, name, context, parent)
-
-    def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
-        def async_run_vow(self, tests_col, topic, context_instance, member, member_name):
-            filename, lineno = self.file_info_for(member)
-            result_obj = {
-                'context_instance': context_instance,
-                'name': member_name if not enumerated else '%s - %s' % (str(topic), member_name),
-                'result': None,
-                'topic': topic,
-                'error': None,
-                'succeeded': False,
-                'file': filename,
-                'lineno': lineno
-            }
-
+        topic = None
+        if hasattr(context_instance, 'topic'):
             try:
-                result = member(context_instance, topic)
-                result_obj['result'] = result
-                result_obj['succeeded'] = True
-                if self.vow_successful_event:
-                    self.vow_successful_event(result_obj)
-
+                topic_func = getattr(context_instance, 'topic')
+                topic_list = self.get_topics_for(topic_func, context_instance)
+                topic = topic_func(*topic_list)
             except Exception:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
+                topic = exc_value
+                context_instance.topic_error = (exc_type, exc_value, exc_traceback)
+        else:
+            topic = context_instance._get_first_available_topic(index)
 
-                result_obj['error'] = {
-                    'type': exc_type,
-                    'value': exc_value,
-                    'traceback': exc_traceback
-                }
-                if self.vow_error_event:
-                    self.vow_error_event(result_obj)
+        def run_with_topic(topic):
+            context_instance.topic_value = topic
 
-            tests_col.append(result_obj)
+            is_generator = False
+            if inspect.isgenerator(topic):
+                is_generator = True
+                context_instance.topic_value = list(topic)
+                context_instance.generated_topic = True
 
-            return result_obj
+            topic = context_instance.topic_value
 
-        self.pool.spawn_n(async_run_vow, self, tests_col, topic, context_instance, member, member_name)
+            special_names = set(('setup', 'teardown', 'topic'))
+            if hasattr(context_instance, 'ignored_members'):
+                special_names.update(context_instance.ignored_members)
+
+            context_members = filter(
+                lambda member: not (inspect.ismethod(member[1]) and member[0] in special_names or member[0].startswith('_')),
+                inspect.getmembers(context)
+            )
+
+            def iterate_members(topic, index=-1, enumerated=False):
+                for member_name, member in context_members:
+                    if inspect.ismethod(member):
+                        self.run_vow(context_obj['tests'], topic, context_instance, member, member_name, enumerated=enumerated)
+
+                for member_name, member in context_members:
+                    if inspect.isclass(member) and issubclass(member, self.context_class):
+                        self.pool.spawn_n(self.async_run_context,
+                            context_obj['contexts'], member_name, member, context_instance, index
+                        )
+
+            if is_generator:
+                for index, topic_value in enumerate(topic):
+                    iterate_members(topic_value, index, enumerated=True)
+            else:
+                iterate_members(topic)
+
+        if isinstance(topic, self.async_topic_class):
+            def handle_callback(*args, **kw):
+                run_with_topic(self.async_topic_value_class(args, kw))
+
+            topic(handle_callback)
+        else:
+            run_with_topic(topic)
+
+        context_instance.teardown()
+
+    def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
+        self.pool.spawn_n(self.async_run_vow, tests_col, topic, context_instance, member, member_name, enumerated)
+
+    def async_run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated):
+        filename, lineno = self.file_info_for(member)
+        result_obj = {
+            'context_instance': context_instance,
+            'name': member_name if not enumerated else '%s - %s' % (str(topic), member_name),
+            'result': None,
+            'topic': topic,
+            'error': None,
+            'succeeded': False,
+            'file': filename,
+            'lineno': lineno
+        }
+
+        try:
+            result = member(context_instance, topic)
+            result_obj['result'] = result
+            result_obj['succeeded'] = True
+            if self.vow_successful_event:
+                self.vow_successful_event(result_obj)
+
+        except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+
+            result_obj['error'] = {
+                'type': exc_type,
+                'value': exc_value,
+                'traceback': exc_traceback
+            }
+            if self.vow_error_event:
+                self.vow_error_event(result_obj)
+
+        tests_col.append(result_obj)
+
+        return result_obj
 
     def file_info_for(self, member):
         if hasattr(member, '__code__'):
