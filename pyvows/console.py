@@ -29,7 +29,7 @@ from pyvows import version
 
 
 class Messages(object):
-    pattern = 'Pattern of vows files. (default: %(default)s).'
+    pattern = 'Pattern of vows files. (default: %(default)r).'
     cover = 'Indicates that coverage of code should be shown. (default: %(default)s).'
     cover_package = 'Package to verify coverage. May be specified many times. (default: all packages).'
     cover_omit = 'Path of file to exclude from coverage. May be specified many times. (default: no files).'
@@ -38,7 +38,7 @@ class Messages(object):
     xunit_output = 'Enable XUnit output. (default: %(default)s).'
     xunit_file = 'Filename of the XUnit output (default: %(default)s).'
     no_color = 'Does not colorize the output. (default: %(default)s).'
-    path = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)s).'
+    path = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)r).'
 
 def __get_arguments():
     current_dir = os.curdir
