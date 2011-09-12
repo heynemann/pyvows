@@ -14,6 +14,9 @@ from pyvows import Vows, expect
 class SetupTeardownSpecs(Vows.Context):
     exec_order = []
 
+    def teardown(self):
+        expect(self.exec_order).to_equal([1,2,3,-2,-1])
+
     class OrderOfExecution(Vows.Context):
         def setup(self):
             self.parent.exec_order.append(1)
@@ -23,12 +26,21 @@ class SetupTeardownSpecs(Vows.Context):
             return 20
 
         def teardown(self):
-            self.parent.exec_order.append(3)
+            self.parent.exec_order.append(-1) #last
+            expect(self.parent.exec_order).to_equal([1,2,3,-2,-1])
 
         def check_order(self, topic):
             expect(self.parent.exec_order).to_equal([1, 2])
 
         class TeardownOrderOfExecution(Vows.Context):
+            def setup(self):
+                self.parent.parent.exec_order.append(3)
+
+            def teardown(self):
+                self.parent.parent.exec_order.append(-2) #right before the parent's teardown
+                expect(self.parent.parent.exec_order).to_equal([1,2,3,-2])
+
             def check_order(self, topic):
                 expect(self.parent.parent.exec_order).to_equal([1, 2, 3])
+
 

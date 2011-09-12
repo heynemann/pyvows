@@ -120,7 +120,7 @@ class Vows(object):
     contexts = {}
 
     class Context(object):
-        def __init__(self, parent):
+        def __init__(self, parent=None):
             self.parent = parent
             self.topic_value = None
             self.index = -1

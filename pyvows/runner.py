@@ -16,6 +16,7 @@ import eventlet
 
 from pyvows.result import VowsResult
 
+
 class VowsParallelRunner(object):
     def __init__(self, vows, context_class, async_topic_class, async_topic_value_class, vow_successful_event, vow_error_event):
         self.vows = vows
@@ -31,7 +32,7 @@ class VowsParallelRunner(object):
         result = VowsResult()
 
         for name, context in self.vows.iteritems():
-            self.run_context(result.contexts, name, context)
+            self.run_context(result.contexts, name, context())
 
         while self.pool.running():
             self.pool.waitall()
@@ -40,10 +41,10 @@ class VowsParallelRunner(object):
         result.ellapsed_time = float(end_time - start_time)
         return result
 
-    def run_context(self, context_col, name, context, parent=None):
-        self.pool.spawn_n(self.async_run_context, context_col, name, context, parent)
+    def run_context(self, context_col, name, context_instance):
+        self.pool.spawn_n(self.async_run_context, context_col, name, context_instance)
 
-    def async_run_context(self, context_col, name, context, parent, index=-1):
+    def async_run_context(self, context_col, name, context_instance, index=-1):
         context_obj = {
             'name': name,
             'contexts': [],
@@ -51,7 +52,6 @@ class VowsParallelRunner(object):
         }
         context_col.append(context_obj)
 
-        context_instance = context(parent)
         context_instance.index = index
         context_instance.setup()
 
@@ -67,6 +67,8 @@ class VowsParallelRunner(object):
                 context_instance.topic_error = (exc_type, exc_value, exc_traceback)
         else:
             topic = context_instance._get_first_available_topic(index)
+
+        teardown = FunctionWrapper(context_instance.teardown)
 
         def run_with_topic(topic):
             context_instance.topic_value = topic
@@ -85,18 +87,20 @@ class VowsParallelRunner(object):
 
             context_members = filter(
                 lambda member: not (inspect.ismethod(member[1]) and member[0] in special_names or member[0].startswith('_')),
-                inspect.getmembers(context)
+                inspect.getmembers(type(context_instance))
             )
 
             def iterate_members(topic, index=-1, enumerated=False):
                 for member_name, member in context_members:
                     if inspect.ismethod(member):
-                        self.run_vow(context_obj['tests'], topic, context_instance, member, member_name, enumerated=enumerated)
+                        self.run_vow(context_obj['tests'], topic, context_instance, teardown.wrap(member), member_name, enumerated=enumerated)
 
                 for member_name, member in context_members:
                     if inspect.isclass(member) and issubclass(member, self.context_class):
+                        child_context_instance = member(context_instance)
+                        child_context_instance.teardown = teardown.wrap(child_context_instance.teardown)
                         self.pool.spawn_n(self.async_run_context,
-                            context_obj['contexts'], member_name, member, context_instance, index
+                            context_obj['contexts'], member_name, child_context_instance, index
                         )
 
             if is_generator:
@@ -113,7 +117,8 @@ class VowsParallelRunner(object):
         else:
             run_with_topic(topic)
 
-        context_instance.teardown()
+        teardown()
+
 
     def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
         self.pool.spawn_n(self.async_run_vow, tests_col, topic, context_instance, member, member_name, enumerated)
@@ -204,4 +209,26 @@ class VowsParallelRunner(object):
             child = child.parent
 
         return topics
+
+
+class FunctionWrapper(object):
+
+    def __init__(self, func):
+        self.waiting = 0
+        self.func = func
+
+    def wrap(self, method):
+        self.waiting += 1
+        def wrapper(*args, **kw):
+            ret = method(*args, **kw)
+            self.waiting -= 1
+            self()
+            return ret
+        return wrapper
+
+    def __call__(self):
+        if self.waiting == 0:
+            self.func()
+
+
 
