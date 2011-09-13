@@ -41,7 +41,8 @@ pyVows is a test engine based in Vows JS and features topic-based testing as wel
     install_requires=[
         "eventlet",
         "colorama",
-        "lxml"
+        "lxml",
+        "argparse"
     ],
 
     entry_points = {
