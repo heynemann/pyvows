@@ -32,7 +32,7 @@ class VowsParallelRunner(object):
         result = VowsResult()
 
         for name, context in self.vows.iteritems():
-            self.run_context(result.contexts, name, context())
+            self.run_context(result.contexts, name, context(None))
 
         while self.pool.running():
             self.pool.waitall()
