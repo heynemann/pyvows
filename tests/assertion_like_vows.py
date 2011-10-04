@@ -24,6 +24,18 @@ class AssertionIsLike(Vows.Context):
         def we_assert_it_is_not_like_other_string(self, topic):
             expect(topic).Not.to_be_like('some other string')
 
+
+    class WhenItIsAMultilineString(Vows.Context):
+        def topic(self):
+            return " some StRinG \nwith RanDoM \nCaSe And  \nWeird   \nSpACING   "
+
+        def we_assert_it_is_like_other_string(self, topic):
+            expect(topic).to_be_like('some string with random case and weird spacing')
+
+        def we_assert_it_is_not_like_other_string(self, topic):
+            expect(topic).Not.to_be_like('some other string')
+
+
     class WhenItIsANumber(Vows.Context):
         def topic(self):
             return 42
