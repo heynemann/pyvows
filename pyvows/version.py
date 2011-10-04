@@ -8,7 +8,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-__version__ = (0, 7, 1)
+__version__ = (0, 7, 2)
 
 def to_str():
     return '.'.join([str(item) for item in __version__])
