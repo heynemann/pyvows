@@ -176,6 +176,7 @@ A nested context with no topics
         <li><a href="#-running-a-suite">Running a Suite</a></li>
         <li><a href="#-context-inheritance">Context Inheritance</a></li>
         <li><a href="#-using-generative-testing">Generative Testing</a></li>
+        <li><a href="#-async-topics">Asynchronous Topics</a></li>
         <li><a href="#-assertions">Assertions</a></li>
       </ul>
     </div>
@@ -760,6 +761,31 @@ class Add(Vows.Context):
         <p>This way we are verifying against the sum of all combinations of 0 to 9 plus 0 to 9, yet it is still very simple.</p>
 
         <p>Now we can add as many scenarios as we may think of, and won't have to write a single other vow.</p>
+
+        <h2>Asynchronous Topics</h2>
+        
+        <p>Say you need to test an async method called <em>async_square</em> that takes a number and returns the square of that number, but asynchronously.</p>
+        <p>Normally, you'd have a problem, since your tests would not wait for the callback (or even pass a callback for that matter). That's where <em>pyvows</em> comes to your rescue.</p>
+        <p>Testing async topics is as easy as decorating the topic method with a <em>Vows.asyncTopic</em> decorator.</p>
+        
+        <pre class="brush:python">
+ def async_square(a, callback):
+    callback(a * a) # imagine this is async code and could take a while
+
+class Square(Vows.Context):
+    @Vows.asyncTopic
+    def topic(self, callback):
+        async_square(10, callback)
+            
+        def should_be_numeric(self, topic):
+            expect(topic).to_be_numeric()
+
+        def should_equal_to_expected(self, topic):
+            expect(topic).to_equal(100)
+        </pre>
+        
+        <p>Notice the <em>callback</em> argument in the topic. When you decorate the topic with <em>asyncTopic</em>, <em>pyvows</em> adds this argument.</p>
+        <p>Simply pass this argument as the callback to the method you wish to test and let <em>pyvows</em> take care of the rest.</p>
 
         <h2>Assertions</h2>
 
