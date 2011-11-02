@@ -777,11 +777,11 @@ class Square(Vows.Context):
     def topic(self, callback):
         async_square(10, callback)
             
-        def should_be_numeric(self, topic):
-            expect(topic).to_be_numeric()
+    def should_be_numeric(self, topic):
+        expect(topic).to_be_numeric()
 
-        def should_equal_to_expected(self, topic):
-            expect(topic).to_equal(100)
+    def should_equal_to_expected(self, topic):
+        expect(topic).to_equal(100)
         </pre>
         
         <p>Notice the <em>callback</em> argument in the topic. When you decorate the topic with <em>asyncTopic</em>, <em>pyvows</em> adds this argument.</p>
