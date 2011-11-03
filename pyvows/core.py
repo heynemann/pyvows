@@ -13,6 +13,7 @@ import fnmatch
 import glob
 import re
 import sys
+import warnings
 
 from pyvows.runner import VowsParallelRunner
 
@@ -161,12 +162,17 @@ class Vows(object):
     Assert = VowsAssertion()
 
     @staticmethod
-    def asyncTopic(topic):
+    def async_topic(topic):
         def wrapper(*args, **kw):
             return VowsAsyncTopic(topic, args, kw)
         wrapper._original = topic
         wrapper.__name__ = topic.__name__
         return wrapper
+
+    @staticmethod
+    def asyncTopic(topic):
+        warnings.warn("The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.", DeprecationWarning, stacklevel=2)
+        return Vows.async_topic(topic)
 
     @staticmethod
     def batch(method):

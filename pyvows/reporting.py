@@ -145,12 +145,23 @@ class VowsDefaultReporter(object):
         print ' ' + '=' * len(msg)
         print
 
-        print "         Ellapsed    Context File Path                 Context Name"
+        print "       Ellapsed    Context File Path                 Context Name"
         for index, topic in enumerate(topics):
             name = self.under_split(topic['context'])
             name = self.camel_split(name)
 
-            print Style.BRIGHT + ("%s#%04d%s    %.05fs    %" + str(MAX_PATH_SIZE) + "s    %s") % (Fore.BLUE, index + 1, Fore.RESET, topic['ellapsed'], topic['path'][-MAX_PATH_SIZE:], name) + Style.RESET_ALL
+            print Style.BRIGHT + ("%s#%02d%s    %.05fs    %s%s%" + str(MAX_PATH_SIZE) + "s%s%s    %s") % (
+                    Fore.BLUE, 
+                    index + 1, 
+                    Fore.RESET, 
+                    topic['ellapsed'], 
+                    Style.DIM,
+                    Fore.WHITE,
+                    topic['path'][-MAX_PATH_SIZE:], 
+                    Fore.RESET,
+                    Style.BRIGHT,
+                    name
+            ) + Style.RESET_ALL
 
         print
 
