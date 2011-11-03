@@ -1,5 +1,5 @@
 vows test:
-	@env PYTHONPATH=. python pyvows/console.py --cover --cover_package=pyvows --cover_package=pyvows.assertions --cover_threshold=80.0 tests/
+	@env PYTHONPATH=. python pyvows/console.py --cover --cover_package=pyvows --cover_package=pyvows.assertions --cover_threshold=80.0 --profile tests/
 
 ci_test:
 	@env PYTHONPATH=. python pyvows/console.py --cover --cover_package=pyvows --cover_package=pyvows.assertions --cover_threshold=80.0 -r pyvows.coverage.xml -x tests/

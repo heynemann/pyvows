@@ -47,8 +47,10 @@ class VowsParallelRunner(object):
     def async_run_context(self, context_col, name, context_instance, index=-1):
         context_obj = {
             'name': name,
+            'topic_ellapsed': 0,
             'contexts': [],
-            'tests': []
+            'tests': [],
+            'filename': inspect.getsourcefile(context_instance.__class__)
         }
         context_col.append(context_obj)
 
@@ -57,6 +59,7 @@ class VowsParallelRunner(object):
 
         topic = None
         if hasattr(context_instance, 'topic'):
+            start_time = time.time()
             try:
                 topic_func = getattr(context_instance, 'topic')
                 topic_list = self.get_topics_for(topic_func, context_instance)
@@ -65,6 +68,7 @@ class VowsParallelRunner(object):
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 topic = exc_value
                 context_instance.topic_error = (exc_type, exc_value, exc_traceback)
+            context_obj['topic_ellapsed'] = float(round(time.time() - start_time, 6))
         else:
             topic = context_instance._get_first_available_topic(index)
 
@@ -124,6 +128,7 @@ class VowsParallelRunner(object):
         self.pool.spawn_n(self.async_run_vow, tests_col, topic, context_instance, member, member_name, enumerated)
 
     def async_run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated):
+        start_time = time.time()
         filename, lineno = self.file_info_for(member)
         result_obj = {
             'context_instance': context_instance,
@@ -133,7 +138,8 @@ class VowsParallelRunner(object):
             'error': None,
             'succeeded': False,
             'file': filename,
-            'lineno': lineno
+            'lineno': lineno,
+            'ellapsed': 0
         }
 
         try:
@@ -154,6 +160,7 @@ class VowsParallelRunner(object):
             if self.vow_error_event:
                 self.vow_error_event(result_obj)
 
+        result_obj['ellapsed'] = time.time() - start_time
         tests_col.append(result_obj)
 
         return result_obj

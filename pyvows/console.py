@@ -30,6 +30,7 @@ from pyvows import version
 
 class Messages(object):
     pattern = 'Pattern of vows files. (default: %(default)r).'
+    progress = 'Indicates that progress ticks should be shown. (default: %(default)s).'
     cover = 'Indicates that coverage of code should be shown. (default: %(default)s).'
     cover_package = 'Package to verify coverage. May be specified many times. (default: all packages).'
     cover_omit = 'Path of file to exclude from coverage. May be specified many times. (default: no files).'
@@ -40,6 +41,7 @@ class Messages(object):
     no_color = 'Does not colorize the output. (default: %(default)s).'
     verbosity = 'Verbosity. Can be supplied multiple times to increase verbosity (default: -vv)'
     path = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)r).'
+    profile = 'Prints the 10 slowest topics. (default: %(default)s).'
 
 def __get_arguments():
     current_dir = os.curdir
@@ -62,6 +64,8 @@ def __get_arguments():
     parser.add_argument('--no_color', action="store_true", default=False, help=Messages.no_color)
     parser.add_argument('--version', action='version', version='%(prog)s ' + version.to_str())
     parser.add_argument('-v', action='append_const', dest='verbosity', const=1, help=Messages.verbosity)
+    parser.add_argument('--profile', action='store_true', dest='profile', default=False, help=Messages.profile)
+    parser.add_argument('--progress', action='store_true', dest='progress', default=False, help=Messages.progress)
 
     parser.add_argument('path', default=current_dir, nargs='?', help=Messages.path)
 
@@ -69,13 +73,15 @@ def __get_arguments():
 
     return arguments
 
-def run(path, pattern, verbosity):
+def run(path, pattern, verbosity, progress):
     from pyvows.core import Vows
     from pyvows.reporting import VowsDefaultReporter
 
     Vows.gather(path, pattern)
 
-    result = Vows.ensure(VowsDefaultReporter.handle_success, VowsDefaultReporter.handle_error)
+    handle_success = progress and VowsDefaultReporter.handle_success or None
+    handle_error = progress and VowsDefaultReporter.handle_error or None
+    result = Vows.ensure(handle_success, handle_error)
 
     reporter = VowsDefaultReporter(result, verbosity)
     reporter.pretty_print()
@@ -104,7 +110,7 @@ def main():
         cov.start()
 
     verbosity = len(arguments.verbosity) if arguments.verbosity else 2
-    result, reporter = run(path, pattern, verbosity)
+    result, reporter = run(path, pattern, verbosity, arguments.progress)
 
     if arguments.cover:
         if COVERAGE_AVAILABLE:
@@ -136,6 +142,9 @@ def main():
     if arguments.xunit_output:
         xunit = XUnitReporter(result, arguments.xunit_file)
         xunit.write_report()
+
+    if arguments.profile:
+        reporter.print_profile()
 
     sys.exit(result.errored_tests)
 

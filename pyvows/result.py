@@ -51,3 +51,24 @@ class VowsResult(object):
 
         return succeeded
 
+    def get_topic_times(self, contexts=None):
+        topic_times = []
+
+        if contexts is None:
+            contexts = self.contexts
+
+        for context in contexts:
+            topic_times.append({
+                'context': context['name'],
+                'path': context['filename'],
+                'ellapsed': context['topic_ellapsed']
+            })
+
+            topic_times.extend(self.get_topic_times(context['contexts']))
+
+        return topic_times
+
+    def get_worst_topics(self, number=10):
+        times = [time for time in self.get_topic_times() if time['ellapsed'] > 0]
+        return list(reversed(sorted(times, key=lambda x: x['ellapsed'])))[:number]
+
