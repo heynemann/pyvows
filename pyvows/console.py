@@ -112,7 +112,7 @@ def main():
     verbosity = len(arguments.verbosity) if arguments.verbosity else 2
     result, reporter = run(path, pattern, verbosity, arguments.progress)
 
-    if arguments.cover:
+    if result.successful and arguments.cover:
         if COVERAGE_AVAILABLE:
             cov.stop()
 
