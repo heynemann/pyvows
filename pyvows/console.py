@@ -84,7 +84,6 @@ def run(path, pattern, verbosity, progress):
     result = Vows.ensure(handle_success, handle_error)
 
     reporter = VowsDefaultReporter(result, verbosity)
-    reporter.pretty_print()
 
     return result, reporter
 
@@ -138,6 +137,8 @@ def main():
             print Fore.YELLOW + "WARNING: Cover disabled because coverage or lxml could not be found."
             print Fore.YELLOW + "Make sure both are installed and accessible"
             print
+
+    reporter.pretty_print()
 
     if arguments.xunit_output:
         xunit = XUnitReporter(result, arguments.xunit_file)

@@ -50,6 +50,11 @@ class VowsDefaultReporter(object):
         sys.stdout.write(cls.broken)
 
     def pretty_print(self):
+        msg = 'Vows Results'
+        print ' ' + '=' * len(msg)
+        print Fore.GREEN + Style.BRIGHT + ' ' + msg + Style.RESET_ALL + Fore.RESET
+        print ' ' + '=' * len(msg)
+
         if not self.result.contexts:
             print '%s%s No vows found! » 0 honored • 0 broken (0.0s)' % (
                 self.tab * self.indent,
@@ -64,7 +69,6 @@ class VowsDefaultReporter(object):
         for context in self.result.contexts:
             self.print_context(context['name'], context)
 
-        print
         print '%s%s OK » %d honored • %d broken (%.6fs)' % (
             self.tab * self.indent,
             self.honored if self.result.successful else self.broken,
@@ -72,6 +76,8 @@ class VowsDefaultReporter(object):
             self.result.errored_tests,
             self.result.ellapsed_time
         )
+
+        print
 
     def humanized_print(self, msg, indentation=None):
         msg = self.under_split(msg)
