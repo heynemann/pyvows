@@ -55,6 +55,7 @@ class VowsParallelRunner(object):
         context_col.append(context_obj)
 
         context_instance.index = index
+        context_instance.pool = self.pool
         context_instance.setup()
 
         topic = None
@@ -102,6 +103,7 @@ class VowsParallelRunner(object):
                 for member_name, member in context_members:
                     if inspect.isclass(member) and issubclass(member, self.context_class):
                         child_context_instance = member(context_instance)
+                        child_context_instance.pool = self.pool
                         child_context_instance.teardown = teardown.wrap(child_context_instance.teardown)
                         self.pool.spawn_n(self.async_run_context,
                             context_obj['contexts'], member_name, child_context_instance, index
