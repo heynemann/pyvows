@@ -31,7 +31,7 @@ def asyncFunc(callback):
 
 @Vows.batch
 class AsyncTopic(Vows.Context):
-    @Vows.asyncTopic
+    @Vows.async_topic
     def topic(self, callback):
         asyncFunc(callback)
 
@@ -50,7 +50,6 @@ class AsyncTopic(Vows.Context):
     def should_check_the_kw2_parameter(self, topic):
         expect(topic.kw['kw2']).to_equal(40)
 
-
     class SyncTopic(Vows.Context):
         def topic(self):
             return 1
@@ -59,7 +58,7 @@ class AsyncTopic(Vows.Context):
             expect(topic).to_equal(1)
 
         class NestedAsyncTest(Vows.Context):
-            @Vows.asyncTopic
+            @Vows.async_topic
             def topic(self, callback, old_topic):
                 def cb(*args, **kw):
                     args = (old_topic,) + args
