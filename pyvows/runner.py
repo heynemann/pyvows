@@ -99,7 +99,10 @@ class VowsParallelRunner(object):
                         self.run_vow(context_obj['tests'], topic, context_instance, teardown.wrap(member), member_name, enumerated=enumerated)
 
                 for member_name, member in context_members:
-                    if inspect.isclass(member) and issubclass(member, self.context_class):
+                    if inspect.isclass(member):
+                        if not issubclass(member, self.context_class):
+                            member = type(name, (member, self.context_class), {})
+
                         child_context_instance = member(context_instance)
                         child_context_instance.pool = self.pool
                         child_context_instance.teardown = teardown.wrap(child_context_instance.teardown)
