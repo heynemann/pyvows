@@ -18,10 +18,24 @@ class ContextClass(Vows.Context):
         expect(self.entered).to_equal(True)
 
     class SubcontextThatDoesntNeedToExtendAgainFromContext:
+        entered = False
+
         def topic(self):
-            self.parent.entered = True
             return 2
 
         def should_be_working_fine_too(self, topic):
             self.parent.entered = True
             expect(topic).to_equal(2)
+
+        def teardown(self):
+            # note to readers: 'expect's are not recommended on teardown methods
+            expect(self.entered).to_equal(True)
+
+        class SubcontextThatDoesntNeedToExtendAgainFromContext:
+            def topic(self):
+                return 3
+
+            def should_be_working_fine_too(self, topic):
+                self.parent.entered = True
+                expect(topic).to_equal(3)
+
