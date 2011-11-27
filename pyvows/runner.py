@@ -15,14 +15,13 @@ import time
 import eventlet
 
 from pyvows.result import VowsResult
+from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 
 
 class VowsParallelRunner(object):
-    def __init__(self, vows, context_class, async_topic_class, async_topic_value_class, vow_successful_event, vow_error_event):
+    def __init__(self, vows, context_class, vow_successful_event, vow_error_event):
         self.vows = vows
         self.context_class = context_class
-        self.async_topic_class = async_topic_class
-        self.async_topic_value_class = async_topic_value_class
         self.pool = eventlet.GreenPool()
         self.vow_successful_event = vow_successful_event
         self.vow_error_event = vow_error_event
@@ -115,9 +114,9 @@ class VowsParallelRunner(object):
             else:
                 iterate_members(topic)
 
-        if isinstance(topic, self.async_topic_class):
+        if isinstance(topic, VowsAsyncTopic):
             def handle_callback(*args, **kw):
-                run_with_topic(self.async_topic_value_class(args, kw))
+                run_with_topic(VowsAsyncTopicValue(args, kw))
 
             topic(handle_callback)
         else:
@@ -238,6 +237,4 @@ class FunctionWrapper(object):
     def __call__(self):
         if self.waiting == 0:
             self.func()
-
-
 
