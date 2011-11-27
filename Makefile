@@ -9,3 +9,5 @@ setup:
 
 publish:
 	python setup.py sdist upload
+
+.PHONY: vows test setup publish ci_test
