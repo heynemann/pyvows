@@ -74,6 +74,7 @@ def __get_arguments():
     return arguments
 
 def run(path, pattern, verbosity, progress):
+    # they need to be imported here, else the no-color option wont work
     from pyvows.core import Vows
     from pyvows.reporting import VowsDefaultReporter
 
