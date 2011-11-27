@@ -77,9 +77,8 @@ class VowsParallelRunner(object):
         def run_with_topic(topic):
             context_instance.topic_value = topic
 
-            is_generator = False
-            if inspect.isgenerator(topic):
-                is_generator = True
+            is_generator = inspect.isgenerator(topic)
+            if is_generator:
                 context_instance.topic_value = list(topic)
                 context_instance.generated_topic = True
 
