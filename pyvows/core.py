@@ -15,6 +15,7 @@ import re
 import sys
 import warnings
 
+from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.runner import VowsParallelRunner
 
 def locate(pattern, root=os.curdir, recursive=True):
@@ -62,41 +63,6 @@ class VowsAssertion(object):
         if not hasattr(self, name):
             raise VowsAssertion.AssertionNotFoundError(name)
         return super(VowsAssertion, self).__getattr__(name)
-
-
-class VowsAsyncTopic(object):
-    def __init__(self, func, args, kw):
-        self.func = func
-        self.args = args
-        self.kw = kw
-
-    def __call__(self, callback):
-        args = (self.args[0], callback,) + self.args[1:]
-        self.func(*args, **self.kw)
-
-
-class VowsAsyncTopicValue(object):
-    def __init__(self, args, kw):
-        self.args = args
-        self.kw = kw
-
-    def __getitem__(self, attr):
-        if type(attr) is int:
-            return self.args[attr]
-
-        if attr in self.kw:
-            return self.kw[attr]
-
-        raise AttributeError
-
-    def __getattr__(self, attr):
-        if attr in self.kw:
-            return self.kw[attr]
-
-        if hasattr(self, attr):
-            return self.attr
-
-        raise AttributeError
 
 
 class VowsAssertionError(AssertionError):
