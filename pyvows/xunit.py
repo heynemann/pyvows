@@ -11,62 +11,70 @@ import codecs
 from datetime import datetime
 import socket
 import traceback
-
+from xml.dom.minidom import Document
 
 class XUnitReporter(object):
 
-    def __init__(self, result, filename, encoding='UTF-8'):
-        self.result = result
-        self.filename = filename
-        self.encoding = encoding
+    def __init__(self, result):
+        self.result_summary = self.summarize_results(result)
 
-    def write_report(self):
-        output_file = codecs.open(self.filename, 'w', self.encoding, 'replace')
+    def write_report(self, filename, encoding='utf-8'):
+        output_file = codecs.open(filename, 'w', encoding, 'replace')
+        output_file.write(self.to_xml(encoding))
+        output_file.close()
 
-        stats = {'encoding': self.encoding,
-            'total': self.result.successful_tests + self.result.errored_tests,
+    def to_xml(self, encoding='utf-8'):
+        document = self.create_report_document()
+        return document.toxml(encoding=encoding)
+
+    def summarize_results(self, result):
+        result_summary = {
+            'total': result.successful_tests + result.errored_tests,
             'errors': 0,
-            'failures': self.result.errored_tests,
+            'failures': result.errored_tests,
             'ts': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
             'hostname': socket.gethostname(),
-            'elapsed': self.result.ellapsed_time,
+            'elapsed': result.ellapsed_time,
+            'contexts': result.contexts
         }
+        return result_summary
 
-        output_file.write(
-            u'<?xml version="1.0" encoding="%(encoding)s"?>\n'
-            u'<testsuite name="pyvows" tests="%(total)d" '
-            u'errors="%(errors)d" failures="%(failures)d" '
-            u'timestamp="%(ts)s" hostname="%(hostname)s" '
-            u'time="%(elapsed).3f">\n' % (stats)
-        )
+    def create_report_document(self):
+        result_summary = self.result_summary
 
-        for context in self.result.contexts:
-            self.write_context(output_file, context)
+        document = Document()
+        testsuite_node = document.createElement('testsuite')
+        testsuite_node.setAttribute('name', 'pyvows')
+        testsuite_node.setAttribute('tests', str(result_summary['total']))
+        testsuite_node.setAttribute('errors', str(result_summary['errors']))
+        testsuite_node.setAttribute('failures', str(result_summary['failures']))
+        testsuite_node.setAttribute('timestamp', str(result_summary['ts']))
+        testsuite_node.setAttribute('hostname', str(result_summary['hostname']))
+        testsuite_node.setAttribute('time', '%.3f' % result_summary['elapsed'])
 
-        output_file.write(u'</testsuite>')
+        document.appendChild(testsuite_node)
 
-    def write_context(self, output_file, context):
+        for context in result_summary['contexts']:
+            self.create_test_case_elements(document, testsuite_node, context)
 
+        return document
+
+    def create_test_case_elements(self, document, parent_node, context):
         for test in context['tests']:
-            nice_name = '%s.%s' % (context['name'], test['name'])
 
-            if test['succeeded']:
-                test_stats = {'context': context['name'],
-                    'name': test['name'],
-                    'taken': 0.0
-                }
+            test_stats = {
+                'context': context['name'],
+                'name': test['name'],
+                'taken': 0.0
+            }
 
-                output_file.write(u'<testcase classname="%(context)s" '
-                        u'name="%(name)s" time="%(taken).3f" />\n' % test_stats)
+            testcase_node = document.createElement('testcase')
+            testcase_node.setAttribute('classname', str(test_stats['context']))
+            testcase_node.setAttribute('name', str(test_stats['name']))
+            testcase_node.setAttribute('time', '%.3f' % test_stats['taken'])
+            parent_node.appendChild(testcase_node)
 
-            else:
-                test_stats = {'context': context['name'],
-                    'name': test['name'],
-                    'taken': 0.0
-                }
-                output_file.write(u'<testcase classname="%(context)s" '
-                        u'name="%(name)s" time="%(taken).3f">\n' % test_stats)
-
+            if not test['succeeded']:
                 error = test['error']
                 error_msg = traceback.format_exception(error['type'],
                         error['value'], error['traceback'])
@@ -75,14 +83,18 @@ class XUnitReporter(object):
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
                     error_msg += traceback.format_exception(exc_type, exc_value, exc_traceback)
 
-                error_data = {'errtype': error['type'].__name__,
+                error_data = {
+                    'errtype': error['type'].__name__,
                     'msg': error['value'],
                     'tb': ''.join(error_msg)
                 }
 
-                output_file.write(u'<failure type="%(errtype)s" '
-                        u'message="%(msg)s"><![CDATA[%(tb)s]]>' % error_data)
-                output_file.write(u'</failure>\n</testcase>\n')
+                failure_node = document.createElement('failure')
+                failure_node.setAttribute('type', str(error_data['errtype']))
+                failure_node.setAttribute('message', str(error_data['msg']))
+                failure_text = document.createTextNode(str(error_data['tb']))
+                failure_node.appendChild(failure_text)
+                testcase_node.appendChild(failure_node)
 
         for ctx in context['contexts']:
-            self.write_context(output_file, ctx)
+            self.create_test_case_elements(document, parent_node, ctx)

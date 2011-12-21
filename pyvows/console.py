@@ -142,8 +142,8 @@ def main():
     reporter.pretty_print()
 
     if arguments.xunit_output:
-        xunit = XUnitReporter(result, arguments.xunit_file)
-        xunit.write_report()
+        xunit = XUnitReporter(result)
+        xunit.write_report(arguments.xunit_file)
 
     if arguments.profile:
         reporter.print_profile()
