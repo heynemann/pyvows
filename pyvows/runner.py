@@ -8,9 +8,10 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-import sys
 import inspect
+import sys
 import time
+from functools import wraps
 
 import eventlet
 
@@ -132,7 +133,7 @@ class VowsParallelRunner(object):
 
     def async_run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated):
         start_time = time.time()
-        filename, lineno = self.file_info_for(member)
+        filename, lineno = self.file_info_for(member._original)
         result_obj = {
             'context_instance': context_instance,
             'name': member_name if not enumerated else '%s - %s' % (str(topic), member_name),
@@ -168,11 +169,16 @@ class VowsParallelRunner(object):
 
         return result_obj
 
+    def _get_code_for(self, obj):
+        code = None
+        if hasattr(obj, '__code__'):
+            code = obj.__code__
+        elif hasattr(obj, '__func__'):
+            code = obj.__func__.__code__
+        return code
+
     def file_info_for(self, member):
-        if hasattr(member, '__code__'):
-            code = member.__code__
-        elif hasattr(member, '__func__'):
-            code = member.__func__.__code__
+        code = self._get_code_for(member)
 
         filename = code.co_filename
         lineno = code.co_firstlineno
@@ -188,10 +194,7 @@ class VowsParallelRunner(object):
             topic_function = topic_function._original
             async = True
 
-        if hasattr(topic_function, '__code__'):
-            code = topic_function.__code__
-        elif hasattr(topic_function, '__func__'):
-            code = topic_function.__func__.__code__
+        code = self._get_code_for(topic_function)
 
         if not code:
             raise RuntimeError('Function %s does not have a code property')
@@ -222,18 +225,24 @@ class VowsParallelRunner(object):
 
 
 class FunctionWrapper(object):
-
+    '''
+        Just calls the passed function when all the wrapped functions have been called.
+    '''
     def __init__(self, func):
         self.waiting = 0
         self.func = func
 
     def wrap(self, method):
         self.waiting += 1
+
+        @wraps(method)
         def wrapper(*args, **kw):
             ret = method(*args, **kw)
             self.waiting -= 1
             self()
             return ret
+
+        wrapper._original = method
         return wrapper
 
     def __call__(self):
