@@ -136,7 +136,8 @@ class VowsParallelRunner(object):
         filename, lineno = self.file_info_for(member._original)
         result_obj = {
             'context_instance': context_instance,
-            'name': member_name if not enumerated else '%s - %s' % (str(topic), member_name),
+            'name': member_name,
+            'enumerated': enumerated,
             'result': None,
             'topic': topic,
             'error': None,

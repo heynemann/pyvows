@@ -20,9 +20,16 @@ from pyvows.core import VowsAssertionError
 PROGRESS_SIZE = 50
 
 # verbosity levels
+V_EXTRA_VERBOSE = 4
 V_VERBOSE = 3
 V_NORMAL = 2
 V_SILENT = 1
+
+def ensure_encoded(thing, encoding='utf-8'):
+    if isinstance(thing, unicode):
+        return thing.encode(encoding)
+    else:
+        return thing
 
 class VowsDefaultReporter(object):
     honored = Fore.GREEN + Style.BRIGHT + '✓' + Fore.RESET + Style.RESET_ALL
@@ -117,8 +124,16 @@ class VowsDefaultReporter(object):
 
         for test in context['tests']:
             if test['succeeded']:
-                if self.verbosity >= V_VERBOSE:
-                    self.humanized_print(VowsDefaultReporter.honored + ' ' + test['name'])
+                honored, topic, name = map(
+                    ensure_encoded,
+                    (VowsDefaultReporter.honored, test['topic'], test['name']))
+                if self.verbosity == V_VERBOSE:
+                    self.humanized_print('%s %s' % (honored, name))
+                elif self.verbosity >= V_EXTRA_VERBOSE:
+                    if test['enumerated']:
+                        self.humanized_print('%s %s - %s' % (honored, topic, name))
+                    else:
+                        self.humanized_print('%s %s' % (honored, name))
             else:
                 self.humanized_print(VowsDefaultReporter.broken + ' ' + test['name'])
 
