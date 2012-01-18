@@ -141,35 +141,36 @@ class VowsDefaultReporter(object):
 
         self.indent -= 1
 
-    def print_profile(self):
+    def print_profile(self, threshold):
         MAX_PATH_SIZE = 30
-        topics = self.result.get_worst_topics(10)
+        topics = self.result.get_worst_topics(number=10, threshold=threshold)
 
-        msg = "Slowest Topics"
-        print ' ' + '=' * len(msg)
-        print Fore.GREEN + Style.BRIGHT + ' ' + msg + Style.RESET_ALL + Fore.RESET
-        print ' ' + '=' * len(msg)
-        print
+        if topics:
+            msg = "Slowest Topics"
+            print ' ' + '=' * len(msg)
+            print Fore.GREEN + Style.BRIGHT + ' ' + msg + Style.RESET_ALL + Fore.RESET
+            print ' ' + '=' * len(msg)
+            print
 
-        print "       Ellapsed    Context File Path                 Context Name"
-        for index, topic in enumerate(topics):
-            name = self.under_split(topic['context'])
-            name = self.camel_split(name)
+            print "       Ellapsed    Context File Path                 Context Name"
+            for index, topic in enumerate(topics):
+                name = self.under_split(topic['context'])
+                name = self.camel_split(name)
 
-            print Style.BRIGHT + ("%s#%02d%s    %.05fs    %s%s%" + str(MAX_PATH_SIZE) + "s%s%s    %s") % (
-                    Fore.BLUE, 
-                    index + 1, 
-                    Fore.RESET, 
-                    topic['ellapsed'], 
-                    Style.DIM,
-                    Fore.WHITE,
-                    topic['path'][-MAX_PATH_SIZE:], 
-                    Fore.RESET,
-                    Style.BRIGHT,
-                    name
-            ) + Style.RESET_ALL
+                print Style.BRIGHT + ("%s#%02d%s    %.05fs    %s%s%" + str(MAX_PATH_SIZE) + "s%s%s    %s") % (
+                        Fore.BLUE, 
+                        index + 1, 
+                        Fore.RESET, 
+                        topic['ellapsed'], 
+                        Style.DIM,
+                        Fore.WHITE,
+                        topic['path'][-MAX_PATH_SIZE:], 
+                        Fore.RESET,
+                        Style.BRIGHT,
+                        name
+                ) + Style.RESET_ALL
 
-        print
+            print
 
     def print_coverage(self, xml, cover_threshold):
         write_blue = lambda msg: Fore.BLUE + Style.BRIGHT + str(msg) + Style.RESET_ALL + Fore.RESET

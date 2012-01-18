@@ -68,7 +68,7 @@ class VowsResult(object):
 
         return topic_times
 
-    def get_worst_topics(self, number=10):
-        times = [time for time in self.get_topic_times() if time['ellapsed'] > 0]
+    def get_worst_topics(self, number=10, threshold=0.1):
+        times = [time for time in self.get_topic_times() if time['ellapsed'] > 0 and time['ellapsed'] >= threshold]
         return list(reversed(sorted(times, key=lambda x: x['ellapsed'])))[:number]
 
