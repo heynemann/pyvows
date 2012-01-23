@@ -1,5 +1,6 @@
 *.pyc
 *.swp
+*.un~
 build
 dist
 pyVows.egg-info

@@ -13,8 +13,10 @@ import fnmatch
 import glob
 import re
 import sys
+import time
 import warnings
 
+from pyvows.result import VowsResult
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.runner import VowsParallelRunner
 
@@ -82,9 +84,9 @@ class VowsAssertionError(AssertionError):
     def __repr__(self):
         return "VowsAssertionError('%s',)" % self.__str__()
 
-
 class Vows(object):
     contexts = {}
+    batches = []
 
     class Context(object):
         def __init__(self, parent=None):
@@ -145,6 +147,7 @@ class Vows(object):
         def method_name(*args, **kw):
             method(*args, **kw)
 
+        Vows.batches.append(method.__name__)
         Vows.contexts[method.__name__] = method
 
         return method_name
@@ -188,8 +191,21 @@ class Vows(object):
 
     @classmethod
     def ensure(cls, vow_success_event, vow_error_event):
-        runner = VowsParallelRunner(Vows.contexts, Vows.Context, vow_success_event, vow_error_event)
-        return runner.run()
+        start_time = time.time()
+        result = VowsResult()
+
+        for batch in Vows.batches:
+            runner = VowsParallelRunner(
+                    {batch:Vows.contexts[batch]},   # contexts for this batch
+                    Vows.Context, 
+                    vow_success_event, 
+                    vow_error_event, 
+                    result)                         # accumulate results
+            runner.run()
+
+        end_time = time.time()
+        result.ellapsed_time = float(end_time - start_time)
+        return result
 
     @classmethod
     def gather(cls, path, pattern):

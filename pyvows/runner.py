@@ -18,28 +18,21 @@ import eventlet
 from pyvows.result import VowsResult
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 
-
 class VowsParallelRunner(object):
-    def __init__(self, vows, context_class, vow_successful_event, vow_error_event):
+    def __init__(self, vows, context_class, vow_successful_event, vow_error_event, result):
         self.vows = vows
         self.context_class = context_class
         self.pool = eventlet.GreenPool()
         self.vow_successful_event = vow_successful_event
         self.vow_error_event = vow_error_event
+        self.result = result
 
     def run(self):
-        start_time = time.time()
-        result = VowsResult()
-
         for name, context in self.vows.iteritems():
-            self.run_context(result.contexts, name, context(None))
+            self.run_context(self.result.contexts, name, context(None))
 
         while self.pool.running():
             self.pool.waitall()
-
-        end_time = time.time()
-        result.ellapsed_time = float(end_time - start_time)
-        return result
 
     def run_context(self, context_col, name, context_instance):
         self.pool.spawn_n(self.async_run_context, context_col, name, context_instance)
@@ -222,6 +215,25 @@ class VowsParallelRunner(object):
             child = child.parent
 
         return topics
+
+class VowsBatchRunner(object):
+    def run(self):
+        start_time = time.time()
+        result = VowsResult()
+
+        print "batches:", self.vows.batches
+        print "contexts:", self.vows.contexts
+
+        for name in self.vows.batches:
+            context = self.vows.contexts[name]
+            print 'seq', name, context
+            runner = VowsParallelRunner(context, self.context_class, self.vow_successful_event, self.vow_error_event)
+            runner.run()
+            #self.run_context(result.contexts, name, context(None))
+
+        end_time = time.time()
+        result.ellapsed_time = float(end_time - start_time)
+        return result
 
 
 class FunctionWrapper(object):
