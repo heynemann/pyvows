@@ -216,26 +216,6 @@ class VowsParallelRunner(object):
 
         return topics
 
-class VowsBatchRunner(object):
-    def run(self):
-        start_time = time.time()
-        result = VowsResult()
-
-        print "batches:", self.vows.batches
-        print "contexts:", self.vows.contexts
-
-        for name in self.vows.batches:
-            context = self.vows.contexts[name]
-            print 'seq', name, context
-            runner = VowsParallelRunner(context, self.context_class, self.vow_successful_event, self.vow_error_event)
-            runner.run()
-            #self.run_context(result.contexts, name, context(None))
-
-        end_time = time.time()
-        result.ellapsed_time = float(end_time - start_time)
-        return result
-
-
 class FunctionWrapper(object):
     '''
         Just calls the passed function when all the wrapped functions have been called.
