@@ -90,7 +90,6 @@ class VowsParallelRunner(object):
                 special_names.update(context_instance.ignored_members)
 
             context_members = filter(
-                # Deleted test for methodhood. What’s it good for?
                 lambda member: not (member[0] in special_names or member[0].startswith('_')),
                 inspect.getmembers(type(context_instance))
             )
@@ -103,7 +102,6 @@ class VowsParallelRunner(object):
                 for member_name, member in context_members:
                     if inspect.isclass(member):
                         if not issubclass(member, self.context_class):
-                            # This is rather weird and implicit, and breaks my code:
                             member = type(name, (member, self.context_class), {})
 
                         child_context_instance = member(context_instance)
