@@ -24,7 +24,6 @@ class VowsParallelRunner(object):
     def __init__(self, vows, context_class, vow_successful_event, vow_error_event):
         self.vows = vows
         self.context_class = context_class
-        #self.pool = eventlet.GreenPool()
         self.pool = Pool(1000)
         self.vow_successful_event = vow_successful_event
         self.vow_error_event = vow_error_event
@@ -36,8 +35,6 @@ class VowsParallelRunner(object):
         for name, context in self.vows.iteritems():
             self.run_context(result.contexts, name, context(None))
 
-        #while self.pool.running():
-            #self.pool.waitall()
         self.pool.join()
 
         end_time = time.time()
