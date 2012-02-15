@@ -18,28 +18,21 @@ import eventlet
 from pyvows.result import VowsResult
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 
-
 class VowsParallelRunner(object):
-    def __init__(self, vows, context_class, vow_successful_event, vow_error_event):
+    def __init__(self, vows, context_class, vow_successful_event, vow_error_event, result):
         self.vows = vows
         self.context_class = context_class
         self.pool = eventlet.GreenPool()
         self.vow_successful_event = vow_successful_event
         self.vow_error_event = vow_error_event
+        self.result = result
 
     def run(self):
-        start_time = time.time()
-        result = VowsResult()
-
         for name, context in self.vows.iteritems():
-            self.run_context(result.contexts, name, context(None))
+            self.run_context(self.result.contexts, name, context(None))
 
         while self.pool.running():
             self.pool.waitall()
-
-        end_time = time.time()
-        result.ellapsed_time = float(end_time - start_time)
-        return result
 
     def run_context(self, context_col, name, context_instance):
         self.pool.spawn_n(self.async_run_context, context_col, name, context_instance)
@@ -224,7 +217,6 @@ class VowsParallelRunner(object):
 
         return topics
 
-
 class FunctionWrapper(object):
     '''
         Just calls the passed function when all the wrapped functions have been called.
@@ -238,10 +230,12 @@ class FunctionWrapper(object):
 
         @wraps(method)
         def wrapper(*args, **kw):
-            ret = method(*args, **kw)
-            self.waiting -= 1
-            self()
-            return ret
+            try:
+                ret = method(*args, **kw)
+                return ret
+            finally:
+                self.waiting -= 1
+                self()
 
         wrapper._original = method
         return wrapper
