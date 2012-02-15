@@ -83,7 +83,7 @@ class VowsParallelRunner(object):
                 special_names.update(context_instance.ignored_members)
 
             context_members = filter(
-                lambda member: not (inspect.ismethod(member[1]) and member[0] in special_names or member[0].startswith('_')),
+                lambda member: not (member[0] in special_names or member[0].startswith('_')),
                 inspect.getmembers(type(context_instance))
             )
 
@@ -129,7 +129,8 @@ class VowsParallelRunner(object):
         filename, lineno = self.file_info_for(member._original)
         result_obj = {
             'context_instance': context_instance,
-            'name': member_name if not enumerated else '%s - %s' % (str(topic), member_name),
+            'name': member_name,
+            'enumerated': enumerated,
             'result': None,
             'topic': topic,
             'error': None,
