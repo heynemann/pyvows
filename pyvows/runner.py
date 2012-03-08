@@ -13,7 +13,8 @@ import sys
 import time
 from functools import wraps
 
-import eventlet
+#import eventlet
+from gevent.pool import Pool
 
 from pyvows.result import VowsResult
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
@@ -23,7 +24,7 @@ class VowsParallelRunner(object):
     def __init__(self, vows, context_class, vow_successful_event, vow_error_event):
         self.vows = vows
         self.context_class = context_class
-        self.pool = eventlet.GreenPool()
+        self.pool = Pool(1000)
         self.vow_successful_event = vow_successful_event
         self.vow_error_event = vow_error_event
 
@@ -34,15 +35,14 @@ class VowsParallelRunner(object):
         for name, context in self.vows.iteritems():
             self.run_context(result.contexts, name, context(None))
 
-        while self.pool.running():
-            self.pool.waitall()
+        self.pool.join()
 
         end_time = time.time()
         result.ellapsed_time = float(end_time - start_time)
         return result
 
     def run_context(self, context_col, name, context_instance):
-        self.pool.spawn_n(self.async_run_context, context_col, name, context_instance)
+        self.pool.spawn(self.async_run_context, context_col, name, context_instance)
 
     def async_run_context(self, context_col, name, context_instance, index=-1):
         context_obj = {
@@ -107,7 +107,7 @@ class VowsParallelRunner(object):
                         child_context_instance = member(context_instance)
                         child_context_instance.pool = self.pool
                         child_context_instance.teardown = teardown.wrap(child_context_instance.teardown)
-                        self.pool.spawn_n(self.async_run_context,
+                        self.pool.spawn(self.async_run_context,
                             context_obj['contexts'], member_name, child_context_instance, index
                         )
 
@@ -129,7 +129,7 @@ class VowsParallelRunner(object):
 
 
     def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
-        self.pool.spawn_n(self.async_run_vow, tests_col, topic, context_instance, member, member_name, enumerated)
+        self.pool.spawn(self.async_run_vow, tests_col, topic, context_instance, member, member_name, enumerated)
 
     def async_run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated):
         start_time = time.time()

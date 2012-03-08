@@ -39,7 +39,7 @@ pyVows is a test engine based in Vows JS and features topic-based testing as wel
     package_dir = {"pyvows": "pyvows"},
 
     install_requires=[
-        "eventlet",
+        "gevent>=0.13.6",
         "colorama",
         "lxml",
         "argparse"

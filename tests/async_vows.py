@@ -10,30 +10,22 @@
 
 import time
 
-import eventlet
-
 from pyvows import Vows, expect
 
-pool = eventlet.GreenPool()
-
-def asyncFunc(callback):
+def asyncFunc(pool, callback):
     def async():
         time.sleep(0.1)
         return 10
 
-    func = pool.spawn(async)
-
-    def get_value(gt, callback):
-        value = gt.wait()
+    def get_value(value):
         callback(value, 20, kwarg=30, kw2=40)
-
-    func.link(get_value, callback)
+    pool.apply_async(async, callback=get_value)
 
 @Vows.batch
 class AsyncTopic(Vows.Context):
     @Vows.async_topic
     def topic(self, callback):
-        asyncFunc(callback)
+        asyncFunc(self.pool, callback)
 
     def should_check_the_first_parameter(self, topic):
         expect(topic[0]).to_equal(10)
@@ -63,7 +55,7 @@ class AsyncTopic(Vows.Context):
                 def cb(*args, **kw):
                     args = (old_topic,) + args
                     return callback(*args, **kw)
-                asyncFunc(cb)
+                asyncFunc(self.pool, cb)
 
             def should_be_the_value_of_the_old_topic(self, topic):
                 expect(topic.args[0]).to_equal(1)
