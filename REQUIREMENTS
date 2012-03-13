@@ -1,5 +1,5 @@
 colorama
-eventlet
+gevent
 lxml
 argparse
 
