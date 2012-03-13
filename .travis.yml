@@ -4,7 +4,7 @@ python:
   - "2.7"
 # command to install dependencies
 before_install:
-    sudo apt-get install -y python-gevent
+    sudo apt-get install -y python-gevent python-lxml
 install: 
     pip install -r REQUIREMENTS --use-mirrors
 # command to run tests
