@@ -3,7 +3,9 @@ python:
   - "2.6"
   - "2.7"
 # command to install dependencies
-install: pip install -r REQUIREMENTS --use-mirrors
+install: 
+    aptitude install libevent
+    pip install -r REQUIREMENTS --use-mirrors
 # command to run tests
 script: make ci_test
 
