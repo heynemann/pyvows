@@ -6,7 +6,7 @@ python:
 before_install:
     sudo apt-get install -y python-gevent python-lxml
 install: 
-    pip install -r REQUIREMENTS --use-mirrors
+    pip install -r requirements-travis.txt --use-mirrors
 # command to run tests
 script: make ci_test
 
