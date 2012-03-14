@@ -12,7 +12,7 @@ import sys
 import re
 import traceback
 
-from lxml import etree
+from xml.etree import ElementTree as etree
 
 from pyvows.color import Fore, Style
 from pyvows.core import VowsAssertionError
@@ -189,9 +189,9 @@ class VowsDefaultReporter(object):
     def parse_coverage_xml(self, xml):
         result = {}
         root = etree.fromstring(xml)
-        result['overall'] = float(root.xpath('//coverage')[0].attrib['line-rate']) * 100
+        result['overall'] = float(root.attrib['line-rate']) * 100
         result['classes'] = []
-        for package in root.xpath('//package'):
+        for package in root.findall('.//package'):
             package_name = package.attrib['name']
             for klass in package.findall('.//class'):
                 result['classes'].append({

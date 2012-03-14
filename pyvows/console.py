@@ -18,7 +18,6 @@ import argparse
 
 try:
     from coverage import coverage
-    from lxml import etree
     COVERAGE_AVAILABLE = True
 except ImportError:
     COVERAGE_AVAILABLE = False
@@ -139,8 +138,8 @@ def main():
         else:
 
             print
-            print Fore.YELLOW + "WARNING: Cover disabled because coverage or lxml could not be found."
-            print Fore.YELLOW + "Make sure both are installed and accessible"
+            print Fore.YELLOW + "WARNING: Cover disabled because coverage could not be found."
+            print Fore.YELLOW + "Make sure it is installed and accessible"
             print
 
     reporter.pretty_print()
