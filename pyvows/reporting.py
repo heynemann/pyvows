@@ -13,8 +13,8 @@ import re
 import traceback
 
 from lxml import etree
-from colorama import init, Fore, Style
 
+from pyvows.color import Fore, Style
 from pyvows.core import VowsAssertionError
 
 PROGRESS_SIZE = 50
@@ -36,7 +36,6 @@ class VowsDefaultReporter(object):
     broken = Fore.RED + Style.BRIGHT + '✗' + Fore.RESET + Style.RESET_ALL
 
     def __init__(self, result, verbosity):
-        init(autoreset=True)
         self.verbosity = verbosity
         self.result = result
         self.tab = ' ' * 2

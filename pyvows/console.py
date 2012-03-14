@@ -15,7 +15,6 @@ import tempfile
 import inspect
 
 import argparse
-from colorama import init, Fore
 
 try:
     from coverage import coverage
@@ -24,6 +23,7 @@ try:
 except ImportError:
     COVERAGE_AVAILABLE = False
 
+from pyvows.color import Fore
 from pyvows.xunit import XUnitReporter
 from pyvows import version
 
@@ -138,7 +138,6 @@ def main():
 
         else:
 
-            init(autoreset=True)
             print
             print Fore.YELLOW + "WARNING: Cover disabled because coverage or lxml could not be found."
             print Fore.YELLOW + "Make sure both are installed and accessible"

@@ -40,7 +40,7 @@ pyVows is a test engine based in Vows JS and features topic-based testing as wel
 
     install_requires=[
         "gevent>=0.13.6",
-        "colorama",
+        #"colorama",
         "lxml",
         "argparse"
     ],
