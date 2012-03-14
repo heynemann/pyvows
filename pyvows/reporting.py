@@ -186,28 +186,39 @@ class VowsDefaultReporter(object):
 
             print
 
+    def parse_coverage_xml(self, xml):
+        result = {}
+        root = etree.fromstring(xml)
+        result['overall'] = float(root.xpath('//coverage')[0].attrib['line-rate']) * 100
+        result['classes'] = []
+        for package in root.xpath('//package'):
+            package_name = package.attrib['name']
+            for klass in package.findall('.//class'):
+                result['classes'].append({
+                    'name': '.'.join([package_name, klass.attrib['name']]),
+                    'line_rate': float(klass.attrib['line-rate']) * 100,
+                    'uncovered_lines': [line.attrib['number'] for line in klass.find('lines') if line.attrib['hits'] == '0']
+                })
+        return result
+
     def print_coverage(self, xml, cover_threshold):
         write_blue = lambda msg: Fore.BLUE + Style.BRIGHT + str(msg) + Style.RESET_ALL + Fore.RESET
         write_white = lambda msg: Fore.WHITE + Style.BRIGHT + str(msg) + Style.RESET_ALL + Fore.RESET
 
-        root = etree.fromstring(xml)
+        root = self.parse_coverage_xml(xml)
 
-        klasses = root.xpath('//class')
-        names = ['.'.join([klass.getparent().getparent().attrib['name'], klass.attrib['name']]) for klass in klasses]
-        max_length = max([len(klass_name) for klass_name in names])
+        max_length = max([len(klass['name']) for klass in root['classes']])
 
         print ' ' + '=' * len('Code Coverage')
         print Fore.GREEN + Style.BRIGHT + ' Code Coverage' + Style.RESET_ALL + Fore.RESET
         print ' ' + '=' * len('Code Coverage')
         print
 
-        klasses = sorted(klasses, key=lambda klass: float(klass.attrib['line-rate']))
+        klasses = sorted(root['classes'], key=lambda klass: klass['line_rate'])
 
         max_coverage = 0
         for klass in klasses:
-            package_name = klass.getparent().getparent().attrib['name']
-            klass_name = '.'.join([package_name, klass.attrib['name']])
-            coverage = float(klass.attrib['line-rate']) * 100
+            coverage = klass['line_rate']
             if coverage < cover_threshold:
                 cover_character = self.broken
             else:
@@ -218,25 +229,23 @@ class VowsDefaultReporter(object):
                 if max_coverage == 100.0:
                     print
 
-            uncovered_lines = [line.attrib['number'] for line in klass.find('lines') if line.attrib['hits'] == '0']
-
             coverage = int(round(coverage, 0))
             progress = int(round(coverage / 100.0 * PROGRESS_SIZE, 0))
             offset = coverage == 0 and 2 or (coverage < 10 and 1 or 0)
 
-            if coverage == 0 and not uncovered_lines:
+            if coverage == 0 and not klass['uncovered_lines']:
                 continue
 
             print ' %s %s%s\t%s%s%%%s %s' % (cover_character,
-                                        write_blue(klass_name),
-                                        ' ' * (max_length - len(klass_name)),
+                                        write_blue(klass['name']),
+                                        ' ' * (max_length - len(klass['name'])),
                                         '•' * progress,
                                         write_white((coverage > 0 and ' ' or '') + '%.2f' % coverage),
                                         ' ' * (PROGRESS_SIZE - progress + offset),
-                                        self.get_uncovered_lines(uncovered_lines))
+                                        self.get_uncovered_lines(klass['uncovered_lines']))
 
         print
-        total_coverage = float(root.xpath('//coverage')[0].attrib['line-rate']) * 100
+        total_coverage = root['overall']
         progress = int(round(total_coverage / 100.0 * PROGRESS_SIZE, 0))
         print ' %s %s%s\t%s %s%%' % ((total_coverage >= cover_threshold) and self.honored or self.broken,
                                     write_blue('OVERALL'),
