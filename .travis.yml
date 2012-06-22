@@ -2,11 +2,32 @@ language: python
 python:
   - "2.6"
   - "2.7"
-# command to install dependencies
-before_install:
-    sudo apt-get install -y python-gevent python-lxml
-install: 
-    pip install -r requirements-travis.txt --use-mirrors
-# command to run tests
-script: make ci_test
+
+install:
+    # update aptitude
+    - sudo apt-get update -y
+
+    # install aptitude packages
+    - LDFLAGS=-lm sudo aptitude install -y $(< requirements-travis.txt)
+
+    # weird travis-ci python paths
+    - export PYTHONPATH=$PYTHONPATH:/usr/lib/pymodules/python2.7/
+    - export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
+    - export PYTHONPATH=$PYTHONPATH:/usr/lib/pyshared/python2.7/
+    - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages/
+
+    # verify both requirements were met
+    - INSTALLDIR=$(python -c "import os; import gevent; print(os.path.dirname(gevent.__file__))")
+
+    # install python requirements
+    - pip install -r test_requirements.txt --use-mirrors
+
+script:
+    - export PYTHONPATH=$PYTHONPATH:/usr/lib/pymodules/python2.7/
+    - export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
+    - export PYTHONPATH=$PYTHONPATH:/usr/lib/pyshared/python2.7/
+    - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages/
+
+    # finally run tests
+    - make ci_test
 

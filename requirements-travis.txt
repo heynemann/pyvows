@@ -1,2 +1,4 @@
-gevent
-argparse
+libevent-dev
+libxml2-dev
+libcurl4-gnutls-dev
+python-pycurl-dbg
