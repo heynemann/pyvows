@@ -10,17 +10,18 @@ install:
     # install aptitude packages
     - LDFLAGS=-lm sudo aptitude install -y $(< requirements-travis.txt)
 
+    # install python requirements
+    - pip install -r test_requirements.txt --use-mirrors
+
     # weird travis-ci python paths
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pymodules/python2.7/
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pyshared/python2.7/
     - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages/
 
-    # verify both requirements were met
+    # verify requirements were met
     - INSTALLDIR=$(python -c "import os; import gevent; print(os.path.dirname(gevent.__file__))")
 
-    # install python requirements
-    - pip install -r test_requirements.txt --use-mirrors
 
 script:
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pymodules/python2.7/
