@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/heynemann/pyvows.png?branch=master)](http://travis-ci.org/heynemann/pyvows)
+
 pyVows is the python version of the [Vows.JS](http://vowsjs.org) testing framework.
 
 For more info go to [pyVows website](http://heynemann.github.com/pyvows/).
