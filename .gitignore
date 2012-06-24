@@ -3,3 +3,4 @@
 build
 dist
 pyVows.egg-info
+.tox
