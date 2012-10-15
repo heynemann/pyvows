@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
 <!doctype html>
 <html>
   <head>
@@ -7,7 +9,7 @@
     <link rel="alternate stylesheet" type="text/less" href="./media/main.less">
     <script src="./media/less.js"></script>
 
-    <link href='http://fonts.googleapis.com/css?family=Droid+Serif|Lobster' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif|Lobster' rel='stylesheet' type='text/css' />
     <link href="./media/shThemeFadeToGrey.css" rel="stylesheet" type="text/css" />
     <link rel="alternate" type="application/atom+xml" title="app - feed" href="./index.xml" />
     <script>
@@ -191,12 +193,12 @@ A nested context with no topics
 
         <p>pyVows is inspired by <a href="http://vowsjs.org">Vows</a>, a BDD framework for node.js.</p>
 
-        <p>Much of what's written here is based or the same as in <a href="http://vowsjs.org">Vows</a> docs.</p>
+        <p>Much of what’s written here is based or the same as in <a href="http://vowsjs.org">Vows</a> docs.</p>
 
-        <p>As its node.js counterpart, pyVows executes your tests in parallel when it makes sense,
+        <p>As its node.js counterpart does, pyVows executes your tests in parallel when it makes sense,
         and sequentially when there are dependencies.</p>
 
-        <p>Imagine we are testing a method that sums up two integers, like this:</p>
+        <p>Imagine we’re testing a method that sums two integers, like this:</p>
 
         <pre class="brush:python">
 def test_sum_returns_42():
@@ -207,7 +209,7 @@ def test_sum_returns_42():
     assert result == 42
         </pre>
 
-        <p>Even in a VERY simple scenario like this, we have three assertions in this test. Not too good if we want a single assertion per test, so we could do it like this:</p>
+        <p>Even in a <em>very</em> simple scenario like this, we have three assertions in this test. Not too good if we want a single assertion per test. So, we could do it like this:</p>
 
         <pre class="brush:python">
 def test_sum_returns_result():
@@ -223,7 +225,7 @@ def test_sum_returns_42():
     assert result == 42
         </pre>
 
-        <p>This is all fine and dandy, except that we are executing the add_two_numbers function three times. In this simple scenario we don't really care if it gets executed many times, but with real code we want to minimize calls so our tests are always as fast as possible.</p>
+        <p>Which is all fine and dandy, except that we are executing the <code>add_two_numbers</code> function three times. In this simple scenario, it might not matter if a function is executed many times. But with real code, we want to minimize calls, so our tests are always as fast as possible.</p>
 
         <p>This is how the above test would look like in pyVows:</p>
 
@@ -243,9 +245,9 @@ class SumContext(Vows.Context):
         expect(topic).to_equal(42)
         </pre>
 
-        <p>Don't worry if you don't understand all of it. We'll see it more thoroughly in the next sections.</p>
+        <p>Don’t worry if you don’t understand all of it. We’ll see it more thoroughly in the next sections.</p>
 
-        <p>Here&rsquo;s another example, this time describing &lsquo;division by zero&rsquo;:</p>
+        <p>Here’s another example, this time describing ‘division by zero’:</p>
 
         <pre class="brush:python">
 # division_by_zero_vows.py
@@ -277,7 +279,7 @@ class Divisions(Vows.Context):
 
         <hr />
 
-        <p>And now, a little more involved example&mdash;let&rsquo;s suppose we have a module called &lsquo;<code>the_good_things</code>&rsquo;, with some fruit in it:</p>
+        <p>Now let’s look at a more involved example.  Suppose we have a module called <code>the_good_things</code>, with some fruit in it:</p>
 
         <pre class="brush:python">
 class Strawberry(object):
@@ -297,7 +299,7 @@ class Banana(object):
         return PeeledBanana()
         </pre>
 
-        <p>Now write some tests in <em>the_good_things_vows.py</em>:</p>
+        <p>Now write some tests in <code>the_good_things_vows.py</code>:</p>
 
         <pre class="brush:python">
 from pyvows import Vows, expect
@@ -328,7 +330,7 @@ class TheGoodThings(Vows.Context):
                 expect(topic).to_be_instance_of(PeeledBanana)
         </pre>
 
-        <p>And run them with the test runner:</p>
+        <p>And run the tests:</p>
 
         <pre><code>$ pyvows the_good_things_vows.py</code></pre>
 
@@ -339,20 +341,20 @@ class TheGoodThings(Vows.Context):
     <div class="content">
         <h1>Installing</h1>
 
-        <p>The easiest way to install pyVows, is via <a href="http://www.pip-installer.org/en/latest/index.html">pip</a>, the python package manager, as so:</p>
+        <p>The easiest way to install pyVows, is via <a href="http://www.pip-installer.org/en/latest/">pip</a>, the Python package manager, like so:</p>
 
         <pre><code>$ pip install pyvows</code></pre>
 
         <p>Or to upgrade:</p>
 
-        <pre><code>$ pip install -U pyvows</code></pre>
+        <pre><code>$ pip install --upgrade pyvows</code></pre>
 
-        <p>Note: If you are on a Debian like system (Ubuntu) and pyvows fails to install,
-        you may need to install these packages (as root):</p>
+        <p><strong>Note:</strong> If you’re on a Debian-like system (Ubuntu) and pyvows fails to install,
+        you may need to install these packages (as <kbd>root</kbd>):</p>
 
         <pre><code># apt-get install libxslt-dev libxml2-dev</code></pre>
 
-        <p>After installing the packages, try to install pyvows again.</p>
+        <p>After those packages are installed, try installing pyvows again.</p>
     </div>
 </section>
 
@@ -360,11 +362,11 @@ class TheGoodThings(Vows.Context):
     <div class="content">
         <h1>Guide</h1>
 
-        <p>To understand pyVows, we&rsquo;re going to start with a general overview of the different components involved in writing tests, and then go through some of them in more detail.</p>
+        <p>To understand pyVows, we’re going to start with a general overview of the different components involved in writing tests, and then go through some of them in more detail.</p>
 
         <h2>Structure of a test batch</h2>
 
-        <p>Test batches in pyVows are the largest unit of tests. The convention is to have one test batch per file, and have the batch&rsquo;s class match the file name. Test batches are created with <code>@Vows.batch</code> decorator.</p>
+        <p>Test batches in pyVows are the largest unit of tests. The convention is to have one test batch per file, and have the batch’s class match the file name. Test batches are created with <code>@Vows.batch</code> decorator.</p>
 
         <pre class="brush:python">
 @Vows.batch
@@ -442,7 +444,7 @@ class AnotherContext(Vows.Context):
         Context → Topic? Vow* Context*
         </code></pre>
 
-        <p>Here&rsquo;s an annotated example:</p>
+        <p>Here’s an annotated example:</p>
 
         <pre class="brush:python">
 @Vows.batch                                             # Batch
@@ -473,9 +475,9 @@ class Array(Vows.Context):                              # Context
         <h2>How topics work</h2>
 
         <p><a href="http://vowsjs.org" target="_blank">Vows</a> introduces an <strong>incredibly powerful</strong>, yet very simple way of writing your tests. pyVows leverages the same approach towards the same goals.</p>
-        <p>Understanding <em>topics</em> is one of the keys to understanding pyVows. Unlike other testing frameworks, pyVows forces a clear separation between the element which is tested, the <em>topic</em>, and the actual tests, the <em>vows</em>.</p>
+        <p>Understanding <em>topics</em> is one of the keys to understanding pyVows. Unlike other testing frameworks, pyVows forces a clear separation between the element which is tested—the <em>topic</em>—and the tests themselves—the <em>vows</em>.</p>
 
-        <p>Let&rsquo;s start with a simple example of a context:</p>
+        <p>Let’s start with a simple example of a context:</p>
 
         <pre class="brush:python">
 class Test42(Vows.Context):
@@ -486,7 +488,7 @@ class Test42(Vows.Context):
         expect(topic).to_equal(42)
         </pre>
 
-        <p>So this shows us that the value of the topic is passed down to our test function (refered to as a <em>vow</em> from now on) as an argument.
+        <p>This demonstrates how the value of <code>topic</code> is passed down to our test function (referred to as a <dfn>vow</dfn> from now on) as an argument.
         Simple enough. Now what if we have multiple vows?</p>
 
         <pre class="brush:python">
@@ -502,11 +504,11 @@ class Test42(Vows.Context):
         expect(topic).to_equal(42)
         </pre>
 
-        <p>It works as expected, the value is passed down to each <em>vow</em>. Note that the topic function is <strong>only run once</strong>.</p>
+        <p>It works as expected; the value is passed down to each <em>vow</em>. Note that the topic function is <strong>only run once</strong>.</p>
 
         <h3>Scope</h3>
 
-        <p>Sometimes, you might need a parent topic&rsquo;s value, from inside a child topic. This is easy, because there is a notion of topic <em>scope</em>. Let&rsquo;s look at an example:</p>
+        <p>Sometimes, you’ll need a parent topic’s value, from inside a child topic. This is easy because of the notion of topic <em>scope</em>. Let’s look at an example:</p>
 
         <pre class="brush:python">
 @Vows.batch
@@ -528,9 +530,9 @@ class DataStore(Vows.Context):
             expect(topic.id).toEqual(42)
         </pre>
 
-        <p>In the example above, the value of the top-level topic is passed as an argument to the inner topic, in the same manner it&rsquo;s passed to the vows. For clarity, I named both arguments which refer to the outer topic as <code>store</code>.</p>
+        <p>In this example, the value of the top-level topic is passed as an argument to the nested topic, in the same manner in which it’s passed to vows. For clarity, I named both arguments which refer to the outer topic as <code>store</code>.</p>
 
-        <p>Note that the scoping isn&rsquo;t limited to a single level. Consider:</p>
+        <p>Note that the scoping isn’t limited to a single level. Consider:</p>
 
 <pre class="brush:python">
 def topic(self, a, b, c):
@@ -541,30 +543,30 @@ def topic(self, a, b, c):
     # return something
 </pre>
 
-        <p>So the parent topics are passed along to each topic function in the certain order: the immediate parent is always the first argument (<code>a</code>), and the outer topics follow (<code>b</code>, then <code>c</code>), like the layers of an onion.</p>
+        <p>So the parent topics are passed along to each topic function in the certain order: the immediate parent is always the first argument (<code>a</code>), and the outer topics follow—<code>b</code>, then <code>c</code>, and so on—like the layers of an onion.</p>
 
         <h2>Running a suite</h2>
 
-        <p>The simplest way to run a test suite, is with the <code>pyvows</code> command:</p>
+        <p>The simplest way to run a test suite is with the <code>pyvows</code> command:</p>
 
 <pre><code>pyvows vows/my_vows.py
 </code></pre>
 
-<p>The results will be printed to the console with the default reporter, which is <strong>very similar</strong> to <a href="http://vowsjs.org">Vows</a> <code>'dot-matrix'</code> reporter.</p>
+<p>The results will be printed to the console with the default reporter (which is <strong>very similar</strong> to <a href="http://vowsjs.org">Vows</a> ‘<code>dot-matrix</code>’ reporter).</p>
 
         <h3>Running larger suites</h3>
 
-        <p>When your tests become more complex, spanning multiple files, you&rsquo;re going to need a way to run them as a single entity.</p>
+        <p>When your tests become more complex, spanning multiple files, you’re going to need a way to run them as a single entity.</p>
 
-        <p>pyVows' test runner, can be used to run multiple test suites at once. To make use of it, just run it passing the directory as the argument, instead of the file, like this:</p>
+        <p>pyVows’ test runner can run multiple test suites at once. To use it, just pass the directory as the argument instead of the file, like this:</p>
 
         <pre><code>pyvows vows/</code></pre>
 
-        <p>We can also pass options to <code>pyvows</code>. For example, to get pyvows to run only files that end in '_test', pass the <code>--pattern='*_test.py'</code> argument. The reference section has more information on the different options you can pass to it.</p>
+        <p>You can also pass options to <code>pyvows</code>. For example, to get pyvows to run only files that end in ‘_test’, just add the <code>--pattern='*_test.py'</code> option. The reference section has more information on the different options you can pass to it.</p>
 
         <h3>Order of execution and parallelism</h3>
 
-        <p>We talked about how batches and contexts are executed briefly, but it&rsquo;s now time to delve into it in more detail:</p>
+        <p>We’ve already briefly covered how batches and contexts are executed. Now it’s now time to delve into more detail:</p>
 
         <pre class="brush:python">
 @Vows.batch
@@ -582,13 +584,13 @@ class ReadFile(Vows.Context):
             expect(topic).to_be_like('some string')
         </pre>
 
-        <p>In the example above, we make use of nested contexts. As you can tell, the result of the parent topic is passed down to its children, as arguments.</p>
+        <p>This example makes use of nested contexts. As you can see, the result of the parent topic is passed down to its children, as arguments.</p>
 
-        <p>This example as a whole is therefore mostly sequential, while remaining asynchronous.</p>
+        <p>This example is therefore, as a whole, mostly sequential—while remaining asynchronous.</p>
 
         <hr />
 
-        <p>Now let&rsquo;s look at an example which uses parallel tests to check for some devices:</p>
+        <p>Now let’s look at an example which uses parallel tests to check for some devices:</p>
 
 <pre class="brush:python">
 @Vows.batch
@@ -615,9 +617,9 @@ class Exists(Vows.Context):
             expect(topic).to_be_true()
 </pre>
 
-        <p>So in this case, the tests can finish in any order, and must not rely on each other. The test suite will exit when the last I/O call completes, and the assertions for it are run.</p>
+        <p>In this case, the tests can finish in any order, and must not rely on each other. The test suite will exit when the last I/O call completes, and the assertions for it are run.</p>
 
-        <p>In other words, <em>sibling contexts</em> are executed in parallel, while <em>nested contexts</em> are executed sequentially. Note that this all happens asynchronously, so while some contexts may be waiting for a parent context to finish, sibling contexts can still execute in the meantime.</p>
+        <p>In other words: <em>sibling contexts</em> are executed in parallel, while <em>nested contexts</em> are executed sequentially. Remember—this all happens asynchronously, so while some contexts might be waiting for their parent context to finish, sibling contexts are executing in the meantime.</p>
 
         <h2>Context inheritance</h2>
 
@@ -628,7 +630,7 @@ def add(a, b):
     return a + b
         </pre>
 
-        <p>We would write some vows as such:</p>
+        <p>You could write some vows like this:</p>
 
         <pre class="brush:python">
 class Add(Vows.Context):
@@ -642,7 +644,9 @@ class Add(Vows.Context):
         expect(topic).to_equal(3)
         </pre>
 
-        <p>We might be writing redundant tests, but again, this is just an example. Now imagine we want to test for <strong>MANY</strong> different combinations. It would be very painful to write the exact same contexts and vows over and over just to test different values. Let's try writing the above in a different way:</p>
+        <p>These might be redundant tests, but again, this is just an example.</p>
+        
+        <p>Now, imagine we want to test for <strong>MANY</strong> different combinations. It would be very painful to write the exact same contexts and vows over and over, just to test different values. Let’s try writing the above a little differently:</p>
 
         <pre class="brush:python">
 def addctx(a, b):
@@ -668,13 +672,13 @@ class AddEquals10(addctx(6,4)):
 # and so on, and so forth
         </pre>
 
-        <p>In the above test we are taking advantage of the functional nature of Python and returning a dynamic Context class as the result of <code>addctx</code>. This means that every time <code>addctx</code> is called it's returning a different Context that's aware of the values <code>a</code> and <code>b</code>.</p>
+        <p>The above tests are taking advantage of the functional nature of Python, and returning a dynamic <code>Context</code> class as the result of <code>addctx</code>. This means every time <code>addctx</code> is called, it’s returning a different <code>Context</code> with awareness of the values <code>a</code> and <code>b</code>.</p>
 
-        <p>Context inheritance can also be a powerful tool to initialize database connections, web servers and any other resources your vows may rely on. A pretty good example of this is <a href="https://github.com/rafaelcaricio/tornado_pyvows">the tornado pyvows project</a> by <a href="https://github.com/rafaelcaricio">Rafael Carício</a>.</p>
+        <p>Context inheritance can also be a powerful tool to initialize database connections, web servers, and any other resources your vows might rely on. A pretty good example of this is the <a href="https://github.com/rafaelcaricio/tornado_pyvows">tornado pyvows project</a> by <a href="https://github.com/rafaelcaricio">Rafael Carício</a>.</p>
 
         <h2>Using generative testing</h2>
 
-        <p>Generative testing can be a great ally in having clean, lean tests. Let's get back to our old friend, the add two numbers example:</p>
+        <p><dfn>Generative testing</dfn> can be a powerful ally for having clean, lean tests. Let’s check back with our old friend, the add two numbers example:</p>
 
         <pre class="brush:python">
 def add(a, b):
@@ -691,11 +695,11 @@ class Add(Vows.Context):
         expect(topic).to_equal(3)
         </pre>
 
-        <p>Even though we can simplify this a lot by using context inheritance, like demonstrated in the previous section, we'll try something different now. We'll use generative testing.</p>
+        <p>Even though we could simplify this a lot with context inheritance (as demonstrated in the last section), we’re going to try something different this time. We’ll use <strong>generative testing</strong>.</p>
 
-        <p>Generative testing is having a test (or in our case vows and contexts) be executed one or more times, but with different arguments (topics) in each pass.</p>
+        <p>Generative testing means having a test (or in our case, <em>vows</em> and <em>contexts</em>) executed one or more times, but with different arguments (<code>topics</code>) each pass.</p>
 
-        <p>Let's rewrite the above using generative testing:</p>
+        <p>Let’s rewrite the above using generative testing:</p>
 
         <pre class="brush:python">
 def add(a, b):
@@ -723,9 +727,9 @@ class Add(Vows.Context):
         expect(sum).to_equal(expected)
         </pre>
 
-        <p>This means that <code>should_be_numeric</code> and <code>should_equal_to_expected</code> will be executed four times each with a tuple of two items: the result of adding a and b, and the expected result.</p>
+        <p>This means that <code>should_be_numeric</code> and <code>should_equal_to_expected</code> will be executed four times each, with a tuple of two items: the result of adding <code>a</code> and <code>b</code>, and the expected result.</p>
 
-        <p>Let's take this a step further and check against even more scenarios:</p>
+        <p>Let’s go a step further, and check against even more scenarios:</p>
 
         <pre class="brush:python">
  def add(a, b):
@@ -758,19 +762,19 @@ class Add(Vows.Context):
                     expect(sum).to_equal(expected)
         </pre>
 
-        <p>This way we are verifying against the sum of all combinations of 0 to 9 plus 0 to 9, yet it is still very simple.</p>
+        <p>This way, we’re testing the sum of <em>all</em> combinations of 0 to 9 plus 0 to 9, yet it is still very simple.</p>
 
-        <p>Now we can add as many scenarios as we may think of, and won't have to write a single other vow.</p>
+        <p>Now we can add <em>as many scenarios as we can think of</em>. And we won’t have to write a single new vow!</p>
 
         <h2>Asynchronous Topics</h2>
 
-        <p>Say you need to test an async method called <em>async_square</em> that takes a number and returns the square of that number, but asynchronously.</p>
-        <p>Normally, you'd have a problem, since your tests would not wait for the callback (or even pass a callback for that matter). That's where <em>pyvows</em> comes to your rescue.</p>
-        <p>Testing async topics is as easy as decorating the topic method with a <em>Vows.async_topic</em> decorator.</p>
+        <p>Imagine you need to test an asynchronous method called <em>async_square</em>. It takes a number and returns that number’s square—but it does so <em>asynchronously</em>.</p>
+        <p>Normally, this would be a problem. Your tests wouldn’t wait for the callback—or even pass a callback, for that matter. This is where <em>pyvows</em> comes to your rescue.</p>
+        <p>Testing asynchronous topics is as trivial as decorating the <code>topic</code> method with the <em><code>Vows.async_topic</code></em> decorator.</p>
 
         <pre class="brush:python">
 def async_square(a, callback):
-    callback(a * a, kwarg1=True) # imagine this is async code and could take a while
+    callback(a * a, kwarg1=True) # This is async code, and could take a while
 
 class Square(Vows.Context):
     @Vows.async_topic
@@ -788,22 +792,22 @@ class Square(Vows.Context):
         expect(topic['kwarg1']).to_equal(True) # does the same as the previous line
         </pre>
 
-        <p>Notice the <em>callback</em> argument in the topic. When you decorate the topic with <em>async_topic</em>, <em>pyvows</em> adds this argument.</p>
-        <p>Simply pass this argument as the callback to the method you wish to test and let <em>pyvows</em> take care of the rest.</p>
+        <p>Notice the <em><code>callback</code></em> argument in the topic. When you decorate the topic with <em><code>async_topic</code></em>, <em>pyvows</em> adds this argument.</p>
+        <p>Simply pass this argument as the callback to the method you wish to test, and let <em>pyvows</em> take care of the rest.</p>
 
         <h2>Assertions</h2>
 
-        <p>pyVows features an extensible assertion model, with many useful functions, as well as error reporting.</p>
+        <p>pyVows features an extensible assertion model with many useful functions, as well as error reporting.</p>
 
-        <p>It&rsquo;s always best to use the more specific assertion functions when testing a value, you&rsquo;ll get much better error reporting, because your intention is clearer.</p>
+        <p>It’s always best to use the most specific assertion functions when testing a value. You’ll get much better error reporting, because your intention is clearer.</p>
 
-        <p>Let&rsquo;s say we have the following array:</p>
+        <p>Let’s say we have the following array:</p>
 
         <pre class="brush:python">
 ary = [1, 2, 3]
         </pre>
 
-        <p>and try to assert that it has 5 elements. With the built-in <code>assert</code>, we would do something like this:</p>
+        <p>…and try to assert that it has 5 elements. With the built-in <code>assert</code>, we would do something like this:</p>
 
         <pre class="brush:python">
 assert len(ary) == 5
@@ -813,7 +817,7 @@ assert len(ary) == 5
 
         <pre><code>AssertionError:</code></pre>
 
-        <p>Now let&rsquo;s try that with one of our more specific assertion functions, <code>to_length</code>:</p>
+        <p>Now let’s try that with one of our more specific assertion functions, <code>to_length</code>:</p>
 
         <pre class="brush:python">
 expect(ary).to_length(5);
@@ -824,11 +828,11 @@ expect(ary).to_length(5);
         <pre><code>Expected topic([1, 2, 3]) to have 5 of length, but it had 3.</code></pre>
 
         <p>Other useful assertion functions bundled with pyVows include <code>to_match</code>, <code>to_be_instance_of</code>,
-        <code>to_include</code> and <code>to_be_empty</code>&mdash;head over to the <a href="#reference">reference</a> to get the full list.</p>
+        <code>to_include</code>, and <code>to_be_empty</code>. Check out the <a href="#reference">reference</a> for the full list.</p>
 
         <h3>Custom Assertions</h3>
 
-        <p>Creating new assertions to be used with <code>expect</code> is as simple as using the <code>Vows.create_assertions</code> decorator on a function that gets the topic as first parameter and the expectation as second:</p>
+        <p>Creating new assertions for use with <code>expect</code> is as simple as using the <code>Vows.create_assertions</code> decorator on a function. The function expects <code>topic</code> as the first parameter, and <code>expectation</code> second:</p>
 
         <pre class="brush:python">
 @Vows.create_assertions
@@ -836,17 +840,17 @@ def to_be_greater_than(topic, expected):
     return topic > expected
         </pre>
 
-        <p>Now doing the following expectation:</p>
+        <p>Now, the following expectation…</p>
 
         <pre class="brush:python">
 expect(2).to_be_greater_than(3);
         </pre>
 
-        <p>Will report:</p>
+        <p>…will report:</p>
 
         <pre><code>Expected topic(2) to be greater than 3.</code></pre>
 
-        <p>It will also create the corresponding 'not_' assertion:</p>
+        <p>It will also create the corresponding <code>not_</code> assertion:</p>
 
         <pre class="brush:python">
 expect(4).not_to_be_greater_than(3);
@@ -856,14 +860,14 @@ expect(4).not_to_be_greater_than(3);
 
         <pre><code>Expected topic(4) not to be greater than 3.</code></pre>
 
-        <p>If you need more control over your error message or your assertion doesn't have a corresponding 'not_', you can use the lower level <code>Vows.assertion</code> decorator and raise a <code>VowsAssertionError</code>. There are lots of examples <a href="https://github.com/heynemann/pyvows/tree/master/pyvows/assertions">here</a>.</p>
+        <p>If you need more control over your error message, or your assertion doesn’t have a corresponding <code>not_</code>, you can use the lower-level <code>Vows.assertion</code> decorator and raise a <code>VowsAssertionError</code>. <a href="https://github.com/heynemann/pyvows/tree/master/pyvows/assertions">Here are lots of examples</a>.</p>
 
-        <p>By raising a <code>VowsAssertionError</code> you get the benefit of highlighting the important values when your specs are giving error.</p>
+        <p>By raising a <code>VowsAssertionError</code> you get the benefit of highlighting the important values when your vows are broken.</p>
 
-        <p>If you still just wanna raise a <code>AssertionError</code>, like the old times, they are supported:</p>
+        <p>If you still just wanna raise an <code>AssertionError</code> like old times, that’s supported:</p>
 
         <pre class="brush:python">
-# attention, this is not a recommendation, just an example of what could be done
+# NOTE: This is not a recommendation--just an example of what can be done
 @Vows.assertion
 def to_be_a_positive_integer(topic):
     assert type(topic) == int, "Expected %s to be a positive integer, but it's not even an integer" % (topic,)
@@ -875,7 +879,7 @@ def not_to_be_a_positive_integer(topic):
     assert topic <= 0, "Expected %s not to be a positive integer, but it was" % (topic,)
         </pre>
 
-        <p>It is really recommended to always declare the assertion and the 'not_' assertion (if applied), so they can be used like this:</p>
+        <p>It’s recommended to always declare both the assertion and the <code>not_</code> assertion (if applicable), so they can be used like this:</p>
         <pre class="brush:python">
         expect(5).to_be_a_positive_integer()
         expect(-3).Not.to_be_a_positive_integer()
@@ -893,13 +897,13 @@ def not_to_be_a_positive_integer(topic):
 <pre><code>pyvows [FILE, ...] [options]
 </code></pre>
 
-<p>Running specific tests</p>
+<p>Run specific tests</p>
 
 <pre><code>$ pyvows test_1.py
 $ pyvows tests/
 </code></pre>
 
-<p>Running all tests in the current or children folders</p>
+<p>Run all tests in the current (or child) folders</p>
 
 <pre><code>$ pyvows
 </code></pre>
@@ -911,11 +915,11 @@ $ pyvows tests/
 <table cellspacing="10">
   <tr>
     <td class="usage"><code>-p</code>, <code>--pattern</code></td>
-    <td>Pattern of files to run as vows. Defaults to "*_vows.py".</td>
+    <td>Pattern of files to run as vows. Defaults to <kbd>*_vows.py</kbd>.</td>
   </tr>
   <tr>
     <td class="usage"><code>-c</code>, <code>--cover</code></td>
-    <td>Indicates that coverage of code should be shown. Defaults to True.</td>
+    <td>Indicates that coverage of code should be shown. Defaults to <code>True</code>.</td>
   </tr>
   <tr>
     <td class="usage"><code>-l</code>, <code>--cover_package</code></td>
@@ -927,7 +931,7 @@ $ pyvows tests/
   </tr>
   <tr>
     <td class="usage"><code>-t</code>, <code>--cover_threshold</code></td>
-    <td>Coverage number below which coverage is considered failing. Defaults to 80.0.</td>
+    <td>Coverage number below which coverage is considered failing. Defaults to <code>80.0</code>.</td>
   </tr>
   <tr>
     <td class="usage"><code>-r</code>, <code>--cover_report</code></td>
@@ -939,11 +943,11 @@ $ pyvows tests/
   </tr>
   <tr>
     <td class="usage"><code>-f</code>, <code>--xunit_file</code></td>
-    <td>Filename of the XUnit output. Defaults to 'pyvows.xml'.</td>
+    <td>Filename of the XUnit output. Defaults to <kbd>pyvows.xml</kbd>.</td>
   </tr>
   <tr>
     <td class="usage"><code>-v</code></td>
-    <td>Verbosity. Can be supplied multiple times to increase verbosity. Defaults to -vv.</td>
+    <td>Verbosity. Can be supplied multiple times to increase verbosity. Defaults to <kbd>-vv</kbd>.</td>
   </tr>
   <tr>
     <td class="usage"><code>--no-color</code></td>
@@ -955,7 +959,7 @@ $ pyvows tests/
   </tr>
   <tr>
     <td class="usage"><code>--version</code></td>
-    <td>Show current installed pyvows' version</td>
+    <td>Show pyvows’ current version</td>
   </tr>
 </table>
 
@@ -1079,16 +1083,16 @@ expect(ValueError("some")).Not.to_have_an_error_message_of("error")
     <div class="content">
         <h1>About</h1>
 
-        <p>Both pyVows and this website are <strong>HEAVILY</strong> inspired by the work done by <a href="http://cloudhead.io">Alexis Sellier</a>, more commonly known as <a href="http://cloudhead.io">cloudhead</a>. He is responsible for <a href="http://cloudhead.io/toto">toto</a>, <a href="http://github.com/cloudhead/less.js">LESS</a>, <a href="http://github.com/cloudhead/hijs">hijs</a>, and a lot more.</p>
+        <p>Both pyVows and this website are <strong>HEAVILY</strong> inspired by the work done by <a href="http://cloudhead.io">Alexis Sellier</a>, more commonly known as <a href="http://cloudhead.io">cloudhead</a>. He’s responsible for <a href="http://cloudhead.io/toto">toto</a>, <a href="http://github.com/cloudhead/less.js">LESS</a>, <a href="http://github.com/cloudhead/hijs">hijs</a>, and a lot more.</p>
 
-        <p>More than that, he's responsible for a shift in the way we write tests. We have cleaner, leaner and meaner tests now. And they *ARE* fast.</p>
+        <p>More than that, he’s responsible for a shift in <em>the way we write</em> tests. We have cleaner, leaner, and meaner tests now. And they are <strong>fast</strong>.</p>
 
         <p>pyVows was developed by <a href="http://blog.heynemann.com.br" target="_blank">Bernardo Heynemann</a>, and features contribution by <a href="https://github.com/rafaelcaricio" target="_blank">Rafael Carício</a>, <a href="https://github.com/fabiomcosta">Fábio Costa</a> and <a href="https://github.com/truemped">Daniel Truemper</a>.</p>
 
         <p>The design for this website is the work of <a href="http://cloudhead.io">Alexis Sellier</a>, and this website is intended as a compliment and as recognition of his great work, not as a copy.</p>
 
         <footer>
-            <p id="copy">Copyright &copy; Bernardo Heynemann 2011</p>
+            <p id="copy">Copyright © Bernardo Heynemann 2011</p>
         </footer>
     </div>
 </section>
