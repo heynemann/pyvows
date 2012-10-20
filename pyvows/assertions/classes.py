@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+'''PyVows instance assertions.  For use with `expect()` (see `pyvows.core`).
+'''
+
 
 # pyVows testing engine
 # https://github.com/heynemann/pyvows

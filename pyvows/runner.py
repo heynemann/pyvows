@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+'''This module contains the magic that makes PyVows run its tests *fast*.  
+
+Contains the classes `VowsParallelRunner` and `FunctionWrapper`.
+'''
+
 
 # pyvows testing engine
 # https://github.com/heynemann/pyvows
@@ -226,8 +231,8 @@ class VowsParallelRunner(object):
 
 
 class FunctionWrapper(object):
-    '''
-        Just calls the passed function when all the wrapped functions have been called.
+    ''' Just calls the passed function when all the wrapped functions have been 
+        called.
     '''
     def __init__(self, func):
         self.waiting = 0

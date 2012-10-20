@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+'''This package contains all the code for PyVows assertions.  
+
+Aren't they convenient?
+'''
+
 
 # pyVows testing engine
 # https://github.com/heynemann/pyvows
