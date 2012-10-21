@@ -50,7 +50,7 @@ class XUnitReporter(object):
         testsuite_node.setAttribute('failures', str(result_summary['failures']))
         testsuite_node.setAttribute('timestamp', str(result_summary['ts']))
         testsuite_node.setAttribute('hostname', str(result_summary['hostname']))
-        testsuite_node.setAttribute('time', '%.3f' % result_summary['elapsed'])
+        testsuite_node.setAttribute('time', '{0:.3f}'.format(result_summary['elapsed']))
 
         document.appendChild(testsuite_node)
 
@@ -71,13 +71,15 @@ class XUnitReporter(object):
             testcase_node = document.createElement('testcase')
             testcase_node.setAttribute('classname', str(test_stats['context']))
             testcase_node.setAttribute('name', str(test_stats['name']))
-            testcase_node.setAttribute('time', '%.3f' % test_stats['taken'])
+            testcase_node.setAttribute('time', '{0:.3f}'.format(test_stats['taken']))
             parent_node.appendChild(testcase_node)
 
             if not test['succeeded']:
                 error = test['error']
-                error_msg = traceback.format_exception(error['type'],
-                        error['value'], error['traceback'])
+                error_msg = traceback.format_exception(
+                        error['type'],
+                        error['value'], 
+                        error['traceback'])
 
                 if isinstance(test['topic'], Exception):
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error

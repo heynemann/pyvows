@@ -32,8 +32,8 @@ def ensure_encoded(thing, encoding='utf-8'):
         return thing
 
 class VowsDefaultReporter(object):
-    honored = Fore.GREEN + Style.BRIGHT + '✓' + Fore.RESET + Style.RESET_ALL
-    broken = Fore.RED + Style.BRIGHT + '✗' + Fore.RESET + Style.RESET_ALL
+    honored = '{0}✓{1}'.format(Fore.GREEN + Style.BRIGHT, Fore.RESET + Style.RESET_ALL)
+    broken  = '{0}✗{1}'.format(Fore.RED   + Style.BRIGHT, Fore.RESET + Style.RESET_ALL)
 
     def __init__(self, result, verbosity):
         self.verbosity = verbosity
@@ -62,9 +62,9 @@ class VowsDefaultReporter(object):
         print ' ' + '=' * len(msg)
 
         if not self.result.contexts:
-            print '%s%s No vows found! » 0 honored • 0 broken (0.0s)' % (
-                self.tab * self.indent,
-                self.broken,
+            print '{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
+                indent = self.tab * self.indent,
+                broken = self.broken,
             )
             return
 
@@ -75,12 +75,12 @@ class VowsDefaultReporter(object):
         for context in self.result.contexts:
             self.print_context(context['name'], context)
 
-        print '%s%s OK » %d honored • %d broken (%.6fs)' % (
+        print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.tab * self.indent,
             self.honored if self.result.successful else self.broken,
-            self.result.successful_tests,
-            self.result.errored_tests,
-            self.result.ellapsed_time
+            honored = self.result.successful_tests,
+            broken  = self.result.errored_tests,
+            time    = self.result.ellapsed_time
         )
 
         print
@@ -93,19 +93,22 @@ class VowsDefaultReporter(object):
     def format_traceback(self, traceback_list, indentation):
         def indent(msg):
             if msg.startswith('  File'):
-                return msg.replace('\n ', '\n %s' % indentation)
+                return msg.replace('\n ', '\n {0}'.format(indentation))
             return msg
 
         return indentation.join(map(indent, traceback_list))
 
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
         if isinstance(exc_value, VowsAssertionError):
-            exc_values_args = tuple(map(lambda arg: Fore.RESET + arg + Fore.RED, exc_value.args))
+            exc_values_args = tuple(map(lambda arg: '{0.RESET}{1}{0.RED}{2}'.format(Fore, arg, exc_value.args)))
             error_msg = exc_value.msg % exc_values_args
         else:
             error_msg = unicode(exc_value)
 
-        print indentation + Fore.RED + error_msg + Fore.RESET
+        print '{indent}{F.RED}{error}{F.RESET}'.format(
+            F       = Fore,
+            indent  = indentation,
+            error   = error_msg)
 
         if self.verbosity >= V_NORMAL:
             traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -127,14 +130,16 @@ class VowsDefaultReporter(object):
                     ensure_encoded,
                     (VowsDefaultReporter.honored, test['topic'], test['name']))
                 if self.verbosity == V_VERBOSE:
-                    self.humanized_print('%s %s' % (honored, name))
+                    self.humanized_print('{0} {1}'.format(honored, name))
                 elif self.verbosity >= V_EXTRA_VERBOSE:
                     if test['enumerated']:
-                        self.humanized_print('%s %s - %s' % (honored, topic, name))
+                        self.humanized_print('{0} {1} - {2}'.format(honored, topic, name))
                     else:
-                        self.humanized_print('%s %s' % (honored, name))
+                        self.humanized_print('{0} {1}'.format(honored, name))
             else:
-                self.humanized_print(VowsDefaultReporter.broken + ' ' + test['name'])
+                self.humanized_print('{0} {1}'.format(
+                    VowsDefaultReporter.broken, 
+                    test['name']))
 
                 if isinstance(test['topic'], Exception) and \
                    hasattr(test['context_instance'], 'topic_error'):
@@ -147,7 +152,11 @@ class VowsDefaultReporter(object):
                 self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
 
                 if 'file' in test:
-                    print indentation2 + Fore.RED + 'found in %s at line %s' % (test['file'], test['lineno']) + Fore.RESET
+                    print
+                    print '{0}found in {test["file"]} at line {test["lineno"]}{1}'.format(
+                        (indentation2 + Fore.RED), 
+                        Fore.RESET, 
+                        test = test)
                     print
 
         for context in context['contexts']:
@@ -166,7 +175,7 @@ class VowsDefaultReporter(object):
             print ' ' + '=' * len(msg)
             print
 
-            print "       Ellapsed    Context File Path                 Context Name"
+            print '       Ellapsed    Context File Path                 Context Name'
             for index, topic in enumerate(topics):
                 name = self.under_split(topic['context'])
                 name = self.camel_split(name)
@@ -202,7 +211,7 @@ class VowsDefaultReporter(object):
         return result
 
     def print_coverage(self, xml, cover_threshold):
-        write_blue = lambda msg: Fore.BLUE + Style.BRIGHT + str(msg) + Style.RESET_ALL + Fore.RESET
+        write_blue  = lambda msg: Fore.BLUE + Style.BRIGHT + str(msg) + Style.RESET_ALL + Fore.RESET
         write_white = lambda msg: Fore.WHITE + Style.BRIGHT + str(msg) + Style.RESET_ALL + Fore.RESET
 
         root = self.parse_coverage_xml(xml)
@@ -240,7 +249,7 @@ class VowsDefaultReporter(object):
                                         write_blue(klass['name']),
                                         ' ' * (max_length - len(klass['name'])),
                                         '•' * progress,
-                                        write_white((coverage > 0 and ' ' or '') + '%.2f' % coverage),
+                                        write_white((coverage > 0 and ' ' or '') + '{0:.2f}'.format(coverage)),
                                         ' ' * (PROGRESS_SIZE - progress + offset),
                                         self.get_uncovered_lines(klass['uncovered_lines']))
 
@@ -251,7 +260,7 @@ class VowsDefaultReporter(object):
                                     write_blue('OVERALL'),
                                     ' ' * (max_length - len('OVERALL')),
                                     '•' * progress,
-                                    write_white('%.2f' % total_coverage))
+                                    write_white('{0:.2f}'.format(total_coverage)))
 
         print
 
@@ -263,7 +272,7 @@ class VowsDefaultReporter(object):
                 if not i == number_of - 1:
                     template_str += ' ,'
 
-            template_str.append(' and %d more' % (len(uncovered_lines) - number_of))
+            template_str.append(' and {0:d} more'.format(len(uncovered_lines) - number_of))
 
             return ''.join(template_str)
 

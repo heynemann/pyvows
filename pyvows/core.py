@@ -37,16 +37,16 @@ class expect(object):
         self.not_assert = False
 
     def __getattr__(self, name):
-        if name == "topic":
+        if name == 'topic':
             return super(expect, self).__getattr__(name)
 
-        if name == "Not":
+        if name == 'Not':
             self.not_assert = not self.not_assert
             return self
 
-        method_name = "not_%s" % name if self.not_assert else name
+        method_name = 'not_{0}'.format(name) if self.not_assert else name
         if not hasattr(Vows.Assert, method_name):
-            raise AttributeError("Assertion %s was not found!" % method_name)
+            raise AttributeError('Assertion {0} was not found!'.format(method_name))
 
         def assert_topic(*args, **kw):
             return getattr(Vows.Assert, method_name)(self.topic, *args, **kw)
@@ -57,7 +57,7 @@ class expect(object):
 class VowsAssertion(object):
     class AssertionNotFoundError(AttributeError):
         def __init__(self, name):
-            super(VowsAssertion.AssertionNotFoundError, self).__init__("Assertion with name %s was not found!" % name)
+            super(VowsAssertion.AssertionNotFoundError, self).__init__('Assertion with name {0} was not found!'.format(name))
 
     def __getattr__(self, name):
         if not hasattr(self, name):
@@ -80,7 +80,7 @@ class VowsAssertionError(AssertionError):
         return self.__str__()
 
     def __repr__(self):
-        return "VowsAssertionError('%s',)" % self.__str__()
+        return "VowsAssertionError('{0!s}',)".format(self)
 
 
 class Vows(object):
@@ -137,7 +137,7 @@ class Vows(object):
 
     @staticmethod
     def asyncTopic(topic):
-        warnings.warn("The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.", DeprecationWarning, stacklevel=2)
+        warnings.warn('The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.', DeprecationWarning, stacklevel=2)
         return Vows.async_topic(topic)
 
     @staticmethod
@@ -163,7 +163,7 @@ class Vows(object):
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
 
         def exec_assertion(*args):
-            raw_msg = 'Expected topic(%s) ' + humanized_method_name
+            raw_msg = 'Expected topic(%s) {0}'.format(humanized_method_name)
             if len(args) == 2:
                 raw_msg += ' %s'
 
@@ -171,7 +171,7 @@ class Vows(object):
                 raise VowsAssertionError(raw_msg, *args)
 
         def exec_not_assertion(*args):
-            raw_msg = 'Expected topic(%s) not ' + humanized_method_name
+            raw_msg = 'Expected topic(%s) not {0}'.format(humanized_method_name)
             if len(args) == 2:
                 raw_msg += ' %s'
 
@@ -179,7 +179,7 @@ class Vows(object):
                 raise VowsAssertionError(raw_msg, *args)
 
         setattr(Vows.Assert, method.__name__, exec_assertion)
-        setattr(Vows.Assert, 'not_%s' % method.__name__, exec_not_assertion)
+        setattr(Vows.Assert, 'not_{0}'.format(method.__name__), exec_not_assertion)
 
         def wrapper(*args, **kw):
             return method(*args, **kw)
