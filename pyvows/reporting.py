@@ -270,7 +270,7 @@ class VowsDefaultReporter(object):
             for i in range(number_of):
                 template_str.append(uncovered_lines[i])
                 if not i == number_of - 1:
-                    template_str += ' ,'
+                    template_str += ', '
 
             template_str.append(' and {0:d} more'.format(len(uncovered_lines) - number_of))
 
