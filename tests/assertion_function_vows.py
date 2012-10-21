@@ -32,7 +32,7 @@ class AssertionIsFunction(Vows.Context):
 
             def we_get_an_understandable_message(self, topic):
                 expect(topic).to_have_an_error_message_of(
-                        "Expected topic(4) to be a function or a method, but it was a %s." % str(int))
+                        'Expected topic(4) to be a function or a method, but it was a {0!s}.'.format(int))
 
 
     class WhenItNotAFunction(Vows.Context):
@@ -49,6 +49,6 @@ class AssertionIsFunction(Vows.Context):
 
             def we_get_an_understandable_message(self, topic):
                 expect(topic).to_have_an_error_message_of(
-                        "Expected topic(%s) not to be a function or a method." % str(a_function))
+                        'Expected topic({0!s}) not to be a function or a method.'.format(a_function))
 
 
