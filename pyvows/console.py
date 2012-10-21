@@ -31,36 +31,24 @@ class Messages(object):
     path      = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)r).'
     pattern   = 'Pattern of vows files. (default: %(default)r)'
     verbosity = 'Verbosity. May be specified many times to increase verbosity (default: -vv)'
-    
     cover           = 'Show the code coverage of tests. (default: %(default)s)'
     cover_package   = 'Verify coverage of %(metavar)s. May be specified many times. (default: all packages)'
     cover_omit      = 'Exclude %(metavar)s from coverage. May be specified many times. (default: no files)'
     cover_threshold = 'Coverage below %(metavar)s is considered a failure. (default: %(default)s)'
     cover_report    = 'Store coverage report as %(metavar)s. (default: %(default)r)'
-    
     xunit_output    = 'Enable XUnit output. (default: %(default)s)'
     xunit_file      = 'Store XUnit output as %(metavar)s. (default: %(default)r)'
-    
     profile           = 'Prints the 10 slowest topics. (default: %(default)s)'
     profile_threshold = 'Tests taking longer than %(metavar)s seconds are considered slow. (default: %(default)s)'
-    
     no_color  = 'Turn off colorized output. (default: %(default)s)'
     progress  = 'Show progress ticks during testing. (default: %(default)s)'
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
 
 def __get_arguments():
     current_dir = os.curdir
     
-    uline   = lambda text: '\033[4m{0}\033[24m'.format(text)
+    #Easy underlining, if we ever need it in the future
+    #uline   = lambda text: '\033[4m{0}\033[24m'.format(text)
     metavar = lambda metavar: '{0}{1}{2}'.format(Style.RESET_ALL, metavar.upper(), Style.RESET_ALL)
     
     parser = argparse.ArgumentParser(description     = 'Runs pyVows.')
