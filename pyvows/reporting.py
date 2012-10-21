@@ -56,10 +56,7 @@ class VowsDefaultReporter(object):
         sys.stdout.write(cls.broken)
 
     def pretty_print(self):
-        msg = 'Vows Results'
-        print ' ' + '=' * len(msg)
-        print Fore.GREEN + Style.BRIGHT + ' ' + msg + Style.RESET_ALL + Fore.RESET
-        print ' ' + '=' * len(msg)
+        self.print_header('Vows Results')
 
         if not self.result.contexts:
             print '{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
@@ -169,11 +166,7 @@ class VowsDefaultReporter(object):
         topics = self.result.get_worst_topics(number=10, threshold=threshold)
 
         if topics:
-            msg = "Slowest Topics"
-            print ' ' + '=' * len(msg)
-            print Fore.GREEN + Style.BRIGHT + ' ' + msg + Style.RESET_ALL + Fore.RESET
-            print ' ' + '=' * len(msg)
-            print
+            self.print_header('Slowest Topics')
 
             print '       Ellapsed    Context File Path                 Context Name'
             for index, topic in enumerate(topics):
@@ -209,6 +202,23 @@ class VowsDefaultReporter(object):
                     'uncovered_lines': [line.attrib['number'] for line in klass.find('lines') if line.attrib['hits'] == '0']
                 })
         return result
+        
+    def print_header(self, msg):
+        ruler      = ' {0}'.format( '=' * len(msg) )
+        
+        prefix = ''.join(( Fore.GREEN, Style.BRIGHT ))
+        suffix = ''.join(( Style.RESET_ALL, Fore.RESET ))
+        
+        msg   = '{prefix} {msg}{suffix}'.format(
+            prefix = prefix,
+            msg    = msg,
+            suffix = suffix
+            )
+        print 
+        print ruler
+        print msg
+        print ruler
+        print 
 
     def print_coverage(self, xml, cover_threshold):
         write_blue  = lambda msg: Fore.BLUE + Style.BRIGHT + str(msg) + Style.RESET_ALL + Fore.RESET
@@ -218,11 +228,8 @@ class VowsDefaultReporter(object):
 
         max_length = max([len(klass['name']) for klass in root['classes']])
 
-        print ' ' + '=' * len('Code Coverage')
-        print Fore.GREEN + Style.BRIGHT + ' Code Coverage' + Style.RESET_ALL + Fore.RESET
-        print ' ' + '=' * len('Code Coverage')
-        print
-
+        self.print_header('Code Coverage')
+        
         klasses = sorted(root['classes'], key=lambda klass: klass['line_rate'])
 
         max_coverage = 0
