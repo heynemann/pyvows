@@ -11,7 +11,7 @@
 class VowsResult(object):
     def __init__(self):
         self.contexts = []
-        self.ellapsed_time = 0.0
+        self.elapsed_time = 0.0
 
     @property
     def successful(self):
@@ -61,7 +61,7 @@ class VowsResult(object):
             topic_times.append({
                 'context': context['name'],
                 'path': context['filename'],
-                'ellapsed': context['topic_ellapsed']
+                'elapsed': context['topic_elapsed']
             })
 
             topic_times.extend(self.get_topic_times(context['contexts']))
@@ -69,6 +69,6 @@ class VowsResult(object):
         return topic_times
 
     def get_worst_topics(self, number=10, threshold=0.1):
-        times = [time for time in self.get_topic_times() if time['ellapsed'] > 0 and time['ellapsed'] >= threshold]
-        return list(reversed(sorted(times, key=lambda x: x['ellapsed'])))[:number]
+        times = [time for time in self.get_topic_times() if time['elapsed'] > 0 and time['elapsed'] >= threshold]
+        return list(reversed(sorted(times, key=lambda x: x['elapsed'])))[:number]
 

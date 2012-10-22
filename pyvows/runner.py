@@ -38,7 +38,7 @@ class VowsParallelRunner(object):
         self.pool.join()
 
         end_time = time.time()
-        result.ellapsed_time = float(end_time - start_time)
+        result.elapsed_time = float(end_time - start_time)
         return result
 
     def run_context(self, context_col, name, context_instance):
@@ -47,7 +47,7 @@ class VowsParallelRunner(object):
     def async_run_context(self, context_col, name, context_instance, index=-1):
         context_obj = {
             'name': name,
-            'topic_ellapsed': 0,
+            'topic_elapsed': 0,
             'contexts': [],
             'tests': [],
             'filename': inspect.getsourcefile(context_instance.__class__)
@@ -69,7 +69,7 @@ class VowsParallelRunner(object):
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 topic = exc_value
                 context_instance.topic_error = (exc_type, exc_value, exc_traceback)
-            context_obj['topic_ellapsed'] = float(round(time.time() - start_time, 6))
+            context_obj['topic_elapsed'] = float(round(time.time() - start_time, 6))
         else:
             topic = context_instance._get_first_available_topic(index)
 
@@ -144,7 +144,7 @@ class VowsParallelRunner(object):
             'succeeded': False,
             'file': filename,
             'lineno': lineno,
-            'ellapsed': 0
+            'elapsed': 0
         }
 
         try:
@@ -165,7 +165,7 @@ class VowsParallelRunner(object):
             if self.vow_error_event:
                 self.vow_error_event(result_obj)
 
-        result_obj['ellapsed'] = time.time() - start_time
+        result_obj['elapsed'] = time.time() - start_time
         tests_col.append(result_obj)
 
         return result_obj

@@ -34,7 +34,7 @@ class XUnitReporter(object):
             'failures': result.errored_tests,
             'ts': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
             'hostname': socket.gethostname(),
-            'elapsed': result.ellapsed_time,
+            'elapsed': result.elapsed_time,
             'contexts': result.contexts
         }
         return result_summary
