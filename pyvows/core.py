@@ -18,6 +18,7 @@ import warnings
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.runner import VowsParallelRunner
 
+
 def locate(pattern, root=os.curdir, recursive=True):
     root_path = os.path.abspath(root)
 
@@ -29,6 +30,7 @@ def locate(pattern, root=os.curdir, recursive=True):
         return return_files
     else:
         return glob(os.path.join(root_path, pattern))
+
 
 class expect(object):
 
@@ -153,8 +155,10 @@ class Vows(object):
     def assertion(cls, method):
         def method_name(*args, **kw):
             method(*args, **kw)
+
         def exec_assertion(*args, **kw):
             return method_name(*args, **kw)
+
         setattr(Vows.Assert, method.__name__, exec_assertion)
         return method_name
 
@@ -200,5 +204,3 @@ class Vows(object):
         for module_path in files:
             module_name = os.path.splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
             __import__(module_name)
-
-
