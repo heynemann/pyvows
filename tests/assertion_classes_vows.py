@@ -31,7 +31,7 @@ class AssertionIsInstance(Vows.Context):
 
             def we_get_an_understandable_message(self, topic):
                 expect(topic).to_have_an_error_message_of(
-                        "Expected topic(2) to be an instance of %s, but it was a %s." % (str(str), str(int)))
+                        'Expected topic(2) to be an instance of {0!s}, but it was a {1!s}.'.format(str, int))
 
     class WhenIsNotInstance(Vows.Context):
 
@@ -45,6 +45,6 @@ class AssertionIsInstance(Vows.Context):
 
             def we_get_an_understandable_message(self, topic):
                 expect(topic).to_have_an_error_message_of(
-                        "Expected topic(2) not to be an instance of %s." % str(int))
+                        'Expected topic(2) not to be an instance of {0!s}.'.format(int))
 
 

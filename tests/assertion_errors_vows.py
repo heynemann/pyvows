@@ -29,13 +29,15 @@ class AssertionErrors(Vows.Context):
 
                 def we_get_an_understandable_message(self, topic):
                     expect(topic).to_have_an_error_message_of(
-                            "Expected topic(%s) to be an error of type %s, but it was a %s." % (
-                                repr(NotImplementedError('no')), repr(OSError), repr(NotImplementedError)))
+                            'Expected topic({0!r}) to be an error of type {1!r}, but it was a {2!r}.'.format(
+                                NotImplementedError('no'), 
+                                OSError, 
+                                NotImplementedError))
 
         class HaveErrorMessageOf(Vows.Context):
 
             def we_can_see_that_is_has_error_message_of(self, topic):
-                expect(topic).to_have_an_error_message_of("some bogus error")
+                expect(topic).to_have_an_error_message_of('some bogus error')
 
             class WhenWeGetAnError(Vows.Context):
 
@@ -44,8 +46,9 @@ class AssertionErrors(Vows.Context):
 
                 def we_get_an_understandable_message(self, topic):
                     expect(topic).to_have_an_error_message_of(
-                            "Expected topic(%s) to be an error with message '%s'." % (
-                                repr(ValueError('some bogus error')), 'some bogus'))
+                            "Expected topic({0!r}) to be an error with message '{1!s}'.".format(
+                                ValueError('some bogus error'), 
+                                'some bogus'))
 
         class ToBeAnError(Vows.Context):
 
@@ -73,7 +76,7 @@ class AssertionErrors(Vows.Context):
                     expect(ValueError).not_to_be_an_error()
 
                 def we_get_an_understandable_message(self, topic):
-                    expect(topic).to_have_an_error_message_of("Expected topic(%s) not to be an error." % str(ValueError))
+                    expect(topic).to_have_an_error_message_of("Expected topic({0!s}) not to be an error.".format(ValueError))
         class TheExceptionClass(Vows.Context):
             def topic(self, error):
                 return ValueError
