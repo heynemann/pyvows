@@ -80,7 +80,7 @@ class VowsDefaultReporter(object):
             self.honored if self.result.successful else self.broken,
             self.result.successful_tests,
             self.result.errored_tests,
-            self.result.ellapsed_time
+            self.result.elapsed_time
         )
 
         print
@@ -166,7 +166,7 @@ class VowsDefaultReporter(object):
             print ' ' + '=' * len(msg)
             print
 
-            print "       Ellapsed    Context File Path                 Context Name"
+            print "       elapsed    Context File Path                 Context Name"
             for index, topic in enumerate(topics):
                 name = self.under_split(topic['context'])
                 name = self.camel_split(name)
@@ -175,7 +175,7 @@ class VowsDefaultReporter(object):
                         Fore.BLUE, 
                         index + 1, 
                         Fore.RESET, 
-                        topic['ellapsed'], 
+                        topic['elapsed'], 
                         Style.DIM,
                         Fore.WHITE,
                         topic['path'][-MAX_PATH_SIZE:], 

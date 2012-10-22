@@ -24,7 +24,7 @@ class XUnitReporterVows(Vows.Context):
             result = ResultMock()
             result.successful_tests = 0
             result.errored_tests = 0
-            result.ellapsed_time = 0
+            result.elapsed_time = 0
             result.contexts = []
             reporter = XUnitReporter(result)
             return reporter
@@ -47,7 +47,7 @@ class XUnitReporterVows(Vows.Context):
             result = ResultMock()
             result.successful_tests = 1
             result.errored_tests = 0
-            result.ellapsed_time = 0
+            result.elapsed_time = 0
             result.contexts = [
                 {
                     'name': 'Context1',
