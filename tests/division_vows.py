@@ -8,6 +8,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+from __future__ import division # Python 2 division is deprecated
 from pyvows import Vows, expect
 
 @Vows.batch
