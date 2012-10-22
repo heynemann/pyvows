@@ -25,15 +25,17 @@ V_VERBOSE = 3
 V_NORMAL = 2
 V_SILENT = 1
 
+
 def ensure_encoded(thing, encoding='utf-8'):
     if isinstance(thing, unicode):
         return thing.encode(encoding)
     else:
         return thing
 
+
 class VowsDefaultReporter(object):
     honored = '{0}✓{1}'.format(Fore.GREEN + Style.BRIGHT, Fore.RESET + Style.RESET_ALL)
-    broken  = '{0}✗{1}'.format(Fore.RED   + Style.BRIGHT, Fore.RESET + Style.RESET_ALL)
+    broken = '{0}✗{1}'.format(Fore.RED + Style.BRIGHT, Fore.RESET + Style.RESET_ALL)
 
     def __init__(self, result, verbosity):
         self.verbosity = verbosity
@@ -60,8 +62,8 @@ class VowsDefaultReporter(object):
 
         if not self.result.contexts:
             print '{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
-                indent = self.tab * self.indent,
-                broken = self.broken,
+                indent=self.tab * self.indent,
+                broken=self.broken,
             )
             return
 
@@ -75,9 +77,9 @@ class VowsDefaultReporter(object):
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.tab * self.indent,
             self.honored if self.result.successful else self.broken,
-            honored = self.result.successful_tests,
-            broken  = self.result.errored_tests,
-            time    = self.result.ellapsed_time
+            honored=self.result.successful_tests,
+            broken=self.result.errored_tests,
+            time=self.result.elapsed_time
         )
 
         print
@@ -103,9 +105,9 @@ class VowsDefaultReporter(object):
             error_msg = unicode(exc_value)
 
         print '{indent}{F.RED}{error}{F.RESET}'.format(
-            F       = Fore,
-            indent  = indentation,
-            error   = error_msg)
+            F=Fore,
+            indent=indentation,
+            error=error_msg)
 
         if self.verbosity >= V_NORMAL:
             traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -135,7 +137,7 @@ class VowsDefaultReporter(object):
                         self.humanized_print('{0} {1}'.format(honored, name))
             else:
                 self.humanized_print('{0} {1}'.format(
-                    VowsDefaultReporter.broken, 
+                    VowsDefaultReporter.broken,
                     test['name']))
 
                 if isinstance(test['topic'], Exception) and \
@@ -151,9 +153,9 @@ class VowsDefaultReporter(object):
                 if 'file' in test:
                     print
                     print '{0}found in {test["file"]} at line {test["lineno"]}{1}'.format(
-                        (indentation2 + Fore.RED), 
-                        Fore.RESET, 
-                        test = test)
+                        (indentation2 + Fore.RED),
+                        Fore.RESET,
+                        test=test)
                     print
 
         for context in context['contexts']:
@@ -174,13 +176,13 @@ class VowsDefaultReporter(object):
                 name = self.camel_split(name)
 
                 print Style.BRIGHT + ("%s#%02d%s    %.05fs    %s%s%" + str(MAX_PATH_SIZE) + "s%s%s    %s") % (
-                        Fore.BLUE, 
-                        index + 1, 
-                        Fore.RESET, 
-                        topic['elapsed'], 
+                        Fore.BLUE,
+                        index + 1,
+                        Fore.RESET,
+                        topic['elapsed'],
                         Style.DIM,
                         Fore.WHITE,
-                        topic['path'][-MAX_PATH_SIZE:], 
+                        topic['path'][-MAX_PATH_SIZE:],
                         Fore.RESET,
                         Style.BRIGHT,
                         name
@@ -202,26 +204,26 @@ class VowsDefaultReporter(object):
                     'uncovered_lines': [line.attrib['number'] for line in klass.find('lines') if line.attrib['hits'] == '0']
                 })
         return result
-        
+
     def print_header(self, msg):
-        ruler      = ' {0}'.format( '=' * len(msg) )
-        
-        prefix = ''.join(( Fore.GREEN, Style.BRIGHT ))
-        suffix = ''.join(( Style.RESET_ALL, Fore.RESET ))
-        
-        msg   = '{prefix} {msg}{suffix}'.format(
-            prefix = prefix,
-            msg    = msg,
-            suffix = suffix
-            )
-        print 
+        ruler = ' {0}'.format('=' * len(msg))
+
+        prefix = ''.join((Fore.GREEN, Style.BRIGHT))
+        suffix = ''.join((Style.RESET_ALL, Fore.RESET))
+
+        msg = '{prefix} {msg}{suffix}'.format(
+            prefix=prefix,
+            msg=msg,
+            suffix=suffix
+        )
+        print
         print ruler
         print msg
         print ruler
-        print 
+        print
 
     def print_coverage(self, xml, cover_threshold):
-        write_blue  = lambda msg: Fore.BLUE + Style.BRIGHT + str(msg) + Style.RESET_ALL + Fore.RESET
+        write_blue = lambda msg: Fore.BLUE + Style.BRIGHT + str(msg) + Style.RESET_ALL + Fore.RESET
         write_white = lambda msg: Fore.WHITE + Style.BRIGHT + str(msg) + Style.RESET_ALL + Fore.RESET
 
         root = self.parse_coverage_xml(xml)
@@ -229,7 +231,7 @@ class VowsDefaultReporter(object):
         max_length = max([len(klass['name']) for klass in root['classes']])
 
         self.print_header('Code Coverage')
-        
+
         klasses = sorted(root['classes'], key=lambda klass: klass['line_rate'])
 
         max_coverage = 0
