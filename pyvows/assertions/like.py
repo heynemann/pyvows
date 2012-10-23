@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+'''PyVows similarity assertions.  For use with `expect()` (see `pyvows.core`).
+
+The imprecise nature of "like" comparisons is much more complicated than most
+assertions.  All support code lives in this module alongside the assertions.
+'''
+
 
 # pyVows testing engine
 # https://github.com/heynemann/pyvows

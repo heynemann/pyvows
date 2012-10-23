@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+'''Contains the `VowsDefaultReporter` class, which handles output after tests
+have been run.
+'''
+
 
 # pyvows testing engine
 # https://github.com/heynemann/pyvows
