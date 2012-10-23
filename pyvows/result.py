@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+'''Contains `VowsResult` class, which collects the results of each vow.
+'''
+
 
 # pyvows testing engine
 # https://github.com/heynemann/pyvows
