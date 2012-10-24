@@ -140,9 +140,20 @@ class VowsDefaultReporter(object):
                     else:
                         self.humanized_print('{0} {1}'.format(honored, name))
             else:
+                ctx = test['context_instance']
+
                 self.humanized_print('{0} {1}'.format(
                     VowsDefaultReporter.broken,
                     test['name']))
+
+                if ctx.generated_topic:
+                    self.humanized_print('')
+                    self.humanized_print('\tTopic value:\n\t{0.YELLOW}{1.BRIGHT}{2}{1.RESET_ALL}\n\n'.format(
+                        Fore,
+                        Style,
+                        test['topic']
+                    ))
+                    self.humanized_print('')
 
                 if isinstance(test['topic'], Exception) and \
                    hasattr(test['context_instance'], 'topic_error'):
