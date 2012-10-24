@@ -103,7 +103,7 @@ class VowsDefaultReporter(object):
 
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
         if isinstance(exc_value, VowsAssertionError):
-            exc_values_args = tuple(map(lambda arg: '{0.RESET}{1}{0.RED}{2}'.format(Fore, arg, exc_value.args)))
+            exc_values_args = tuple(map(lambda arg: '{0.RESET}{1}{0.RED}'.format(Fore, arg), exc_value.args))
             error_msg = exc_value.msg % exc_values_args
         else:
             error_msg = unicode(exc_value)
@@ -156,7 +156,7 @@ class VowsDefaultReporter(object):
 
                 if 'file' in test:
                     print
-                    print '{0}found in {test["file"]} at line {test["lineno"]}{1}'.format(
+                    print '{0}found in {test[file]} at line {test[lineno]}{1}'.format(
                         (indentation2 + Fore.RED),
                         Fore.RESET,
                         test=test)
