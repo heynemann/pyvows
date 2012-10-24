@@ -93,6 +93,16 @@ class VowsDefaultReporter(object):
         msg = self.camel_split(msg)
         print (indentation or (self.tab * self.indent)) + msg.capitalize()
 
+    def max_length(self, text, length):
+        representation = str(text)
+        if len(representation) <= length:
+            return representation
+
+        return "{0}...{1}".format(
+            representation[:length/2],
+            representation[len(representation) - length/2:]
+        )
+
     def format_traceback(self, traceback_list, indentation):
         def indent(msg):
             if msg.startswith('  File'):
@@ -151,7 +161,7 @@ class VowsDefaultReporter(object):
                     self.humanized_print('\tTopic value:\n\t{0.YELLOW}{1.BRIGHT}{2}{1.RESET_ALL}\n\n'.format(
                         Fore,
                         Style,
-                        test['topic']
+                        self.max_length(test['topic'], 250)
                     ))
                     self.humanized_print('')
 
