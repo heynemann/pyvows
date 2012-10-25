@@ -70,10 +70,13 @@ class VowsParallelRunner(object):
                 topic_func = getattr(context_instance, 'topic')
                 topic_list = self.get_topics_for(topic_func, context_instance)
                 topic = topic_func(*topic_list)
-            except Exception:
+            except:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 topic = exc_value
-                context_instance.topic_error = (exc_type, exc_value, exc_traceback)
+                error = (exc_type, exc_value, exc_traceback)
+                topic.error = error
+                context_instance.topic_error = error
+
             context_obj['topic_elapsed'] = float(round(time.time() - start_time, 6))
         else:
             topic = context_instance._get_first_available_topic(index)
@@ -121,6 +124,9 @@ class VowsParallelRunner(object):
                     iterate_members(topic_value, index, enumerated=True)
             else:
                 iterate_members(topic)
+
+            if hasattr(topic, 'error'):
+                context_instance.topic_error = topic.error
 
         if isinstance(topic, VowsAsyncTopic):
             def handle_callback(*args, **kw):

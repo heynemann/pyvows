@@ -91,6 +91,9 @@ class VowsDefaultReporter(object):
     def humanized_print(self, msg, indentation=None):
         msg = self.under_split(msg)
         msg = self.camel_split(msg)
+        self.indent_print(msg, indentation)
+
+    def indent_print(self, msg, indentation=None):
         print (indentation or (self.tab * self.indent)) + msg.capitalize()
 
     def max_length(self, text, length):
@@ -165,15 +168,16 @@ class VowsDefaultReporter(object):
                     ))
                     self.humanized_print('')
 
-                if isinstance(test['topic'], Exception) and \
-                   hasattr(test['context_instance'], 'topic_error'):
-                    exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
+                if hasattr(test['topic'], 'error'):
+                    self.indent_print('')
+                    self.indent_print('{0.BLUE}{1.BRIGHT}Topic Error:{1.RESET_ALL}'.format(Fore, Style))
+                    exc_type, exc_value, exc_traceback = test['topic'].error
                     self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
+                else:
+                    error = test['error']
+                    exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
 
-                error = test['error']
-                exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
-
-                self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
+                    self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
 
                 if 'file' in test:
                     print
