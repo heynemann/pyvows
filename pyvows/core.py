@@ -178,7 +178,7 @@ class Vows(object):
 
         def exec_assertion(*args):
             raw_msg = 'Expected topic(%s) {0}'.format(humanized_method_name)
-            if len(args) == 2:
+            if len(args) is 2:
                 raw_msg += ' %s'
 
             if not method(*args):
@@ -186,7 +186,7 @@ class Vows(object):
 
         def exec_not_assertion(*args):
             raw_msg = 'Expected topic(%s) not {0}'.format(humanized_method_name)
-            if len(args) == 2:
+            if len(args) is 2:
                 raw_msg += ' %s'
 
             if method(*args):
