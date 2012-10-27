@@ -61,7 +61,8 @@ class expect(object):
 class VowsAssertion(object):
     class AssertionNotFoundError(AttributeError):
         def __init__(self, name):
-            super(VowsAssertion.AssertionNotFoundError, self).__init__('Assertion with name {0} was not found!'.format(name))
+            super(VowsAssertion.AssertionNotFoundError, self).__init__(
+                'Assertion with name {0} was not found!'.format(name))
 
     def __getattr__(self, name):
         if not hasattr(self, name):
@@ -177,7 +178,7 @@ class Vows(object):
 
         def exec_assertion(*args):
             raw_msg = 'Expected topic(%s) {0}'.format(humanized_method_name)
-            if len(args) == 2:
+            if len(args) is 2:
                 raw_msg += ' %s'
 
             if not method(*args):
@@ -185,7 +186,7 @@ class Vows(object):
 
         def exec_not_assertion(*args):
             raw_msg = 'Expected topic(%s) not {0}'.format(humanized_method_name)
-            if len(args) == 2:
+            if len(args) is 2:
                 raw_msg += ' %s'
 
             if method(*args):
@@ -201,7 +202,10 @@ class Vows(object):
 
     @classmethod
     def ensure(cls, vow_success_event, vow_error_event):
-        runner = VowsParallelRunner(Vows.contexts, Vows.Context, vow_success_event, vow_error_event)
+        runner = VowsParallelRunner(Vows.contexts, 
+                                    Vows.Context, 
+                                    vow_success_event, 
+                                    vow_error_event)
         return runner.run()
 
     @classmethod
