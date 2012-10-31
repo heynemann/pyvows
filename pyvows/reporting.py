@@ -137,8 +137,11 @@ class VowsDefaultReporter(object):
         if self.verbosity >= V_NORMAL:
             traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_msg = self.format_traceback(traceback_msg, indentation)
-            print
-            print indentation + traceback_msg
+            print '\n{indent}{F.YELLOW}{traceback}{S.RESET_ALL}'.format(
+                F = Fore,
+                S = Style,
+                indent      = indentation,
+                traceback   = traceback_msg)
 
     def pretty_print(self):
         self.print_header('Vows Results')
