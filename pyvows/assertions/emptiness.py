@@ -15,5 +15,5 @@ from pyvows import Vows
 
 @Vows.create_assertions
 def to_be_empty(topic):
-    return len(topic) == 0
+    return len(topic) is 0
 

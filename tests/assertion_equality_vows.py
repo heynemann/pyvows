@@ -14,7 +14,7 @@ from pyvows import Vows, expect
 @Vows.batch
 class AssertionEquality(Vows.Context):
     def topic(self):
-        return "test"
+        return 'test'
 
     class WhenIsEqual(Vows.Context):
 
@@ -27,7 +27,7 @@ class AssertionEquality(Vows.Context):
                 expect(1).to_equal(2)
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(1) to equal 2.")
+                expect(topic).to_have_an_error_message_of('Expected topic(1) to equal 2.')
 
     class WhenIsNotEqual(Vows.Context):
 
@@ -40,7 +40,7 @@ class AssertionEquality(Vows.Context):
                 expect(1).not_to_equal(1)
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(1) not to equal 1.")
+                expect(topic).to_have_an_error_message_of('Expected topic(1) not to equal 1.')
 
     class WhenHaveASubClassThatHaveAExtraParamInTopic(Vows.Context):
         def topic(self, last):

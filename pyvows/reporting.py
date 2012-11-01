@@ -17,6 +17,7 @@ import re
 import traceback
 
 from xml.etree import ElementTree as etree
+from textwrap import dedent
 
 from pyvows.color import Fore, Style
 from pyvows.core import VowsAssertionError
@@ -69,7 +70,9 @@ class VowsDefaultReporter(object):
                 if i is not (number_of - 1):
                     template_str.append(', ')
 
-            template_str.append(' and {0:d} more'.format(len(uncovered_lines) - number_of))
+            template_str.append('and {0:d} more'.format(
+                    len(uncovered_lines) - number_of)
+                )
 
             return ''.join(template_str)
 
@@ -100,11 +103,12 @@ class VowsDefaultReporter(object):
             msg     = msg,
             suffix  = suffix
         )
-        print
-        print ruler
-        print msg
-        print ruler
-        print
+        print dedent(
+            '''
+            {0}
+            {1}
+            {0}
+            '''.format(ruler, msg))
 
     def indent_print(self, msg, indentation=None):
         msg = msg.capitalize()
@@ -125,13 +129,13 @@ class VowsDefaultReporter(object):
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
         if isinstance(exc_value, VowsAssertionError):
             exc_values_args = tuple(map(lambda arg: '{0.RESET}{1}{0.RED}'.format(Fore, arg), exc_value.args))
-            error_msg = exc_value.msg % exc_values_args
+            error_msg = exc_value.msg.format(exc_values_args)
         else:
             error_msg = unicode(exc_value)
 
         print '{indent}{F.RED}{error}{F.RESET}'.format(
-            F      = Fore,
             indent = indentation,
+            F      = Fore,
             error  = error_msg)
 
         if self.verbosity >= V_NORMAL:
@@ -164,9 +168,9 @@ class VowsDefaultReporter(object):
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
             self.HONORED if self.result.successful else self.BROKEN,
-            honored=self.result.successful_tests,
-            broken=self.result.errored_tests,
-            time=self.result.elapsed_time
+            honored = self.result.successful_tests,
+            broken = self.result.errored_tests,
+            time = self.result.elapsed_time
         )
 
         print
@@ -297,7 +301,6 @@ class VowsDefaultReporter(object):
                             WHITE = Fore.WHITE      + Style.BRIGHT,
                             RESET = Style.RESET_ALL + Fore.RESET)
                             
-
         self.print_header('Code Coverage')
         
         root         = self.parse_coverage_xml(xml)

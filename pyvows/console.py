@@ -144,11 +144,14 @@ def main():
             reporter.print_coverage(xml, arguments.cover_threshold)
 
         else:
+            print   dedent( '''
+            
+                            {0.YELLOW}
+                            WARNING: Cover disabled because coverage could not be found.
+                            Make sure it is installed and accessible.{0.RESET}
+                            
+                            '''.format(Fore))
 
-            print
-            print '{0.YELLOW}WARNING: Cover disabled because coverage could not be found.'.format(Fore)
-            print '{0.YELLOW}Make sure it is installed and accessible.'.format(Fore)
-            print
 
     reporter.pretty_print()
 
