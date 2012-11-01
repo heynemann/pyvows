@@ -11,6 +11,7 @@ have been run.
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
+from __future__ import division
 
 import sys
 import re
@@ -70,7 +71,7 @@ class VowsDefaultReporter(object):
                 if i is not (number_of - 1):
                     template_str.append(', ')
 
-            template_str.append('and {0:d} more'.format(
+            template_str.append(' and {0:d} more'.format(
                     len(uncovered_lines) - number_of)
                 )
 
@@ -329,7 +330,7 @@ class VowsDefaultReporter(object):
             if coverage == 0 and not klass['uncovered_lines']:
                 continue
 
-            print ' {0} {klass}{space1}\t{progress}{cover_pct}%{space2} {lines}'.format(
+            print ' {0} {klass}{space1}\t{progress}{cover_pct}{space2} {lines}'.format(
                 # TODO: 
                 #   * remove manual spacing, use .format() alignment
                 cover_character,
@@ -337,7 +338,7 @@ class VowsDefaultReporter(object):
                 space1    = ' ' * (max_length - len(klass['name'])),
                 progress  = '•' * progress,
                 cover_pct = write_white(
-                                (coverage > 0 and ' ' or '') + '{0:.2f}'.format(coverage)
+                                (coverage > 0 and ' ' or '') + '{0:.2%}'.format(coverage / 100.0)
                 ),
                 space2    = ' ' * (PROGRESS_SIZE - progress + offset),
                 lines     = self.get_uncovered_lines(klass['uncovered_lines']))
@@ -347,12 +348,12 @@ class VowsDefaultReporter(object):
         total_coverage = root['overall']
         progress       = int(round(total_coverage / 100.0 * PROGRESS_SIZE, 0))
         
-        print ' {0} {overall}{space}\t{progress} {total}%'.format(
+        print ' {0} {overall}{space}\t{progress} {total}'.format(
            (total_coverage >= cover_threshold) and self.HONORED or self.BROKEN,
             overall = write_blue('OVERALL'),    
             space   = ' ' * (max_length - len('OVERALL')),
             progress= '•' * progress,
-            total   = write_white('{0:.2%}'.format(total_coverage)))
+            total   = write_white('{0:.2%}'.format(total_coverage / 100.0)))
 
         print    
     
