@@ -114,6 +114,8 @@ class VowsDefaultReporter(object):
     def humanized_print(self, msg, indentation=None):
         msg = self.under_split(msg)
         msg = self.camel_split(msg)
+        msg = msg.replace('  ',' ') # normalize spaces if inserted by 
+                                    # both of the above
         self.indent_print(msg, indentation)
     
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
@@ -141,7 +143,7 @@ class VowsDefaultReporter(object):
             # FIXME:
             #   If no vows are found, how could any be broken?
             print '{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
-                indent = self.self.TAB * self.indent,
+                indent = self.TAB * self.indent,
                 broken = self.BROKEN,
             )
             return
@@ -163,7 +165,6 @@ class VowsDefaultReporter(object):
         print
 
     def print_context(self, name, context):
-
         self.indent += 1
         indentation2 = self.TAB * (self.indent + 2)
 
