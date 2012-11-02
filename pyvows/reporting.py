@@ -107,9 +107,13 @@ class VowsDefaultReporter(object):
         print
 
     def indent_print(self, msg, indentation=None):
+        msg = msg.capitalize()
+        msg = msg.replace('true','True')
+        msg = msg.replace('false','False')
+        msg = msg.replace('none','None')
         print '{indent}{msg}'.format(
             indent = indentation or (self.TAB * self.indent),
-            msg    = msg.capitalize())
+            msg    = msg)
 
     def humanized_print(self, msg, indentation=None):
         msg = self.under_split(msg)
