@@ -14,11 +14,13 @@ from pyvows import version
 setup(
     name = 'pyVows',
     version = version.to_str(),
-    description = "pyVows is a test engine based in VowsJS(http://vowsjs.org/).",
-    long_description = """
-pyVows is a test engine based in Vows JS and features topic-based testing as well as parallel running of tests.
-""",
-    keywords = 'testing vows test tdd',
+    description = 'pyVows is a BDD test engine based on Vows.js(http://vowsjs.org).',
+    long_description = '''
+pyVows is a test engine based on Vows.js. It features topic-based testing, 
+(*fast*) parallel running of tests, code coverage reports, test profiling, and 
+more(http://pyvows.org).
+''',
+    keywords = 'test testing vows tdd bdd development coverage profile profiling',
     author = 'Bernardo Heynemann',
     author_email = 'heynemann@gmail.com',
     #Contributors
@@ -26,21 +28,24 @@ pyVows is a test engine based in Vows JS and features topic-based testing as wel
     #contributor_email = 'rafael@caricio.com',
     url = 'http://heynemann.github.com/pyvows/',
     license = 'MIT',
-    classifiers = ['Development Status :: 3 - Alpha',
+    classifiers = ['Development Status :: 4 - Beta',
                    'Intended Audience :: Developers',
                    'License :: OSI Approved :: MIT License',
                    'Natural Language :: English',
                    'Operating System :: MacOS',
-                   'Operating System :: POSIX :: Linux',
+                   'Operating System :: POSIX',
+                   'Operating System :: Unix',
+                   'Operating System :: OS Independent',
                    'Programming Language :: Python :: 2.6',
+                   'Programming Language :: Python :: 2.7',
                    'Topic :: Software Development :: Testing'
     ],
     packages = ['pyvows', 'pyvows.assertions'],
-    package_dir = {"pyvows": "pyvows"},
+    package_dir = {'pyvows': 'pyvows'},
 
     install_requires=[
-        "gevent>=0.13.6",
-        "argparse"
+        'gevent>=0.13.6',
+        'argparse'
     ],
 
     entry_points = {
