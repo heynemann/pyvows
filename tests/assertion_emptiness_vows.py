@@ -48,7 +48,7 @@ class AssertionIsEmpty(Vows.Context):
                 expect([1]).to_be_empty()
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic([1]) to be empty.")
+                expect(topic).to_have_an_error_message_of('Expected topic([1]) to be empty.')
 
     class WhenNotEmpty(Vows.Context):
         class WhenString(Vows.Context):

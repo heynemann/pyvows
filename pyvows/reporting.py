@@ -11,12 +11,14 @@ have been run.
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
+from __future__ import division
 
 import sys
 import re
 import traceback
 
 from xml.etree import ElementTree as etree
+from textwrap import dedent
 
 from pyvows.color import Fore, Style
 from pyvows.core import VowsAssertionError
@@ -69,7 +71,9 @@ class VowsDefaultReporter(object):
                 if i is not (number_of - 1):
                     template_str.append(', ')
 
-            template_str.append(' and {0:d} more'.format(len(uncovered_lines) - number_of))
+            template_str.append(' and {0:d} more'.format(
+                    len(uncovered_lines) - number_of)
+                )
 
             return ''.join(template_str)
 
@@ -100,11 +104,12 @@ class VowsDefaultReporter(object):
             msg     = msg,
             suffix  = suffix
         )
-        print
-        print ruler
-        print msg
-        print ruler
-        print
+        print dedent(
+            '''
+            {0}
+            {1}
+            {0}
+            '''.format(ruler, msg))
 
     def indent_print(self, msg, indentation=None):
         msg = msg.capitalize()
@@ -125,13 +130,13 @@ class VowsDefaultReporter(object):
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
         if isinstance(exc_value, VowsAssertionError):
             exc_values_args = tuple(map(lambda arg: '{0.RESET}{1}{0.RED}'.format(Fore, arg), exc_value.args))
-            error_msg = exc_value.msg % exc_values_args
+            error_msg = exc_value.msg.format(exc_values_args)
         else:
             error_msg = unicode(exc_value)
 
         print '{indent}{F.RED}{error}{F.RESET}'.format(
-            F      = Fore,
             indent = indentation,
+            F      = Fore,
             error  = error_msg)
 
         if self.verbosity >= V_NORMAL:
@@ -164,9 +169,9 @@ class VowsDefaultReporter(object):
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
             self.HONORED if self.result.successful else self.BROKEN,
-            honored=self.result.successful_tests,
-            broken=self.result.errored_tests,
-            time=self.result.elapsed_time
+            honored = self.result.successful_tests,
+            broken = self.result.errored_tests,
+            time = self.result.elapsed_time
         )
 
         print
@@ -297,7 +302,6 @@ class VowsDefaultReporter(object):
                             WHITE = Fore.WHITE      + Style.BRIGHT,
                             RESET = Style.RESET_ALL + Fore.RESET)
                             
-
         self.print_header('Code Coverage')
         
         root         = self.parse_coverage_xml(xml)
@@ -326,7 +330,7 @@ class VowsDefaultReporter(object):
             if coverage == 0 and not klass['uncovered_lines']:
                 continue
 
-            print ' {0} {klass}{space1}\t{progress}{cover_pct}%{space2} {lines}'.format(
+            print ' {0} {klass}{space1}\t{progress}{cover_pct}{space2} {lines}'.format(
                 # TODO: 
                 #   * remove manual spacing, use .format() alignment
                 cover_character,
@@ -334,7 +338,7 @@ class VowsDefaultReporter(object):
                 space1    = ' ' * (max_length - len(klass['name'])),
                 progress  = '•' * progress,
                 cover_pct = write_white(
-                                (coverage > 0 and ' ' or '') + '{0:.2f}'.format(coverage)
+                                (coverage > 0 and ' ' or '') + '{0:.2%}'.format(coverage / 100.0)
                 ),
                 space2    = ' ' * (PROGRESS_SIZE - progress + offset),
                 lines     = self.get_uncovered_lines(klass['uncovered_lines']))
@@ -344,12 +348,12 @@ class VowsDefaultReporter(object):
         total_coverage = root['overall']
         progress       = int(round(total_coverage / 100.0 * PROGRESS_SIZE, 0))
         
-        print ' {0} {overall}{space}\t{progress} {total}%'.format(
+        print ' {0} {overall}{space}\t{progress} {total}'.format(
            (total_coverage >= cover_threshold) and self.HONORED or self.BROKEN,
             overall = write_blue('OVERALL'),    
             space   = ' ' * (max_length - len('OVERALL')),
             progress= '•' * progress,
-            total   = write_white('{0:.2%}'.format(total_coverage)))
+            total   = write_white('{0:.2%}'.format(total_coverage / 100.0)))
 
         print    
     

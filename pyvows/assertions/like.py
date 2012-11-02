@@ -37,7 +37,9 @@ def match_alike(expected, topic):
     elif isinstance(topic, dict):
         return compare_dicts(expected, topic)
     else:
-        raise RuntimeError('Could not compare {expected} and {topic}'.format(expected=expected, topic=topic))
+        raise RuntimeError('Could not compare {expected!r} and {topic!r}'.format(
+            expected = expected, 
+            topic    = topic))
 
 def compare_strings(expected, topic):
     replaced_topic = topic.lower().replace(' ', '').replace('\n', '')

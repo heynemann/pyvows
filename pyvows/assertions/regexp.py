@@ -18,10 +18,14 @@ from pyvows import Vows, VowsAssertionError
 @Vows.assertion
 def to_match(topic, expected):
     if not re.match(expected, topic):
-        raise VowsAssertionError('Expected topic(%s) to match the regular expression %s', topic, expected)
+        raise VowsAssertionError('Expected topic({topic!r}) to match the regular expression {regex!r}'.format(
+            topic  = topic, 
+            regex  = expected))
 
 @Vows.assertion
 def not_to_match(topic, expected):
     if re.match(expected, topic):
-        raise VowsAssertionError('Expected topic(%s) not to match the regular expression %s', topic, expected)
+        raise VowsAssertionError('Expected topic({topic!r}) not to match the regular expression {regex!r}'.format(
+            topic = topic, 
+            regex = expected))
 

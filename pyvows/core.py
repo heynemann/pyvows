@@ -50,7 +50,7 @@ class expect(object):
 
         method_name = 'not_{0}'.format(name) if self.not_assert else name
         if not hasattr(Vows.Assert, method_name):
-            raise AttributeError('Assertion {0} was not found!'.format(method_name))
+            raise AttributeError('Assertion {0!r} was not found!'.format(method_name))
 
         def assert_topic(*args, **kw):
             return getattr(Vows.Assert, method_name)(self.topic, *args, **kw)
@@ -62,7 +62,7 @@ class VowsAssertion(object):
     class AssertionNotFoundError(AttributeError):
         def __init__(self, name):
             super(VowsAssertion.AssertionNotFoundError, self).__init__(
-                'Assertion with name {0} was not found!'.format(name))
+                'Assertion with name {0!r} was not found!'.format(name))
 
     def __getattr__(self, name):
         if not hasattr(self, name):
@@ -79,13 +79,13 @@ class VowsAssertionError(AssertionError):
         self.args = tuple(map(repr, args[1:]))
 
     def __str__(self):
-        return self.msg % self.args
+        return self.msg.format(self.args)
 
     def __unicode__(self):
         return self.__str__()
 
     def __repr__(self):
-        return "VowsAssertionError('{0!s}',)".format(self)
+        return '''VowsAssertionError('{0!r}',)'''.format(self)
 
 
 class Vows(object):
@@ -177,23 +177,27 @@ class Vows(object):
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
 
         def exec_assertion(*args):
-            raw_msg = 'Expected topic(%s) {0}'.format(humanized_method_name)
+            raw_msg = 'Expected topic({0!r}) {assertion}'.format(
+                args[0], 
+                assertion = humanized_method_name)
             if len(args) is 2:
-                raw_msg += ' %s'
+                raw_msg += ' {0!r}'.format(args[1])
 
             if not method(*args):
                 raise VowsAssertionError(raw_msg, *args)
 
         def exec_not_assertion(*args):
-            raw_msg = 'Expected topic(%s) not {0}'.format(humanized_method_name)
+            raw_msg = 'Expected topic({0!r}) not {assertion}'.format(
+                args[0], 
+                assertion = humanized_method_name)
             if len(args) is 2:
-                raw_msg += ' %s'
+                raw_msg += ' {0!r}'.format(args[1])
 
             if method(*args):
                 raise VowsAssertionError(raw_msg, *args)
 
         setattr(Vows.Assert, method.__name__, exec_assertion)
-        setattr(Vows.Assert, 'not_{0}'.format(method.__name__), exec_not_assertion)
+        setattr(Vows.Assert, 'not_{0!s}'.format(method.__name__), exec_not_assertion)
 
         def wrapper(*args, **kw):
             return method(*args, **kw)
