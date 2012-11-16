@@ -48,9 +48,9 @@ class expect(object):
             self.not_assert = not self.not_assert
             return self
 
-        method_name = 'not_{0}'.format(name) if self.not_assert else name
+        method_name = 'not_{name}'.format(name=name) if self.not_assert else name
         if not hasattr(Vows.Assert, method_name):
-            raise AttributeError('Assertion {0} was not found!'.format(method_name))
+            raise AttributeError('Assertion {method_name} was not found!'.format(method_name=method_name))
 
         def assert_topic(*args, **kw):
             return getattr(Vows.Assert, method_name)(self.topic, *args, **kw)
@@ -62,7 +62,7 @@ class VowsAssertion(object):
     class AssertionNotFoundError(AttributeError):
         def __init__(self, name):
             super(VowsAssertion.AssertionNotFoundError, self).__init__(
-                'Assertion with name {0} was not found!'.format(name))
+                'Assertion with name {name} was not found!'.format(name=name))
 
     def __getattr__(self, name):
         if not hasattr(self, name):
@@ -177,7 +177,7 @@ class Vows(object):
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
 
         def exec_assertion(*args):
-            raw_msg = 'Expected topic(%s) {0}'.format(humanized_method_name)
+            raw_msg = 'Expected topic(%s) {assertion}'.format(assertion=humanized_method_name)
             if len(args) is 2:
                 raw_msg += ' %s'
 
@@ -185,7 +185,7 @@ class Vows(object):
                 raise VowsAssertionError(raw_msg, *args)
 
         def exec_not_assertion(*args):
-            raw_msg = 'Expected topic(%s) not {0}'.format(humanized_method_name)
+            raw_msg = 'Expected topic(%s) not {not_assertion}'.format(not_assertion=humanized_method_name)
             if len(args) is 2:
                 raw_msg += ' %s'
 
@@ -193,7 +193,7 @@ class Vows(object):
                 raise VowsAssertionError(raw_msg, *args)
 
         setattr(Vows.Assert, method.__name__, exec_assertion)
-        setattr(Vows.Assert, 'not_{0}'.format(method.__name__), exec_not_assertion)
+        setattr(Vows.Assert, 'not_{method_name}'.format(method_name=method.__name__), exec_not_assertion)
 
         def wrapper(*args, **kw):
             return method(*args, **kw)
