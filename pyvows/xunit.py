@@ -9,7 +9,7 @@
 
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
-# Copyright (c) 2011 Daniel Truemper truemped@googlemail.com
+# Copyright (c) 2012 Daniel Truemper truemped@googlemail.com
 import codecs
 from datetime import datetime
 import socket

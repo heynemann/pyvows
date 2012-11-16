@@ -11,7 +11,7 @@ Aren't they convenient?
 
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
-# Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
+# Copyright (c) 2012 Bernardo Heynemann heynemann@gmail.com
 
 import pyvows.assertions.equality
 import pyvows.assertions.numeric
