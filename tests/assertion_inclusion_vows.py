@@ -12,7 +12,7 @@ from pyvows import Vows, expect
 
 
 @Vows.batch
-class AsserionInclude(Vows.Context):
+class AssertionInclude(Vows.Context):
 
     class WhenItIsAString(Vows.Context):
         def topic(self):
