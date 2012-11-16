@@ -230,14 +230,14 @@ class VowsTestReporter(VowsReporter):
                     self.humanized_print('\t{0.YELLOW}{1.BRIGHT}{2}{1.RESET_ALL}'.format(
                         Fore,
                         Style,
-                        self.max_length(test['topic'], 250)
-                    ))
+                        test['topic']))
                     self.humanized_print('\n\n')
 
                 if hasattr(test['topic'], 'error'):
                     print self.indent_msg('')
                     print self.indent_msg('{0.BLUE}{1.BRIGHT}Topic Error:{1.RESET_ALL}'.format(Fore, Style))
                     exc_type, exc_value, exc_traceback = test['topic'].error
+                    self.indent_print( repr(test['topic']) )
                     self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
                 else:
                     error = test['error']
