@@ -56,7 +56,7 @@ class VowsDefaultReporter(object):
     def format_traceback(self, traceback_list, indentation):
         def indent(msg):
             if msg.startswith('  File'):
-                return msg.replace('\n ', '\n {0}'.format(indentation))
+                return msg.replace('\n ', '\n {indentation}'.format(indentation=indentation))
             return msg
 
         return indentation.join(map(indent, traceback_list))
@@ -69,7 +69,7 @@ class VowsDefaultReporter(object):
                 if i is not (number_of - 1):
                     template_str.append(', ')
 
-            template_str.append(' and {0:d} more'.format(len(uncovered_lines) - number_of))
+            template_str.append(' and {num_more_uncovered:d} more'.format(num_more_uncovered=len(uncovered_lines) - number_of))
 
             return ''.join(template_str)
 
@@ -321,7 +321,7 @@ class VowsDefaultReporter(object):
             coverage = int(round(coverage, 0))
             progress = int(round(coverage / 100.0 * PROGRESS_SIZE, 0))
             offset   = coverage == 0 and 2 or (coverage < 10 and 1 or 0)
-                        #   FIXME: explain the `offset` line please?  :)
+            #   FIXME: explain the `offset` line please?  :)
                         
             if coverage == 0 and not klass['uncovered_lines']:
                 continue
@@ -334,22 +334,22 @@ class VowsDefaultReporter(object):
                 space1    = ' ' * (max_length - len(klass['name'])),
                 progress  = '•' * progress,
                 cover_pct = write_white(
-                                (coverage > 0 and ' ' or '') + '{0:.2f}'.format(coverage)
+                                (coverage > 0 and ' ' or '') + '{coverage:.2f}'.format(coverage=coverage)
                 ),
                 space2    = ' ' * (PROGRESS_SIZE - progress + offset),
                 lines     = self.get_uncovered_lines(klass['uncovered_lines']))
 
         print
-        
+
         total_coverage = root['overall']
         progress       = int(round(total_coverage / 100.0 * PROGRESS_SIZE, 0))
-        
+
         print ' {0} {overall}{space}\t{progress} {total}%'.format(
            (total_coverage >= cover_threshold) and self.HONORED or self.BROKEN,
             overall = write_blue('OVERALL'),    
             space   = ' ' * (max_length - len('OVERALL')),
             progress= '•' * progress,
-            total   = write_white('{0:.2%}'.format(total_coverage)))
+            total   = write_white('{total_coverage:.2%}'.format(total_coverage=total_coverage)))
 
         print    
     

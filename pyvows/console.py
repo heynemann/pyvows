@@ -53,9 +53,9 @@ def __get_arguments():
     
     #Easy underlining, if we ever need it in the future
     #uline   = lambda text: '\033[4m{0}\033[24m'.format(text)
-    metavar = lambda metavar: '{0}{1}{2}'.format(Style.RESET_ALL, metavar.upper(), Style.RESET_ALL)
     
     parser = argparse.ArgumentParser(description     = 'Runs pyVows.')
+    metavar = lambda metavar: '{0}{1}{0}'.format(Style.RESET_ALL, metavar.upper())
 
     parser.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern, metavar=metavar('pattern'))
 
