@@ -12,6 +12,8 @@ running tests, and the almighty `if __name__ == '__main__': main()`.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+from __future__ import print_function
+
 import sys
 import os
 from os.path import isfile, split
@@ -129,7 +131,7 @@ def main():
         if COVERAGE_AVAILABLE:
             cov.stop()
 
-            print '\n' * 2
+            print('\n' * 2)
 
             xml = ''
             with tempfile.NamedTemporaryFile() as tmp:
@@ -145,10 +147,10 @@ def main():
 
         else:
 
-            print
-            print '{0.YELLOW}WARNING: Cover disabled because coverage could not be found.'.format(Fore)
-            print '{0.YELLOW}Make sure it is installed and accessible.'.format(Fore)
-            print
+            print()
+            print('{0.YELLOW}WARNING: Cover disabled because coverage could not be found.'.format(Fore))
+            print('{0.YELLOW}Make sure it is installed and accessible.'.format(Fore))
+            print()
 
     reporter.pretty_print()
 

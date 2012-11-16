@@ -17,6 +17,8 @@ import re
 import sys
 import warnings
 
+from six.moves import map, zip
+
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.runner import VowsParallelRunner
 

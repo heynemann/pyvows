@@ -17,6 +17,7 @@ assertions.  All support code lives in this module alongside the assertions.
 import numbers
 
 from pyvows import Vows
+import six
 
 @Vows.create_assertions
 def to_be_like(topic, expected):
@@ -54,7 +55,7 @@ def compare_dicts(expected, topic):
     return match_dicts(expected, topic) and match_dicts(topic, expected)
 
 def match_dicts(expected, topic):
-    for k, v in expected.iteritems():
+    for k, v in six.iteritems(expected):
         if not k in topic or not match_alike(topic[k], v):
             return False
     return True

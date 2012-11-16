@@ -12,10 +12,14 @@ have been run.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+from __future__ import print_function
+
 import sys
 import re
 import traceback
 
+import six
+from six.moves import map, zip
 from xml.etree import ElementTree as etree
 
 from pyvows.color import Fore, Style
@@ -100,20 +104,20 @@ class VowsDefaultReporter(object):
             msg     = msg,
             suffix  = suffix
         )
-        print
-        print ruler
-        print msg
-        print ruler
-        print
+        print()
+        print(ruler)
+        print(msg)
+        print(ruler)
+        print()
 
     def indent_print(self, msg, indentation=None):
         msg = msg.capitalize()
         msg = msg.replace('true','True')
         msg = msg.replace('false','False')
         msg = msg.replace('none','None')
-        print '{indent}{msg}'.format(
+        print('{indent}{msg}'.format(
             indent = indentation or (self.TAB * self.indent),
-            msg    = msg)
+            msg    = msg))
 
     def humanized_print(self, msg, indentation=None):
         msg = self.under_split(msg)
@@ -127,21 +131,21 @@ class VowsDefaultReporter(object):
             exc_values_args = tuple(map(lambda arg: '{0.RESET}{1}{0.RED}'.format(Fore, arg), exc_value.args))
             error_msg = exc_value.msg % exc_values_args
         else:
-            error_msg = unicode(exc_value)
+            error_msg = six.text_type(exc_value)
 
-        print '{indent}{F.RED}{error}{F.RESET}'.format(
+        print('{indent}{F.RED}{error}{F.RESET}'.format(
             F      = Fore,
             indent = indentation,
-            error  = error_msg)
+            error  = error_msg))
 
         if self.verbosity >= V_NORMAL:
             traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_msg = self.format_traceback(traceback_msg, indentation)
-            print '\n{indent}{F.YELLOW}{traceback}{S.RESET_ALL}'.format(
+            print('\n{indent}{F.YELLOW}{traceback}{S.RESET_ALL}'.format(
                 F = Fore,
                 S = Style,
                 indent      = indentation,
-                traceback   = traceback_msg)
+                traceback   = traceback_msg))
 
     def pretty_print(self):
         self.print_header('Vows Results')
@@ -149,27 +153,27 @@ class VowsDefaultReporter(object):
         if not self.result.contexts:
             # FIXME:
             #   If no vows are found, how could any be broken?
-            print '{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
+            print('{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
                 indent = self.TAB * self.indent,
                 broken = self.BROKEN,
-            )
+            ))
             return
 
         if self.verbosity >= V_VERBOSE or self.result.errored_tests:
-            print '' * 2
+            print('' * 2)
 
         for context in self.result.contexts:
             self.print_context(context['name'], context)
 
-        print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
+        print('{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
             self.HONORED if self.result.successful else self.BROKEN,
             honored=self.result.successful_tests,
             broken=self.result.errored_tests,
             time=self.result.elapsed_time
-        )
+        ))
 
-        print
+        print()
 
     def print_context(self, name, context):
         self.indent += 1
@@ -220,12 +224,12 @@ class VowsDefaultReporter(object):
                     self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
 
                 if 'file' in test:
-                    print
-                    print '{RED}found in {test[file]} at line {test[lineno]}{RESET}'.format(
+                    print()
+                    print('{RED}found in {test[file]} at line {test[lineno]}{RESET}'.format(
                         RED   = indentation2 + Fore.RED,
                         RESET = Fore.RESET,
-                        test  = test)
-                    print
+                        test  = test))
+                    print()
 
         for context in context['contexts']:
             self.print_context(context['name'], context)
@@ -242,12 +246,12 @@ class VowsDefaultReporter(object):
         if topics:
             self.print_header('Slowest Topics')
 
-            print '       elapsed    Context File Path                 Context Name'
+            print('       elapsed    Context File Path                 Context Name')
             for index, topic in enumerate(topics):
                 name = self.under_split(topic['context'])
                 name = self.camel_split(name)
 
-                print Style.BRIGHT + ("%s#%02d%s    %.05fs    %s%s%" + str(MAX_PATH_SIZE) + "s%s%s    %s") % (
+                print(Style.BRIGHT + ("%s#%02d%s    %.05fs    %s%s%" + str(MAX_PATH_SIZE) + "s%s%s    %s") % (
                         Fore.BLUE,
                         index + 1,
                         Fore.RESET,
@@ -258,9 +262,9 @@ class VowsDefaultReporter(object):
                         Fore.RESET,
                         Style.BRIGHT,
                         name
-                ) + Style.RESET_ALL
+                ) + Style.RESET_ALL)
 
-            print
+            print()
     
     #-------------------------------------------------------------------------
     #   Printing (Coverage)
@@ -316,7 +320,7 @@ class VowsDefaultReporter(object):
             if 100.0 < max_coverage < coverage:
                 max_coverage = coverage
                 if max_coverage == 100.0:
-                    print
+                    print()
 
             coverage = int(round(coverage, 0))
             progress = int(round(coverage / 100.0 * PROGRESS_SIZE, 0))
@@ -326,7 +330,7 @@ class VowsDefaultReporter(object):
             if coverage == 0 and not klass['uncovered_lines']:
                 continue
 
-            print ' {0} {klass}{space1}\t{progress}{cover_pct}%{space2} {lines}'.format(
+            print(' {0} {klass}{space1}\t{progress}{cover_pct}%{space2} {lines}'.format(
                 # TODO: 
                 #   * remove manual spacing, use .format() alignment
                 cover_character,
@@ -337,19 +341,19 @@ class VowsDefaultReporter(object):
                                 (coverage > 0 and ' ' or '') + '{coverage:.2f}'.format(coverage=coverage)
                 ),
                 space2    = ' ' * (PROGRESS_SIZE - progress + offset),
-                lines     = self.get_uncovered_lines(klass['uncovered_lines']))
+                lines     = self.get_uncovered_lines(klass['uncovered_lines'])))
 
-        print
+        print()
 
         total_coverage = root['overall']
         progress       = int(round(total_coverage / 100.0 * PROGRESS_SIZE, 0))
 
-        print ' {0} {overall}{space}\t{progress} {total}%'.format(
+        print(' {0} {overall}{space}\t{progress} {total}%'.format(
            (total_coverage >= cover_threshold) and self.HONORED or self.BROKEN,
             overall = write_blue('OVERALL'),    
             space   = ' ' * (max_length - len('OVERALL')),
             progress= '•' * progress,
-            total   = write_white('{total_coverage:.2%}'.format(total_coverage=total_coverage)))
+            total   = write_white('{total_coverage:.2%}'.format(total_coverage=total_coverage))))
 
-        print    
+        print()    
     

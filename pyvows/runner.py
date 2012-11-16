@@ -18,6 +18,9 @@ import sys
 import time
 from functools import wraps
 
+import six
+from six.moves import filter
+
 #import eventlet
 from gevent.pool import Pool
 
@@ -37,7 +40,7 @@ class VowsParallelRunner(object):
         start_time = time.time()
         result = VowsResult()
 
-        for name, context in self.vows.iteritems():
+        for name, context in six.iteritems(self.vows):
             self.run_context(result.contexts, name, context(None))
 
         self.pool.join()
@@ -96,11 +99,11 @@ class VowsParallelRunner(object):
             special_names = set(('setup', 'teardown', 'topic'))
             if hasattr(context_instance, 'ignored_members'):
                 special_names.update(context_instance.ignored_members)
-
-            context_members = filter(
+            
+            context_members = [i for i in filter(
                 lambda member: not (member[0] in special_names or member[0].startswith('_')),
                 inspect.getmembers(type(context_instance))
-            )
+            )]
 
             def iterate_members(topic, index=-1, enumerated=False):
                 for member_name, member in context_members:
