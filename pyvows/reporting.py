@@ -112,7 +112,7 @@ class VowsReporter(object):
     def indent_msg(self, msg, indentation=None):
         msg = msg.capitalize()
         msg = self.format_python_constants(msg)
-        print '{indent}{msg}'.format(
+        return '{indent}{msg}'.format(
             indent = indentation or (self.TAB * self.indent),
             msg    = msg)
     
