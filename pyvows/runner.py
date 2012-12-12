@@ -88,8 +88,15 @@ class VowsParallelRunner(object):
 
             is_generator = inspect.isgenerator(topic)
             if is_generator:
-                context_instance.topic_value = list(topic)
-                context_instance.generated_topic = True
+                try:
+                    context_instance.topic_value = list(topic)
+                    context_instance.generated_topic = True
+                except:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    topic = exc_value
+                    error = (exc_type, exc_value, exc_traceback)
+                    topic.error = error
+                    context_instance.topic_error = error
 
             topic = context_instance.topic_value
 

@@ -168,7 +168,9 @@ class VowsDefaultReporter(object):
                     ))
                     self.humanized_print('')
 
-                if hasattr(test['topic'], 'error'):
+                if hasattr(test, 'topic') and\
+                   hasattr(test['topic'], 'error') and\
+                   test['topic']['error'] is not None:
                     self.indent_print('')
                     self.indent_print('{0.BLUE}{1.BRIGHT}Topic Error:{1.RESET_ALL}'.format(Fore, Style))
                     exc_type, exc_value, exc_traceback = test['topic'].error
