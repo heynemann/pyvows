@@ -22,6 +22,9 @@ from pyvows.runner import VowsParallelRunner
 
 
 def locate(pattern, root=os.curdir, recursive=True):
+    '''Recursively locates test files when `pyvows` is run from the command 
+    line.
+    '''
     root_path = os.path.abspath(root)
 
     if recursive:
@@ -35,7 +38,11 @@ def locate(pattern, root=os.curdir, recursive=True):
 
 
 class expect(object):
-
+    '''The `expect` class is used in pyvows tests.  It is passed the topic,
+    and allows the chaining of pyvows assertions.  Example:
+    
+        expect(True).to_be_true()
+    '''
     def __init__(self, topic):
         self.topic = topic
         self.not_assert = False
@@ -89,9 +96,35 @@ class VowsAssertionError(AssertionError):
 
 
 class Vows(object):
+    '''This class contains almost the entire interface for using PyVows.  (The
+    `expect` class usually being the only other necessary import.)
+    
+        *   Mark test batches with the `Vows.batch` decorator
+        *   Build test hierarchies with classes that extend `Vows.Context`
+        *   For those who need it, topics with asynchronous code can use the 
+            `Vows.async_topic` decorator
+      
+    Other attributes and methods here are for PyVows' internal use.  They 
+    aren't necessary for writing tests.
+    '''
     contexts = {}
 
     class Context(object):
+        '''Extend this class to create your test classes.  (The convention is to
+        write `from pyvows import Vows, expect` in your test module, then extend 
+        `Vows.Context` in your test classes.  If you really wanted, you could
+        also import `Context` directly.  But don't do that.)
+        
+            *   `Vows.Context` subclasses expect one method named `topic`.  
+                It should be the first method in any `Vows.Context` subclass, 
+                by convention.
+            *   Sibling `Context`s run in parallel.  
+            *   Nested `Context`s run sequentially.
+            
+        The `setup` and `teardown` methods aren't typically needed.  But 
+        they are available if your test suite has extra pre- and 
+        post-testing work to be done in any given `Context`.
+        '''
         def __init__(self, parent=None):
             self.parent = parent
             self.topic_value = None
