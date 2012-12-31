@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''PyVows' main entry point.  Contains code for command-line I/O, 
+'''PyVows' main entry point.  Contains code for command-line I/O,
 running tests, and the almighty `if __name__ == '__main__': main()`.
 '''
 
@@ -26,7 +26,7 @@ try:
 except ImportError:
     COVERAGE_AVAILABLE = False
 
-from pyvows.color import Fore, Style
+from pyvows.color import *
 from pyvows.xunit import XUnitReporter
 from pyvows import version
 

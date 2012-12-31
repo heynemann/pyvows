@@ -19,7 +19,7 @@ import traceback
 
 from xml.etree import ElementTree as etree
 
-from pyvows.color import Fore, Style
+from pyvows.color import *
 from pyvows.core import VowsAssertionError
 
 PROGRESS_SIZE = 50
@@ -52,20 +52,8 @@ class VowsReporter(object):
     HONORED = '{0}✓{1}'.format(Fore.GREEN + Style.BRIGHT, Fore.RESET + Style.RESET_ALL)
     BROKEN  = '{0}✗{1}'.format(Fore.RED + Style.BRIGHT, Fore.RESET + Style.RESET_ALL)
     TAB     = '  '
-    
-    #-------------------------------------------------------------------------
-    #   Quick Colors
-    #-------------------------------------------------------------------------
-    def blue(self, msg):
-        BLUE  = Fore.BLUE + Style.BRIGHT
-        RESET = Style.RESET_ALL + Fore.RESET
-        return '{BLUE}{0!s}{RESET}'.format(msg, BLUE=BLUE, RESET=RESET)
-    
-    def white(self, msg):
-        WHITE = ''.join((Fore.WHITE, Style.BRIGHT))
-        RESET = ''.join((Style.RESET_ALL, Fore.RESET))
-        return '{WHITE}{0!s}{RESET}'.format(msg, WHITE=WHITE, RESET=RESET)
-    
+
+
     #-------------------------------------------------------------------------
     #   String Formatting
     #-------------------------------------------------------------------------
