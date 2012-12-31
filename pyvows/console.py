@@ -146,8 +146,8 @@ def main():
         else:
 
             print
-            print '{0.YELLOW}WARNING: Cover disabled because coverage could not be found.'.format(Fore)
-            print '{0.YELLOW}Make sure it is installed and accessible.'.format(Fore)
+            print yellow('WARNING: Cover disabled because coverage could not be found.')
+            print yellow('Make sure it is installed and accessible.')
             print
 
     reporter.pretty_print()
