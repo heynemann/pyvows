@@ -244,7 +244,7 @@ class VowsCoverageReporter(VowsReporter):
                 if i is not (number_of - 1):
                     template_str.append(', ')
 
-            template_str.append(' and {num_more_uncovered:d} more'.format(num_more_uncovered=len(uncovered_lines) - number_of))
+            template_str.append(', and {num_more_uncovered:d} more'.format(num_more_uncovered=len(uncovered_lines) - number_of))
 
             return ''.join(template_str)
 
