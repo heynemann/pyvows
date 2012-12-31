@@ -325,6 +325,7 @@ class VowsCoverageReporter(VowsReporter):
         cover_pct   = white(cover_pct)
 
         # ...then format
+        # TODO: use str.format for spacing, alignment, and fill characters
         return ' {0} {klass}{space1}\t{progress}{cover_pct}%{space2} {lines}'.format(
             # TODO:
             #   * remove manual spacing, use .format() alignment
@@ -342,7 +343,9 @@ class VowsCoverageReporter(VowsReporter):
         overall = blue('OVERALL')
         space   = ' ' * (max_length - len('OVERALL'))
         total   = white('{total_coverage:.2%}'.format(total_coverage=total_coverage/100))
+
         # then format
+        # TODO: use str.format for spacing, alignment, and fill characters
         return ' {0} {overall}{space}\t{progress} {total}%'.format(
             cover_character,
             overall  = overall,
@@ -359,6 +362,7 @@ class VowsProfileReporter(VowsReporter):
         topics = self.result.get_worst_topics(number=10, threshold=threshold)
 
         if topics:
+            # TODO: use str.format for spacing, alignment, and fill characters
             print self.header('Slowest Topics')
 
             print yellow('       elapsed     Context File Path                 Context Name')
