@@ -97,6 +97,7 @@ class VowsParallelRunner(object):
                     error = (exc_type, exc_value, exc_traceback)
                     topic.error = error
                     context_instance.topic_error = error
+                    context_instance.topic_value = topic
 
             topic = context_instance.topic_value
 
