@@ -230,7 +230,7 @@ class VowsTestReporter(VowsReporter):
                     self.humanized_print('\t{0.YELLOW}{1.BRIGHT}{2}{1.RESET_ALL}'.format(
                         Fore,
                         Style,
-                        self.max_length(test['topic'], 250)
+                        test['topic']
                     ))
                     self.humanized_print('\n\n')
 
