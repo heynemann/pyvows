@@ -15,5 +15,5 @@ from pyvows import Vows
 
 @Vows.create_assertions
 def to_equal(topic, expected):
-    #   FIXME: Add Docstring
+    '''Asserts that `topic == expected`.'''
     return expected == topic

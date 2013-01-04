@@ -15,6 +15,6 @@ from pyvows import Vows
 
 @Vows.create_assertions
 def to_be_empty(topic):
-    #   FIXME: Add Docstring
+    '''Asserts that the `len` of `topic` is `0`.'''
     return len(topic) == 0
 
