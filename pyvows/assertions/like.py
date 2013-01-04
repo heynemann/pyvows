@@ -20,12 +20,15 @@ from pyvows import Vows
 
 @Vows.create_assertions
 def to_be_like(topic, expected):
+    #   FIXME: Add Docstring
     return match_alike(expected, topic)
 
 def compare_alike(expected, topic, modifier, message):
+    #   FIXME: Add Docstring
     assert modifier(match_alike(expected, topic)), message % (topic, expected)
 
 def match_alike(expected, topic):
+    #   FIXME: Add Docstring
     if topic is None:
         return expected is None
     if isinstance(topic, basestring):
@@ -40,29 +43,35 @@ def match_alike(expected, topic):
         raise RuntimeError('Could not compare {expected} and {topic}'.format(expected=expected, topic=topic))
 
 def compare_strings(expected, topic):
+    #   FIXME: Add Docstring
     replaced_topic = topic.lower().replace(' ', '').replace('\n', '')
     replaced_expected = expected.lower().replace(' ', '').replace('\n', '')
     return replaced_expected.lower() == replaced_topic.lower()
 
 def compare_numbers(expected, topic):
+    #   FIXME: Add Docstring
     if not isinstance(topic, numbers.Number) or \
        not isinstance(expected, numbers.Number):
         return False
     return float(expected) == float(topic)
 
 def compare_dicts(expected, topic):
+    #   FIXME: Add Docstring
     return match_dicts(expected, topic) and match_dicts(topic, expected)
 
 def match_dicts(expected, topic):
+    #   FIXME: Add Docstring
     for k, v in expected.iteritems():
         if not k in topic or not match_alike(topic[k], v):
             return False
     return True
 
 def compare_lists(expected, topic):
+    #   FIXME: Add Docstring
     return match_lists(expected, topic) and match_lists(topic, expected)
 
 def match_lists(expected, topic):
+    #   FIXME: Add Docstring
     for item in expected:
         if isinstance(item, (list, tuple)):
             found = False

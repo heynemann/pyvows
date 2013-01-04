@@ -15,11 +15,13 @@ from pyvows import Vows, VowsAssertionError
 
 @Vows.assertion
 def to_be_instance_of(topic, expected):
+    #   FIXME: Add Docstring
     if not isinstance(topic, expected):
         raise VowsAssertionError('Expected topic(%s) to be an instance of %s, but it was a %s', topic, expected, topic.__class__)
 
 @Vows.assertion
 def not_to_be_instance_of(topic, expected):
+    #   FIXME: Add Docstring
     if isinstance(topic, expected):
         raise VowsAssertionError('Expected topic(%s) not to be an instance of %s', topic, expected)
 

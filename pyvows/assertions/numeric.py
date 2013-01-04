@@ -17,5 +17,6 @@ from pyvows import Vows
 
 @Vows.create_assertions
 def to_be_numeric(topic):
+    #   FIXME: Add Docstring
     return isinstance(topic, numbers.Number)
 

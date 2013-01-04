@@ -14,6 +14,7 @@
 import sys
 
 class VowsAsyncTopic(object):
+    #   FIXME: Add Docstring
     def __init__(self, func, args, kw):
         self.func = func
         self.args = args
@@ -29,6 +30,7 @@ class VowsAsyncTopic(object):
 
 
 class VowsAsyncTopicValue(object):
+    #   FIXME: Add Docstring
     def __init__(self, args, kw):
         self.args = args
         self.kw = kw

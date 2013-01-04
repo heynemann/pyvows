@@ -22,7 +22,7 @@ from pyvows.runner import VowsParallelRunner
 
 
 def locate(pattern, root=os.curdir, recursive=True):
-    '''Recursively locates test files when `pyvows` is run from the command 
+    '''Recursively locates test files when `pyvows` is run from the command
     line.
     '''
     root_path = os.path.abspath(root)
@@ -56,17 +56,23 @@ class expect(object):
             return self
 
         method_name = 'not_{name}'.format(name=name) if self.not_assert else name
+
         if not hasattr(Vows.Assert, method_name):
             raise AttributeError('Assertion {method_name} was not found!'.format(method_name=method_name))
 
         def assert_topic(*args, **kw):
+            #   FIXME: Add Docstring / Comment description
             return getattr(Vows.Assert, method_name)(self.topic, *args, **kw)
 
         return assert_topic
 
 
 class VowsAssertion(object):
+    #   FIXME: Add Docstring
+
     class AssertionNotFoundError(AttributeError):
+        #   FIXME: Add Docstring
+
         def __init__(self, name):
             super(VowsAssertion.AssertionNotFoundError, self).__init__(
                 'Assertion with name {name} was not found!'.format(name=name))
@@ -78,6 +84,8 @@ class VowsAssertion(object):
 
 
 class VowsAssertionError(AssertionError):
+    #   FIXME: Add Docstring
+
     def __init__(self, *args):
         msg = args[0]
         if not msg.endswith('.'):
@@ -101,37 +109,37 @@ class Vows(object):
     
         *   Mark test batches with the `Vows.batch` decorator
         *   Build test hierarchies with classes that extend `Vows.Context`
-        *   For those who need it, topics with asynchronous code can use the 
+        *   For those who need it, topics with asynchronous code can use the
             `Vows.async_topic` decorator
       
-    Other attributes and methods here are for PyVows' internal use.  They 
+    Other attributes and methods here are for PyVows' internal use.  They
     aren't necessary for writing tests.
     '''
     contexts = {}
 
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
-        write `from pyvows import Vows, expect` in your test module, then extend 
+        write `from pyvows import Vows, expect` in your test module, then extend
         `Vows.Context` in your test classes.  If you really wanted, you could
         also import `Context` directly.  But don't do that.)
         
-            *   `Vows.Context` subclasses expect one method named `topic`.  
-                It should be the first method in any `Vows.Context` subclass, 
+            *   `Vows.Context` subclasses expect one method named `topic`.
+                It should be the first method in any `Vows.Context` subclass,
                 by convention.
-            *   Sibling `Context`s run in parallel.  
+            *   Sibling `Context`s run in parallel.
             *   Nested `Context`s run sequentially.
+        The `setup` and `teardown` methods aren't typically needed.  But
+        they are available if your test suite has extra pre- and
             
-        The `setup` and `teardown` methods aren't typically needed.  But 
-        they are available if your test suite has extra pre- and 
         post-testing work to be done in any given `Context`.
         '''
+            
         def __init__(self, parent=None):
             self.parent = parent
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
             self.ignored_members = ['topic', 'setup', 'teardown', 'ignore']
-
         def _get_first_available_topic(self, index=-1):
             if self.topic_value:
                 if index > -1 and isinstance(self.topic_value, (list, set, tuple)):
@@ -161,10 +169,12 @@ class Vows(object):
             pass
 
     class NotErrorContext(Context):
+        #   FIXME: Add Docstring
         def should_not_be_an_error(self, topic):
             expect(topic).not_to_be_an_error()
 
     class NotEmptyContext(Context):
+        #   FIXME: Add Docstring
         def should_not_be_empty(self, topic):
             expect(topic).not_to_be_empty()
 
@@ -174,6 +184,7 @@ class Vows(object):
 
     @staticmethod
     def async_topic(topic):
+        #   FIXME: Add Docstring
         def wrapper(*args, **kw):
             return VowsAsyncTopic(topic, args, kw)
         wrapper._original = topic
@@ -182,11 +193,13 @@ class Vows(object):
 
     @staticmethod
     def asyncTopic(topic):
+        #   FIXME: Add Comment
         warnings.warn('The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.', DeprecationWarning, stacklevel=2)
         return Vows.async_topic(topic)
 
     @staticmethod
     def batch(method):
+        #   FIXME: Add Docstring
         def method_name(*args, **kw):
             method(*args, **kw)
 
@@ -196,6 +209,7 @@ class Vows(object):
 
     @classmethod
     def assertion(cls, method):
+        #   FIXME: Add Docstring
         def method_name(*args, **kw):
             method(*args, **kw)
 
@@ -207,6 +221,7 @@ class Vows(object):
 
     @classmethod
     def create_assertions(cls, method):
+        #   FIXME: Add Docstring
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
 
         def exec_assertion(*args):
@@ -235,14 +250,16 @@ class Vows(object):
 
     @classmethod
     def ensure(cls, vow_success_event, vow_error_event):
-        runner = VowsParallelRunner(Vows.contexts, 
-                                    Vows.Context, 
-                                    vow_success_event, 
+        #   FIXME: Add Docstring
+        runner = VowsParallelRunner(Vows.contexts,
+                                    Vows.Context,
+                                    vow_success_event,
                                     vow_error_event)
         return runner.run()
 
     @classmethod
     def gather(cls, path, pattern):
+        #   FIXME: Add Docstring
         path = os.path.abspath(path)
 
         files = locate(pattern, path)

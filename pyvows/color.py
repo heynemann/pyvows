@@ -16,6 +16,7 @@ try:
     init(autoreset=True)
 except ImportError:
     class NoColor(object):
+        #   FIXME: Add Docstring
         def __getattr__(self, *args, **kwargs):
             return ""
 
