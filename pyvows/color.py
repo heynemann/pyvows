@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''PyVows' thin wrapper around the (3rd-party) `colorama` module.
+'''PyVows' support for color-printing to the terminal.
+
+Currently, just a thin wrapper around the (3rd-party) `colorama` module.
 '''
 
 
