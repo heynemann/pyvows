@@ -12,27 +12,35 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 class VowsResult(object):
+    #   FIXME: Add Docstring
+    
     def __init__(self):
         self.contexts = []
         self.elapsed_time = 0.0
 
     @property
     def successful(self):
+        #   FIXME: Add Docstring
         return self.successful_tests == self.total_test_count
 
     @property
     def total_test_count(self):
+        #   FIXME: Add Docstring
         return self.count_tests(contexts=None, first=True, count_func=lambda test: 1)
 
     @property
     def successful_tests(self):
+        #   FIXME: Add Docstring
         return self.count_tests(contexts=None, first=True, count_func=lambda test: 1 if test['succeeded'] else 0)
 
     @property
     def errored_tests(self):
+        #   FIXME: Add Docstring
         return self.count_tests(contexts=None, first=True, count_func=lambda test: 0 if test['succeeded'] else 1)
 
     def count_tests(self, contexts=None, first=True, count_func=lambda test: 1):
+        #   FIXME: Add Docstring
+        
         test_count = 0
 
         if first:
@@ -45,6 +53,7 @@ class VowsResult(object):
         return test_count
 
     def eval_context(self, context):
+        #   FIXME: Add Docstring
         succeeded = True
         for context in context['contexts']:
             succeeded = succeeded and self.eval_context(context)
@@ -55,6 +64,7 @@ class VowsResult(object):
         return succeeded
 
     def get_topic_times(self, contexts=None):
+        #   FIXME: Add Docstring
         topic_times = []
 
         if contexts is None:
@@ -72,6 +82,7 @@ class VowsResult(object):
         return topic_times
 
     def get_worst_topics(self, number=10, threshold=0.1):
+        #   FIXME: Add Docstring
         times = [time for time in self.get_topic_times() if time['elapsed'] > 0 and time['elapsed'] >= threshold]
         return list(reversed(sorted(times, key=lambda x: x['elapsed'])))[:number]
 

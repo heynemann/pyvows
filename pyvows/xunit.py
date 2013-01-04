@@ -16,21 +16,27 @@ import socket
 import traceback
 from xml.dom.minidom import Document
 
+
 class XUnitReporter(object):
+    #   FIXME: Add Docstring
 
     def __init__(self, result):
         self.result_summary = self.summarize_results(result)
 
     def write_report(self, filename, encoding='utf-8'):
+        #   FIXME: Add Docstring
         output_file = codecs.open(filename, 'w', encoding, 'replace')
         output_file.write(self.to_xml(encoding))
         output_file.close()
 
     def to_xml(self, encoding='utf-8'):
+        #   FIXME: Add Docstring
         document = self.create_report_document()
         return document.toxml(encoding=encoding)
 
     def summarize_results(self, result):
+        #   FIXME: Add Docstring
+        
         result_summary = {
             'total': result.successful_tests + result.errored_tests,
             'errors': 0,
@@ -43,6 +49,8 @@ class XUnitReporter(object):
         return result_summary
 
     def create_report_document(self):
+        #   FIXME: Add Docstring
+        
         result_summary = self.result_summary
 
         document = Document()
@@ -63,6 +71,8 @@ class XUnitReporter(object):
         return document
 
     def create_test_case_elements(self, document, parent_node, context):
+        #   FIXME: Add Docstring
+        
         for test in context['tests']:
 
             test_stats = {

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''PyVows' main entry point.  Contains code for command-line I/O, 
+'''PyVows' main entry point.  Contains code for command-line I/O,
 running tests, and the almighty `if __name__ == '__main__': main()`.
 '''
 
@@ -32,6 +32,7 @@ from pyvows import version
 
 
 class Messages(object):
+    #   FIXME: Add Docstring
     path      = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)r).'
     pattern   = 'Pattern of vows files. (default: %(default)r)'
     verbosity = 'Verbosity. May be specified many times to increase verbosity (default: -vv)'
@@ -87,7 +88,9 @@ def __get_arguments():
     return arguments
 
 def run(path, pattern, verbosity, progress):
-    # they need to be imported here, else the no-color option wont work
+    #   FIXME: Add Docstring
+
+    # they need to be imported here, else the no-color option won't work
     from pyvows.core import Vows
     from pyvows.reporting import VowsDefaultReporter
 
@@ -102,6 +105,8 @@ def run(path, pattern, verbosity, progress):
     return result, reporter
 
 def main():
+    #   FIXME: Add Docstring
+
     arguments = __get_arguments()
 
     path = arguments.path
