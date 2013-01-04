@@ -32,7 +32,8 @@ from pyvows import version
 
 
 class Messages(object):
-    #   FIXME: Add Docstring
+    '''A simple container for command-line interface strings.'''
+    
     path      = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)r).'
     pattern   = 'Pattern of vows files. (default: %(default)r)'
     verbosity = 'Verbosity. May be specified many times to increase verbosity (default: -vv)'
@@ -50,6 +51,8 @@ class Messages(object):
     
 
 def __get_arguments():
+    '''Parses arguments from the command-line.'''
+    
     current_dir = os.curdir
     
     #Easy underlining, if we ever need it in the future
@@ -105,7 +108,8 @@ def run(path, pattern, verbosity, progress):
     return result, reporter
 
 def main():
-    #   FIXME: Add Docstring
+    '''PyVows' runtime implementation.
+    '''
 
     arguments = __get_arguments()
 
