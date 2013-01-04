@@ -18,7 +18,10 @@ try:
     init(autoreset=True)
 except ImportError:
     class NoColor(object):
-        #   FIXME: Add Docstring
+        '''When Python can't import `colorama`, this stand-in class prevents
+        other parts of PyVows from throwing errors when attempting to print
+        in color.
+        '''
         def __getattr__(self, *args, **kwargs):
             return ""
 
