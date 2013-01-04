@@ -32,6 +32,10 @@ V_SILENT = 1
 
 
 def ensure_encoded(thing, encoding='utf-8'):
+    '''Ensures proper encoding for unicode characters.
+    
+    Currently used only for characters `✓` and `✗`.
+    '''
     if isinstance(thing, unicode):
         return thing.encode(encoding)
     else:
@@ -57,11 +61,13 @@ class VowsReporter(object):
     #   Quick Colors
     #-------------------------------------------------------------------------
     def blue(self, msg):
+        '''Returns `msg` in blue (for console output).'''
         BLUE  = Fore.BLUE + Style.BRIGHT
         RESET = Style.RESET_ALL + Fore.RESET
         return '{BLUE}{0!s}{RESET}'.format(msg, BLUE=BLUE, RESET=RESET)
     
     def white(self, msg):
+        '''Returns `msg` in white (for console output).'''
         WHITE = ''.join((Fore.WHITE, Style.BRIGHT))
         RESET = ''.join((Style.RESET_ALL, Fore.RESET))
         return '{WHITE}{0!s}{RESET}'.format(msg, WHITE=WHITE, RESET=RESET)
@@ -70,12 +76,27 @@ class VowsReporter(object):
     #   String Formatting
     #-------------------------------------------------------------------------
     def camel_split(self, string):
+        '''Splits camel-case `string` into separate words.  
+        
+        Example: 
+            
+            self.camel_split('SomeCamelCaseString')
+            
+        Returns:
+            
+            'Some camel case string'
+        '''
         return re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?=[0-9]\b))', ' ', string).strip()
 
     def under_split(self, string):
+        '''Replaces all underscores in `string` with spaces.'''
         return ' '.join(string.split('_'))
 
     def format_traceback(self, traceback_list, indentation):
+        '''Adds the current level of indentation to a traceback (so it matches
+        the current context's indentation).
+        '''
+
         # TODO:
         #   ...Is this a decorator?  If so, please add a comment or docstring
         #   to make it explicit.
@@ -87,12 +108,21 @@ class VowsReporter(object):
         return indentation.join(map(indent, traceback_list))
 
     def format_python_constants(self, msg):
+        '''Fixes capitalization of Python constants.  
+        
+        Since developers are used to reading `True`, `False`, and `None` 
+        as capitalized words, it makes sense to match that capitalization 
+        in reports.
+        '''
         msg = msg.replace('true', 'True')
         msg = msg.replace('false', 'False')
         msg = msg.replace('none', 'None')
         return msg
     
     def header(self, msg):
+        '''Returns the string `msg` with a text "ruler".  Also colorizes as 
+        bright green (when color is available).
+        '''
         ruler = ' {0}'.format('=' * len(msg))
 
         prefix = ''.join((Fore.GREEN, Style.BRIGHT))
@@ -110,6 +140,8 @@ class VowsReporter(object):
         )
     
     def indent_msg(self, msg, indentation=None):
+        '''Returns `msg` with the indentation specified by `indentation`.
+        '''
         msg = msg.capitalize()
         msg = self.format_python_constants(msg)
         return '{indent}{msg}'.format(
@@ -121,6 +153,10 @@ class VowsReporter(object):
     #   Printing Methods
     #-------------------------------------------------------------------------
     def humanized_print(self, msg, indentation=None):
+        '''Passes `msg` through multiple text filters to make the output
+        appear more like normal text, then prints it (indented by 
+        `indentation`).
+        '''
         msg = self.under_split(msg)
         msg = self.camel_split(msg)
         msg = msg.replace('  ',' ') # normalize spaces if inserted by
@@ -128,6 +164,7 @@ class VowsReporter(object):
         print self.indent_msg(msg, indentation)
     
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
+        '''Prints a color-formatted traceback with appropriate indentation.'''
         if isinstance(exc_value, VowsAssertionError):
             exc_values_args = tuple(map(lambda arg: '{0.RESET}{1}{0.RED}'.format(Fore, arg), exc_value.args))
             error_msg = exc_value.msg % exc_values_args
@@ -161,16 +198,23 @@ class VowsTestReporter(VowsReporter):
     #-------------------------------------------------------------------------
     @classmethod
     def handle_success(cls, vow):
+        #   FIXME: Add Docstring / Comment description
+        #   
+        #       *   Why is `vow` unused?
         sys.stdout.write(cls.honored)
     
     @classmethod
     def handle_error(cls, vow):
+        #   FIXME: Add Docstring / Comment description
+        #   
+        #       *   Why is `vow` unused?
         sys.stdout.write(cls.broken)
     
     #-------------------------------------------------------------------------
     #   Printing Methods
     #-------------------------------------------------------------------------
     def pretty_print(self):
+        '''Prints PyVows test results.'''
         print self.header('Vows Results')
         
         if not self.result.contexts:
@@ -198,6 +242,10 @@ class VowsTestReporter(VowsReporter):
         print
 
     def print_context(self, name, context):
+        #   FIXME: Add Docstring
+        #
+        #       *   Is this only used in certain cases?  
+        #           *   If so, which?
         self.indent += 1
         indentation2 = self.TAB * (self.indent + 2)
 
@@ -265,6 +313,14 @@ class VowsCoverageReporter(VowsReporter):
     '''A VowsReporter which prints the code coverage of tests.'''
 
     def get_uncovered_lines(self, uncovered_lines, number_of=3):
+        '''Searches for untested lines of code.  Returns a string
+        listing the line numbers.
+        
+        If the number of uncovered lines is greater than `number_of`, this will
+        only explicitly list the first `number_of` uncovered lines, followed
+        by ' and ## more' (where '##' is the total number of additional 
+        uncovered lines.
+        '''
         if len(uncovered_lines) > number_of:
             template_str = []
             for i in range(number_of):
@@ -279,6 +335,9 @@ class VowsCoverageReporter(VowsReporter):
         return ', '.join(uncovered_lines)
 
     def parse_coverage_xml(self, xml):
+        '''Reads `xml` for code coverage statistics, and returns the
+        dict `result`.
+        '''
         result = {}
         root   = etree.fromstring(xml)
         result['overall'] = float(root.attrib['line-rate']) * 100
@@ -300,6 +359,7 @@ class VowsCoverageReporter(VowsReporter):
     #   Printing (Coverage)
     #-------------------------------------------------------------------------
     def print_coverage(self, xml, cover_threshold):
+        '''Prints code coverage statistics for your tests.'''
         print self.header('Code Coverage')
 
         root         = self.parse_coverage_xml(xml)
@@ -348,6 +408,12 @@ class VowsCoverageReporter(VowsReporter):
         print
             
     def format_class_coverage(self, cover_character, klass, space1, progress, cover_pct, space2, lines):
+        '''Accepts coverage data for a class and returns a formatted string (intended for 
+        humans).
+        '''
+        #   FIXME:
+        #       Doesn't this *actually* print coverage for a module, and not a class?
+        
         # preprocess raw data
         klass       = self.blue( klass )
         cover_pct   = self.white( cover_pct )
@@ -365,6 +431,10 @@ class VowsCoverageReporter(VowsReporter):
         )
         
     def format_overall_coverage(self, cover_character, max_length, progress, total_coverage):
+        '''Accepts overall coverage data and returns a formatted string (intended for 
+        humans).
+        '''
+
         # preprocess raw data
         overall = self.blue('OVERALL')
         space   = ' ' * (max_length - len('OVERALL'))
@@ -382,6 +452,10 @@ class VowsProfileReporter(VowsReporter):
     '''A VowsReporter which prints a profile of the 10 slowest topics.'''
 
     def print_profile(self, threshold):
+        '''Prints the 10 slowest topics that took longer than `threshold`
+        to test.
+        '''
+
         MAX_PATH_SIZE = 30
         topics = self.result.get_worst_topics(number=10, threshold=threshold)
 

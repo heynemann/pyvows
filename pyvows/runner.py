@@ -26,6 +26,8 @@ from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 
 
 class VowsParallelRunner(object):
+    '''Runs tests asynchronously.'''
+    
     def __init__(self, vows, context_class, vow_successful_event, vow_error_event):
         self.vows = vows
         self.context_class = context_class
@@ -34,6 +36,9 @@ class VowsParallelRunner(object):
         self.vow_error_event = vow_error_event
 
     def run(self):
+        '''Runs vows and returns `result` (an instance of `VowsResult`).
+        '''
+        
         start_time = time.time()
         result = VowsResult()
 
@@ -47,9 +52,12 @@ class VowsParallelRunner(object):
         return result
 
     def run_context(self, context_col, name, context_instance):
+        #   FIXME: Add Docstring
         self.pool.spawn(self.async_run_context, context_col, name, context_instance)
 
     def async_run_context(self, context_col, name, context_instance, index=-1):
+        #   FIXME: Add Docstring
+        
         context_obj = {
             'name': name,
             'topic_elapsed': 0,
@@ -146,11 +154,13 @@ class VowsParallelRunner(object):
 
         teardown()
 
-
     def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
+        #   FIXME: Add Docstring
         self.pool.spawn(self.async_run_vow, tests_col, topic, context_instance, member, member_name, enumerated)
 
     def async_run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated):
+        #   FIXME: Add Docstring
+        
         start_time = time.time()
         filename, lineno = self.file_info_for(member._original)
         result_obj = {
@@ -174,6 +184,11 @@ class VowsParallelRunner(object):
                 self.vow_successful_event(result_obj)
 
         except Exception:
+            #   FIXME: 
+            #
+            #   Either...
+            #       *   Describe why we're catching every exception, or
+            #       *   Fix to catch specific kinds of exceptions
             exc_type, exc_value, exc_traceback = sys.exc_info()
 
             result_obj['error'] = {
@@ -190,6 +205,7 @@ class VowsParallelRunner(object):
         return result_obj
 
     def _get_code_for(self, obj):
+        #   FIXME: Add Comment description
         code = None
         if hasattr(obj, '__code__'):
             code = obj.__code__
@@ -198,6 +214,7 @@ class VowsParallelRunner(object):
         return code
 
     def file_info_for(self, member):
+        '''Returns a tuple containing `(filename, lineno)` of `member`.'''
         code = self._get_code_for(member)
 
         filename = code.co_filename
@@ -206,6 +223,8 @@ class VowsParallelRunner(object):
         return filename, lineno
 
     def get_topics_for(self, topic_function, context_instance):
+        '''Returns a list of topics for `context_instance`.'''
+        
         if not context_instance.parent:
             return []
 
@@ -245,9 +264,10 @@ class VowsParallelRunner(object):
 
 
 class FunctionWrapper(object):
-    ''' Just calls the passed function when all the wrapped functions have been 
-        called.
+    '''Simply calls the passed-in function after all wrapped functions have been 
+    called.
     '''
+    
     def __init__(self, func):
         self.waiting = 0
         self.func = func
