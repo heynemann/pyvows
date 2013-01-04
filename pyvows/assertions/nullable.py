@@ -15,13 +15,13 @@ from pyvows import Vows, VowsAssertionError
 
 @Vows.assertion
 def to_be_null(topic):
-    #   FIXME: Add Docstring
+    '''Asserts that `topic` is `None`.'''
     if topic is not None:
         raise VowsAssertionError('Expected topic(%s) to be None', topic)
 
 @Vows.assertion
 def not_to_be_null(topic):
-    #   FIXME: Add Docstring
+    '''Asserts that `topic` is NOT `None`.'''
     if topic is None:
         raise VowsAssertionError('Expected topic(%s) not to be None', topic)
 

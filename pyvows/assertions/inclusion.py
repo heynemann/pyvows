@@ -16,5 +16,5 @@ from pyvows import Vows
 
 @Vows.create_assertions
 def to_include(topic, expected):
-    #   FIXME: Add Docstring
+    '''Asserts that `expected` is in `topic`.'''
     return expected in topic
