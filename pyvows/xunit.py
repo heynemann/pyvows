@@ -18,7 +18,9 @@ from xml.dom.minidom import Document
 
 
 class XUnitReporter(object):
-    #   FIXME: Add Docstring
+    '''This class is responsible for turning `VowsResult` objects
+    into XUnit-style reports.
+    '''
 
     def __init__(self, result):
         self.result_summary = self.summarize_results(result)
