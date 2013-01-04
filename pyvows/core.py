@@ -38,11 +38,14 @@ def locate(pattern, root=os.curdir, recursive=True):
 
 
 class expect(object):
-    '''The `expect` class is used in pyvows tests.  It is passed the topic,
-    and allows the chaining of pyvows assertions.  Example:
+    '''This atypical class provides a key part of the PyVows testing syntax.
+    
+    For example:
     
         expect(True).to_be_true()
+        
     '''
+    
     def __init__(self, topic):
         self.topic = topic
         self.not_assert = False
@@ -55,23 +58,35 @@ class expect(object):
             self.not_assert = not self.not_assert
             return self
 
-        method_name = 'not_{name}'.format(name=name) if self.not_assert else name
+        if self.not_assert:
+            method_name = 'not_{name}'.format(name=name)  
+        else:
+            method_name = name
 
         if not hasattr(Vows.Assert, method_name):
             raise AttributeError('Assertion {method_name} was not found!'.format(method_name=method_name))
 
         def assert_topic(*args, **kw):
-            #   FIXME: Add Docstring / Comment description
+            '''Allows instances (topics) to chain calls to `VowsAssertion`s.
+            
+            In the following PyVows-test snippet:
+                
+                expect(topic).to_be_True()
+                
+            ...This method is what allows `expect(topic)` to call 
+            `.to_be_True()` (or some other VowsAssertion).
+            
+            '''
             return getattr(Vows.Assert, method_name)(self.topic, *args, **kw)
 
         return assert_topic
 
 
 class VowsAssertion(object):
-    #   FIXME: Add Docstring
+    '''Used by the `Vows` class for various assertion-related functionality.'''
 
     class AssertionNotFoundError(AttributeError):
-        #   FIXME: Add Docstring
+        '''Raised when a VowsAssertion cannot be found.'''
 
         def __init__(self, name):
             super(VowsAssertion.AssertionNotFoundError, self).__init__(
@@ -84,7 +99,7 @@ class VowsAssertion(object):
 
 
 class VowsAssertionError(AssertionError):
-    #   FIXME: Add Docstring
+    '''Raised when a VowsAssertion returns False.'''
 
     def __init__(self, *args):
         msg = args[0]
@@ -114,6 +129,7 @@ class Vows(object):
       
     Other attributes and methods here are for PyVows' internal use.  They
     aren't necessary for writing tests.
+    
     '''
     contexts = {}
 
@@ -128,6 +144,7 @@ class Vows(object):
                 by convention.
             *   Sibling `Context`s run in parallel.
             *   Nested `Context`s run sequentially.
+        
         The `setup` and `teardown` methods aren't typically needed.  But
         they are available if your test suite has extra pre- and
             
@@ -140,6 +157,7 @@ class Vows(object):
             self.index = -1
             self.generated_topic = False
             self.ignored_members = ['topic', 'setup', 'teardown', 'ignore']
+        
         def _get_first_available_topic(self, index=-1):
             if self.topic_value:
                 if index > -1 and isinstance(self.topic_value, (list, set, tuple)):
@@ -159,22 +177,51 @@ class Vows(object):
             return self.parent._get_first_available_topic(index)
 
         def ignore(self, *args):
+            '''Appends `*args` to `ignored_members`.  (Methods listed in 
+            `ignored_members` are considered "not a test method" by PyVows.)
+            '''
             for arg in args:
                 self.ignored_members.append(arg)
 
         def setup(self):
+            '''For use in your PyVows tests.  Define `setup` in your 
+            `Vows.Context` subclass to define what should happen before
+            that Context's testing begins.  
+            
+            Remember: 
+                * sibling Contexts are executed in parallel
+                * nested Contexts are executed sequentially
+            '''
             pass
 
         def teardown(self):
+            '''For use in your PyVows tests.  Define `setup` in your 
+            `Vows.Context` subclass to define what should happen after
+            that Context's testing ends.  
+            
+            Remember: 
+                * sibling Contexts are executed in parallel
+                * nested Contexts are executed sequentially
+            '''
             pass
 
     class NotErrorContext(Context):
         #   FIXME: Add Docstring
+        #   
+        #   *   Why does this class exist?  
+        #   *   Does this simply delegate the call to `expect`?
+        #   *   If this can be used for some clever form of generative
+        #       testing, show an example
         def should_not_be_an_error(self, topic):
             expect(topic).not_to_be_an_error()
 
     class NotEmptyContext(Context):
         #   FIXME: Add Docstring
+        #   
+        #   *   Why does this class exist?  
+        #   *   Does this simply delegate the call to `expect`?
+        #   *   If this can be used for some clever form of generative
+        #       testing, show an example
         def should_not_be_empty(self, topic):
             expect(topic).not_to_be_empty()
 
@@ -184,7 +231,12 @@ class Vows(object):
 
     @staticmethod
     def async_topic(topic):
-        #   FIXME: Add Docstring
+        '''Topic decorator.  Allows PyVows testing of asynchronous topics.
+        
+        Use `@Vows.async_topic` on your `topic` method to mark it as 
+        asynchronous.  This allows PyVows to test topics which use callbacks
+        instead of return values.
+        '''
         def wrapper(*args, **kw):
             return VowsAsyncTopic(topic, args, kw)
         wrapper._original = topic
@@ -199,7 +251,12 @@ class Vows(object):
 
     @staticmethod
     def batch(method):
-        #   FIXME: Add Docstring
+        '''Class decorator.  Use on subclasses of `Vows.Context`.
+        
+        Test batches in PyVows are the largest unit of tests. The convention 
+        is to have one test batch per file, and have the batch’s class match 
+        the file name.
+        '''
         def method_name(*args, **kw):
             method(*args, **kw)
 
@@ -209,7 +266,27 @@ class Vows(object):
 
     @classmethod
     def assertion(cls, method):
-        #   FIXME: Add Docstring
+        '''Function decorator.  Provides lower-level control for custom 
+        assertions than `@Vows.create_assertions`.
+        
+        If you need more control over your error message, or your assertion 
+        doesn’t have a corresponding `not_`, use this decorator and 
+        raise a `VowsAssertionError`.
+        
+        By raising a `VowsAssertionError`, you get the benefit of highlighting 
+        the important values when your vows are broken.
+
+        If you still just wanna raise an `AssertionError` like old times, 
+        that’s supported, too.
+        
+        It’s recommended to always declare both the assertion and the `not_` 
+        assertion (if applicable), so they can be used like this:
+        
+            expect(5).to_be_a_positive_integer()
+            expect(-3).Not.to_be_a_positive_integer()
+            
+        '''
+        #   http://pyvows.org/#-assertions
         def method_name(*args, **kw):
             method(*args, **kw)
 
@@ -221,7 +298,35 @@ class Vows(object):
 
     @classmethod
     def create_assertions(cls, method):
-        #   FIXME: Add Docstring
+        '''Function decorator.  Use to create custom assertions for your 
+        vows.
+        
+        Creating new assertions for use with `expect` is as simple as using 
+        this decorator on a function. The function expects `topic` as the 
+        first parameter, and `expectation` second:
+
+            @Vows.create_assertions
+            def to_be_greater_than(topic, expected):
+                return topic > expected
+        
+        Now, the following expectation…
+
+            expect(2).to_be_greater_than(3)
+        
+        …will report:
+
+            Expected topic(2) to be greater than 3.
+        
+        It will also create the corresponding `not_` assertion:
+
+            expect(4).not_to_be_greater_than(3);
+        
+        …will report:
+        
+            Expected topic(4) not to be greater than 3.
+            
+        '''
+        #   http://pyvows.org/#-assertions   
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
 
         def exec_assertion(*args):
@@ -251,6 +356,9 @@ class Vows(object):
     @classmethod
     def ensure(cls, vow_success_event, vow_error_event):
         #   FIXME: Add Docstring
+        #
+        #       *   Used by `run()` in `console.py`
+        #       *   Please add a useful description if you wrote this! :) 
         runner = VowsParallelRunner(Vows.contexts,
                                     Vows.Context,
                                     vow_success_event,
@@ -260,6 +368,8 @@ class Vows(object):
     @classmethod
     def gather(cls, path, pattern):
         #   FIXME: Add Docstring
+        #
+        #   *   Only used in `console.py`
         path = os.path.abspath(path)
 
         files = locate(pattern, path)
