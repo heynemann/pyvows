@@ -1,8 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''This package contains all the code for PyVows assertions.  
+'''PyVows features an extensible assertion model with many useful functions, 
+as well as error reporting.
+
+It’s always best to use the most specific assertion functions when testing a 
+value. You’ll get much better error reporting, because your intention is clearer.
+
+This package contains all the code for PyVows assertions.  
 
 Aren't they convenient?
+
 '''
 
 
