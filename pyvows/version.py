@@ -14,5 +14,5 @@
 __version__ = (1, 1, 9)
 
 def to_str():
-    #   FIXME: Add Docstring
+    '''Returns a string containing PyVows' version number.'''
     return '.'.join([str(item) for item in __version__])
