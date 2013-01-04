@@ -15,11 +15,13 @@ from pyvows import Vows, VowsAssertionError
 
 @Vows.assertion
 def to_be_true(topic):
+    '''Asserts that the boolean value of `topic` is `True`.'''
     if not bool(topic):
         raise VowsAssertionError("Expected topic(%s) to be truthy", topic)
 
 @Vows.assertion
 def to_be_false(topic):
+    '''Asserts that the boolean value of `topic` is `False`.'''
     if bool(topic):
         raise VowsAssertionError("Expected topic(%s) to be falsy", topic)
 
