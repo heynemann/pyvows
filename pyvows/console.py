@@ -34,6 +34,7 @@ from pyvows import version
 class Messages(object):
     '''A simple container for command-line interface strings.'''
     
+    summary   = 'Run PyVows tests.'
     path      = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)r).'
     pattern   = 'Pattern of vows files. (default: %(default)r)'
     verbosity = 'Verbosity. May be specified many times to increase verbosity (default: -vv)'
@@ -58,8 +59,8 @@ def __get_arguments():
     #Easy underlining, if we ever need it in the future
     #uline   = lambda text: '\033[4m{0}\033[24m'.format(text)
     
-    parser = argparse.ArgumentParser(description     = 'Runs pyVows.')
-    metavar = lambda metavar: '{0}{1}{0}'.format(Style.RESET_ALL, metavar.upper())
+    parser  = argparse.ArgumentParser(description     = Messages.summary)
+    metavar = lambda metavar: '{0}{metavar}{0}'.format(Style.RESET_ALL, metavar=metavar.upper())
 
     parser.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern, metavar=metavar('pattern'))
 
