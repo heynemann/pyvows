@@ -17,5 +17,6 @@ from pyvows import Vows
 
 @Vows.create_assertions
 def to_be_numeric(topic):
+    '''Asserts that `topic` is a Number.'''
     return isinstance(topic, numbers.Number)
 

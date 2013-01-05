@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''PyVows' thin wrapper around the (3rd-party) `colorama` module.
+'''PyVows' support for color-printing to the terminal.
+
+Currently, just a thin wrapper around the (3rd-party) `colorama` module.
 '''
 
 
@@ -16,6 +18,10 @@ try:
     init(autoreset=True)
 except ImportError:
     class NoColor(object):
+        '''When Python can't import `colorama`, this stand-in class prevents
+        other parts of PyVows from throwing errors when attempting to print
+        in color.
+        '''
         def __getattr__(self, *args, **kwargs):
             return ""
 
