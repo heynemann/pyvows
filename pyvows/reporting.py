@@ -19,7 +19,7 @@ import traceback
 
 from xml.etree import ElementTree as etree
 
-from pyvows.color import Fore, Style
+from pyvows.color import *
 from pyvows.core import VowsAssertionError
 
 PROGRESS_SIZE = 50
@@ -53,24 +53,9 @@ class VowsReporter(object):
         self.result=result
         self.verbosity=verbosity
     
-    HONORED = '{0}✓{1}'.format(Fore.GREEN + Style.BRIGHT, Fore.RESET + Style.RESET_ALL)
-    BROKEN  = '{0}✗{1}'.format(Fore.RED + Style.BRIGHT, Fore.RESET + Style.RESET_ALL)
+    HONORED = green('✓')
+    BROKEN  = red('✗')
     TAB     = '  '
-    
-    #-------------------------------------------------------------------------
-    #   Quick Colors
-    #-------------------------------------------------------------------------
-    def blue(self, msg):
-        '''Returns `msg` in blue (for console output).'''
-        BLUE  = Fore.BLUE + Style.BRIGHT
-        RESET = Style.RESET_ALL + Fore.RESET
-        return '{BLUE}{0!s}{RESET}'.format(msg, BLUE=BLUE, RESET=RESET)
-    
-    def white(self, msg):
-        '''Returns `msg` in white (for console output).'''
-        WHITE = ''.join((Fore.WHITE, Style.BRIGHT))
-        RESET = ''.join((Style.RESET_ALL, Fore.RESET))
-        return '{WHITE}{0!s}{RESET}'.format(msg, WHITE=WHITE, RESET=RESET)
     
     #-------------------------------------------------------------------------
     #   String Formatting
@@ -119,25 +104,17 @@ class VowsReporter(object):
         msg = msg.replace('none', 'None')
         return msg
     
-    def header(self, msg):
+    def header(self, msg, ruler_character='='):
         '''Returns the string `msg` with a text "ruler".  Also colorizes as 
         bright green (when color is available).
         '''
-        ruler = ' {0}'.format('=' * len(msg))
+        ruler = ' {0}'.format(len(msg) * ruler_character)
+        msg   = ' {0}'.format(msg)
 
-        prefix = ''.join((Fore.GREEN, Style.BRIGHT))
-        suffix = ''.join((Style.RESET_ALL, Fore.RESET))
-
-        msg = '{prefix} {msg}{suffix}'.format(
-            prefix  = prefix,
-            msg     = msg,
-            suffix  = suffix
-        )
-        return '{0}{ruler}{0}{msg}{0}{ruler}{0}'.format(
+        return green('{0}{ruler}{0}{msg}{0}{ruler}{0}'.format(
             '\n',
             ruler = ruler,
-            msg   = msg
-        )
+            msg   = msg))
     
     def indent_msg(self, msg, indentation=None):
         '''Returns `msg` with the indentation specified by `indentation`.
@@ -166,24 +143,21 @@ class VowsReporter(object):
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
         '''Prints a color-formatted traceback with appropriate indentation.'''
         if isinstance(exc_value, VowsAssertionError):
-            exc_values_args = tuple(map(lambda arg: '{0.RESET}{1}{0.RED}'.format(Fore, arg), exc_value.args))
+            exc_values_args = tuple(map(lambda arg: red(arg), exc_value.args))
             error_msg = exc_value.msg % exc_values_args
         else:
             error_msg = unicode(exc_value)
 
-        print '{indent}{F.RED}{error}{F.RESET}'.format(
-            F      = Fore,
+        print red('{indent}{error}'.format(
             indent = indentation,
-            error  = error_msg)
+            error  = error_msg))
 
         if self.verbosity >= V_NORMAL:
             traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_msg = self.format_traceback(traceback_msg, indentation)
-            print '\n{indent}{F.YELLOW}{traceback}{S.RESET_ALL}'.format(
-                F = Fore,
-                S = Style,
+            print yellow('\n{indent}{traceback}'.format(
                 indent      = indentation,
-                traceback   = traceback_msg)
+                traceback   = traceback_msg))
 
 
 class VowsTestReporter(VowsReporter):
@@ -273,20 +247,18 @@ class VowsTestReporter(VowsReporter):
                     test['name']))
 
                 if ctx.generated_topic:
+                    value = yellow(self.max_length(test['topic'], 250))
+                    
                     self.humanized_print('')
                     self.humanized_print('\tTopic value:')
-                    self.humanized_print('\t{0.YELLOW}{1.BRIGHT}{2}{1.RESET_ALL}'.format(
-                        Fore,
-                        Style,
-                        test['topic']
-                    ))
-                    self.humanized_print('\n\n')
+                    self.humanized_print('\t{value}'.format(value = value))
+                    self.humanized_print('\n' * 2)
 
                 if hasattr(test, 'topic') and\
                    hasattr(test['topic'], 'error') and\
                    test['topic']['error'] is not None:
                     print self.indent_msg('')
-                    print self.indent_msg('{0.BLUE}{1.BRIGHT}Topic Error:{1.RESET_ALL}'.format(Fore, Style))
+                    print blue(self.indent_msg('Topic Error:'))
                     exc_type, exc_value, exc_traceback = test['topic'].error
                     self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
                 else:
@@ -297,10 +269,9 @@ class VowsTestReporter(VowsReporter):
 
                 if 'file' in test:
                     print
-                    print '{RED}found in {test[file]} at line {test[lineno]}{RESET}'.format(
-                        RED   = indentation2 + Fore.RED,
-                        RESET = Fore.RESET,
-                        test  = test)
+                    print red('{indent}found in {test[file]} at line {test[lineno]}'.format(
+                        indent= indentation2,
+                        test  = test))
                     print
 
         for context in context['contexts']:
@@ -328,7 +299,9 @@ class VowsCoverageReporter(VowsReporter):
                 if i is not (number_of - 1):
                     template_str.append(', ')
 
-            template_str.append(' and {num_more_uncovered:d} more'.format(num_more_uncovered=len(uncovered_lines) - number_of))
+            template_str.append(', and {num_more_uncovered:d} more'.format(
+                num_more_uncovered = len(uncovered_lines) - number_of)
+                )
 
             return ''.join(template_str)
 
@@ -414,10 +387,11 @@ class VowsCoverageReporter(VowsReporter):
         #   FIXME:
         #       Doesn't this *actually* print coverage for a module, and not a class?
         
-        # preprocess raw data
-        klass       = self.blue( klass )
-        cover_pct   = self.white( cover_pct )
-        # then format
+        # preprocess raw data...
+        klass       = blue( klass )
+        cover_pct   = white( cover_pct )
+        
+        # ...then format
         return ' {0} {klass}{space1}\t{progress}{cover_pct}%{space2} {lines}'.format(
             # TODO:
             #   * remove manual spacing, use .format() alignment
@@ -436,9 +410,9 @@ class VowsCoverageReporter(VowsReporter):
         '''
 
         # preprocess raw data
-        overall = self.blue('OVERALL')
+        overall = blue('OVERALL')
         space   = ' ' * (max_length - len('OVERALL'))
-        total   = self.white('{total_coverage:.2%}'.format(total_coverage=total_coverage/100))
+        total   = white('{total_coverage:.2%}'.format(total_coverage=total_coverage/100))
         # then format
         return ' {0} {overall}{space}\t{progress} {total}%'.format(
             cover_character,
@@ -462,7 +436,7 @@ class VowsProfileReporter(VowsReporter):
         if topics:
             print self.header('Slowest Topics')
 
-            print '       elapsed    Context File Path                 Context Name'
+            print yellow('       elapsed     Context File Path                 Context Name')
             for index, topic in enumerate(topics):
                 name = self.under_split(topic['context'])
                 name = self.camel_split(name)
