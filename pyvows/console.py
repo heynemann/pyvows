@@ -26,7 +26,7 @@ try:
 except ImportError:
     COVERAGE_AVAILABLE = False
 
-from pyvows.color import Fore, Style
+from pyvows.color import *
 from pyvows.xunit import XUnitReporter
 from pyvows import version
 
@@ -156,8 +156,8 @@ def main():
         else:
 
             print
-            print '{0.YELLOW}WARNING: Cover disabled because coverage could not be found.'.format(Fore)
-            print '{0.YELLOW}Make sure it is installed and accessible.'.format(Fore)
+            print yellow('WARNING: Cover disabled because coverage could not be found.')
+            print yellow('Make sure it is installed and accessible.')
             print
 
     reporter.pretty_print()
