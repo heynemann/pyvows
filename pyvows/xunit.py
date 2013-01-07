@@ -17,9 +17,7 @@ from xml.dom.minidom import Document
 
 
 class XUnitReporter(object):
-    '''This class is responsible for turning `VowsResult` objects
-    into XUnit-style reports.
-    '''
+    '''Turns `VowsResult` objects into XUnit-style reports.'''
 
     def __init__(self, result):
         self.result_summary = self.summarize_results(result)
