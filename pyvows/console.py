@@ -11,6 +11,7 @@ running tests, and the almighty `if __name__ == '__main__': main()`.
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
+from __future__ import division
 
 import sys
 import os
@@ -152,6 +153,7 @@ def main():
                 with open(arguments.cover_report, 'w') as report:
                     report.write(xml)
 
+            arguments.cover_threshold /= 100.0
             reporter.print_coverage(xml, arguments.cover_threshold)
 
         else:

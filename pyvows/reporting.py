@@ -253,9 +253,9 @@ class VowsTestReporter(VowsReporter):
                     self.humanized_print('\t{value}'.format(value = value))
                     self.humanized_print('\n' * 2)
 
-                if hasattr(test, 'topic') and\
-                   hasattr(test['topic'], 'error') and\
-                   test['topic']['error'] is not None:
+                if test['topic']['error'] is not None \
+                   and hasattr(test, 'topic')         \
+                   and hasattr(test['topic'], 'error'):
                     print self.indent_msg('')
                     print blue(self.indent_msg('Topic Error:'))
                     exc_type, exc_value, exc_traceback = test['topic'].error
@@ -312,7 +312,7 @@ class VowsCoverageReporter(VowsReporter):
         '''
         result = {}
         root   = etree.fromstring(xml)
-        result['overall'] = float(root.attrib['line-rate']) * 100
+        result['overall'] = float(root.attrib['line-rate'])
         result['classes'] = []
 
         for package in root.findall('.//package'):
@@ -320,7 +320,7 @@ class VowsCoverageReporter(VowsReporter):
             for klass in package.findall('.//class'):
                 result['classes'].append({
                     'name': '.'.join([package_name, klass.attrib['name']]),
-                    'line_rate': float(klass.attrib['line-rate']) * 100,
+                    'line_rate': float(klass.attrib['line-rate']),
                     'uncovered_lines': [line.attrib['number']
                                         for line in klass.find('lines')
                                         if  line.attrib['hits'] == '0']
@@ -352,12 +352,17 @@ class VowsCoverageReporter(VowsReporter):
                 if max_coverage == 100.0:
                     print
 
-            coverage = int(round(coverage, 0))
-            progress = int(round(coverage / 100.0 * PROGRESS_SIZE, 0))
-            offset   = coverage == 0 and 2 or (coverage < 10 and 1 or 0)
-            #   FIXME: explain the `offset` line please?  :)
+            coverage = coverage
+            progress = int(coverage * PROGRESS_SIZE)
+            
+            if coverage == 0.000:
+                offset = 2
+            elif 0.000 < coverage < 0.1000:
+                offset = 1
+            else:
+                offset = 0
                         
-            if coverage == 0 and not klass['uncovered_lines']:
+            if coverage == 0.000 and not klass['uncovered_lines']:
                 continue
 
             print self.format_class_coverage(
@@ -365,7 +370,7 @@ class VowsCoverageReporter(VowsReporter):
                 klass           = klass['name'],
                 space1          = ' ' * (max_length - len(klass['name'])),
                 progress        = progress,
-                cover_pct       = (coverage > 0 and ' ' or '') + '{coverage:.2f}'.format(coverage=coverage),
+                coverage        = coverage,
                 space2          = ' ' * (PROGRESS_SIZE - progress + offset),
                 lines           = self.get_uncovered_lines(klass['uncovered_lines']))
 
@@ -373,13 +378,13 @@ class VowsCoverageReporter(VowsReporter):
 
         total_coverage  = root['overall']
         cover_character = self.HONORED if (total_coverage >= cover_threshold) else self.BROKEN
-        progress        = int(round(total_coverage / 100.0 * PROGRESS_SIZE, 0))
+        progress        = int(total_coverage * PROGRESS_SIZE)
 
         print self.format_overall_coverage(cover_character, max_length, progress, total_coverage)
 
         print
             
-    def format_class_coverage(self, cover_character, klass, space1, progress, cover_pct, space2, lines):
+    def format_class_coverage(self, cover_character, klass, space1, progress, coverage, space2, lines):
         '''Accepts coverage data for a class and returns a formatted string (intended for 
         humans).
         '''
@@ -388,17 +393,22 @@ class VowsCoverageReporter(VowsReporter):
         
         # preprocess raw data...
         klass       = blue( klass )
-        cover_pct   = white( cover_pct )
+        
+        coverage   = '{prefix}{coverage:.1%}'.format(
+            prefix   = ' ' if (coverage > 0.000) else '',
+            coverage = coverage)
+            
+        coverage   = white(coverage)
         
         # ...then format
-        return ' {0} {klass}{space1}\t{progress}{cover_pct}%{space2} {lines}'.format(
+        return ' {0} {klass}{space1}\t{progress}{coverage}{space2} {lines}'.format(
             # TODO:
             #   * remove manual spacing, use .format() alignment
             cover_character,
             klass     = klass,
             space1    = space1,
             progress  = '•' * progress,
-            cover_pct = cover_pct,
+            coverage  = coverage,
             space2    = space2,
             lines     = lines
         )
@@ -411,9 +421,11 @@ class VowsCoverageReporter(VowsReporter):
         # preprocess raw data
         overall = blue('OVERALL')
         space   = ' ' * (max_length - len('OVERALL'))
-        total   = white('{total_coverage:.2%}'.format(total_coverage=total_coverage/100))
+        total   = '{total_coverage:.1%}'.format(total_coverage = total_coverage)
+        total   = white(total)
+        
         # then format
-        return ' {0} {overall}{space}\t{progress} {total}%'.format(
+        return ' {0} {overall}{space}\t{progress} {total}'.format(
             cover_character,
             overall  = overall,
             space    = space,
