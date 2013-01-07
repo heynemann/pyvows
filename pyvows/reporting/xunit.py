@@ -24,14 +24,13 @@ class XUnitReporter(object):
 
     def write_report(self, filename, encoding='utf-8'):
         #   FIXME: Add Docstring
-        output_file = codecs.open(filename, 'w', encoding, 'replace')
-        output_file.write(self.to_xml(encoding))
-        output_file.close()
+        with codecs.open(filename, 'w', encoding, 'replace') as output_file:
+            output_file.write(self.to_xml(encoding))
 
     def to_xml(self, encoding='utf-8'):
         #   FIXME: Add Docstring
         document = self.create_report_document()
-        return document.toxml(encoding=encoding)
+        return document.toxml(encoding = encoding)
 
     def summarize_results(self, result):
         #   FIXME: Add Docstring
@@ -70,7 +69,6 @@ class XUnitReporter(object):
     def create_test_case_elements(self, document, parent_node, context):
         #   FIXME: Add Docstring
         for test in context['tests']:
-
             test_stats = {
                 'context': context['name'],
                 'name': test['name'],
@@ -80,7 +78,7 @@ class XUnitReporter(object):
             testcase_node = document.createElement('testcase')
             testcase_node.setAttribute('classname', str(test_stats['context']))
             testcase_node.setAttribute('name', str(test_stats['name']))
-            testcase_node.setAttribute('time', '{time:.3f}'.format(time=test_stats['taken']))
+            testcase_node.setAttribute('time', '{time:.3f}'.format(time = test_stats['taken']))
             parent_node.appendChild(testcase_node)
 
             if not test['succeeded']:
