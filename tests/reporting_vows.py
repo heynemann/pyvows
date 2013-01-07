@@ -66,7 +66,7 @@ class CoverageXMLParser(Vows.Context):
             expect(len(result['classes'])).to_equal(2)
 
         def should_be_overall_99(self, result):
-            expect(result['overall']).to_equal(99.0)
+            expect(result['overall']).to_equal(0.99)
 
         class TheFirstClass(Vows.Context):
 
@@ -77,7 +77,7 @@ class CoverageXMLParser(Vows.Context):
                 expect(klass['name']).to_equal('pyvows.console')
 
             def should_contain_linehate(self, klass):
-                expect(klass['line_rate']).to_equal(56.8)
+                expect(klass['line_rate']).to_equal(0.568)
 
             def should_contain_lines_uncovered(self, klass):
                 expect(klass['uncovered_lines']).to_equal(['12', '14'])
@@ -91,7 +91,7 @@ class CoverageXMLParser(Vows.Context):
                 expect(klass['name']).to_equal('tests.bla')
 
             def should_contain_linehate(self, klass):
-                expect(klass['line_rate']).to_equal(88.0)
+                expect(klass['line_rate']).to_equal(0.88)
 
             def should_contain_lines_uncovered(self, klass):
                 expect(klass['uncovered_lines']).to_equal(['2', '3'])
