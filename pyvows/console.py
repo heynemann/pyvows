@@ -128,7 +128,8 @@ def main():
                 setattr(Fore, color_name, '')
 
     if arguments.cover and COVERAGE_AVAILABLE:
-        cov = coverage(source=arguments.cover_package, omit=arguments.cover_omit)
+        cov = coverage(source = arguments.cover_package, 
+                       omit   = arguments.cover_omit)
         cov.erase()
         cov.start()
 

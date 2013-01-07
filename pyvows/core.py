@@ -58,12 +58,13 @@ class expect(object):
             return self
 
         if self.not_assert:
-            method_name = 'not_{name}'.format(name=name)  
+            method_name = 'not_{name}'.format(name = name)  
         else:
             method_name = name
 
         if not hasattr(Vows.Assert, method_name):
-            raise AttributeError('Assertion {method_name} was not found!'.format(method_name=method_name))
+            raise AttributeError('Assertion {method_name} was not found!'.format(
+                method_name = method_name))
 
         def assert_topic(*args, **kw):
             '''Allows instances (topics) to chain calls to `VowsAssertion`s.
@@ -86,10 +87,9 @@ class VowsAssertion(object):
 
     class AssertionNotFoundError(AttributeError):
         '''Raised when a VowsAssertion cannot be found.'''
-
         def __init__(self, name):
             super(VowsAssertion.AssertionNotFoundError, self).__init__(
-                'Assertion with name {name} was not found!'.format(name=name))
+                'Assertion "{name!s}" was not found!'.format(name = name))
 
     def __getattr__(self, name):
         if not hasattr(self, name):
@@ -345,7 +345,9 @@ class Vows(object):
                 raise VowsAssertionError(raw_msg, *args)
 
         setattr(Vows.Assert, method.__name__, exec_assertion)
-        setattr(Vows.Assert, 'not_{method_name}'.format(method_name=method.__name__), exec_not_assertion)
+        setattr(Vows.Assert, 'not_{method_name}'.format(
+            method_name = method.__name__), 
+            exec_not_assertion)
 
         def wrapper(*args, **kw):
             return method(*args, **kw)
