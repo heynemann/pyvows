@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''Contains `VowsResult` class, which collects the results of each vow.
 '''

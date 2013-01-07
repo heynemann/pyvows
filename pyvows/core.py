@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''This module is the foundation that allows users to write PyVows-style tests.
 '''

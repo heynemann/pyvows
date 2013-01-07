@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''This module contains the magic that makes PyVows run its tests *fast*.  
 

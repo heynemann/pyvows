@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''PyVows is a Behavior-Driven Development framework for Python.  (And and it 
 is **fast**!)

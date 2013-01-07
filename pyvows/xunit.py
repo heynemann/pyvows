@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''Provides the `XUnitReporter` class, which creates XML reports after testing.
 '''
