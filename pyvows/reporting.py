@@ -49,8 +49,8 @@ class VowsReporter(object):
     #   to a particular type of report.
     
     def __init__(self, result, verbosity):
-        self.result=result
-        self.verbosity=verbosity
+        self.result = result
+        self.verbosity = verbosity
     
     HONORED = green('✓')
     BROKEN  = red('✗')
@@ -208,9 +208,9 @@ class VowsTestReporter(VowsReporter):
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
             self.HONORED if self.result.successful else self.BROKEN,
-            honored=self.result.successful_tests,
-            broken=self.result.errored_tests,
-            time=self.result.elapsed_time)
+            honored = self.result.successful_tests,
+            broken  = self.result.errored_tests,
+            time    = self.result.elapsed_time)
         
         print
 
@@ -241,9 +241,9 @@ class VowsTestReporter(VowsReporter):
             else:
                 ctx = test['context_instance']
 
-                self.humanized_print('{0} {1}'.format(
+                self.humanized_print('{0} {test}'.format(
                     VowsDefaultReporter.BROKEN,
-                    test['name']))
+                    test = test['name']))
 
                 if ctx.generated_topic:
                     value = yellow(self.max_length(test['topic'], 250))
