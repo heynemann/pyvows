@@ -195,7 +195,7 @@ class VowsTestReporter(VowsReporter):
             #   If no vows are found, how could any be broken?
             print '{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
                 indent = self.TAB * self.indent,
-                broken = self.BROKEN,
+                broken = VowsReporter.BROKEN,
             )
             return
 
@@ -207,7 +207,7 @@ class VowsTestReporter(VowsReporter):
 
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
-            self.HONORED if self.result.successful else self.BROKEN,
+            VowsReporter.HONORED if self.result.successful else VowsReporter.BROKEN,
             honored = self.result.successful_tests,
             broken  = self.result.errored_tests,
             time    = self.result.elapsed_time)
@@ -229,7 +229,7 @@ class VowsTestReporter(VowsReporter):
             if test['succeeded']:
                 honored, topic, name = map(
                     ensure_encoded,
-                    (VowsDefaultReporter.HONORED, test['topic'], test['name']))
+                    (VowsReporter.HONORED, test['topic'], test['name']))
                 
                 if self.verbosity == V_VERBOSE:
                     self.humanized_print('{0} {1}'.format(honored, name))
@@ -242,7 +242,7 @@ class VowsTestReporter(VowsReporter):
                 ctx = test['context_instance']
 
                 self.humanized_print('{0} {test}'.format(
-                    VowsDefaultReporter.BROKEN,
+                    VowsReporter.BROKEN,
                     test = test['name']))
 
                 if ctx.generated_topic:
@@ -343,9 +343,9 @@ class VowsCoverageReporter(VowsReporter):
             coverage = klass['line_rate']
 
             if coverage < cover_threshold:
-                cover_character = self.BROKEN
+                cover_character = VowsReporter.BROKEN
             else:
-                cover_character = self.HONORED
+                cover_character = VowsReporter.HONORED
 
             if 100.0 < max_coverage < coverage:
                 max_coverage = coverage
@@ -377,7 +377,7 @@ class VowsCoverageReporter(VowsReporter):
         print
 
         total_coverage  = root['overall']
-        cover_character = self.HONORED if (total_coverage >= cover_threshold) else self.BROKEN
+        cover_character = VowsReporter.HONORED if (total_coverage >= cover_threshold) else VowsReporter.BROKEN
         progress        = int(total_coverage * PROGRESS_SIZE)
 
         print self.format_overall_coverage(cover_character, max_length, progress, total_coverage)
