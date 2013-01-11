@@ -174,14 +174,14 @@ class VowsTestReporter(VowsReporter):
         #   FIXME: Add Docstring / Comment description
         #   
         #       *   Why is `vow` unused?
-        sys.stdout.write(cls.honored)
+        sys.stdout.write(VowsReporter.HONORED)
     
     @classmethod
     def handle_error(cls, vow):
         #   FIXME: Add Docstring / Comment description
         #   
         #       *   Why is `vow` unused?
-        sys.stdout.write(cls.broken)
+        sys.stdout.write(VowsReporter.BROKEN)
     
     #-------------------------------------------------------------------------
     #   Printing Methods
