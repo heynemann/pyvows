@@ -10,7 +10,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-__version__ = (1, 1, 10)
+__version__ = (1, 1, 11)
 
 def to_str():
     '''Returns a string containing PyVows' version number.'''
