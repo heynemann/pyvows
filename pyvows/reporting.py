@@ -253,9 +253,9 @@ class VowsTestReporter(VowsReporter):
                     self.humanized_print('\t{value}'.format(value = value))
                     self.humanized_print('\n' * 2)
 
-                if test['topic']['error'] is not None \
-                   and hasattr(test, 'topic')         \
-                   and hasattr(test['topic'], 'error'):
+                if hasattr(test, 'topic')         \
+                   and hasattr(test['topic'], 'error') \
+                   and test['topic']['error'] is not None:
                     print self.indent_msg('')
                     print blue(self.indent_msg('Topic Error:'))
                     exc_type, exc_value, exc_traceback = test['topic'].error
