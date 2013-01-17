@@ -36,4 +36,3 @@ class VowsTestReporterExceptions(Vows.Context):
         except VowsAssertionError as e:
             expect(e).to_be_an_error_like(VowsAssertionError)
             expect(e).Not.to_be_an_error_like(TypeError)
-            print e.msg
