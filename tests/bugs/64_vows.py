@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# unbreaking some pyvows from https://github.com/heynemann/pyvows
+# unbreaking some pyvows
 
 # This file is MIT licensed
 # http://www.opensource.org/licenses/mit-license
@@ -9,7 +9,6 @@
 
 from pyvows import Vows, expect
 from pyvows.core import VowsAssertionError
-from pyvows.runner import VowsParallelRunner
 from pyvows.result import VowsResult
 from pyvows.reporting import VowsTestReporter  # , VowsDefaultReporter
 
@@ -27,9 +26,9 @@ class VowsTestReporterExceptions(Vows.Context):
         try:
             # Notice that the test dict here has no 'topic' key.
             test = {'name': 'Mock Test Result',
-                                  'succeeded': False,
-                                  'context_instance': Vows.Context(),
-                                  'error': {'type': '', 'value': '', 'traceback': ''}}
+                    'succeeded': False,
+                    'context_instance': Vows.Context(),
+                    'error': {'type': '', 'value': '', 'traceback': ''}}
 
             context = {'tests': [test],
                        'contexts': []}
