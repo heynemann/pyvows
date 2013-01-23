@@ -12,14 +12,15 @@ have been run.
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 from __future__ import division
 
-import sys
+import os
 import re
+import sys
 import traceback
 
-from xml.etree import ElementTree as etree
+from xml.etree      import ElementTree as etree
 
-from pyvows.color import *
-from pyvows.core import VowsAssertionError
+from pyvows.color   import *
+from pyvows.core    import VowsAssertionError
 
 PROGRESS_SIZE = 50
 
@@ -34,6 +35,7 @@ def ensure_encoded(thing, encoding='utf-8'):
     '''Ensures proper encoding for unicode characters.
     
     Currently used only for characters `✓` and `✗`.
+    
     '''
     if isinstance(thing, unicode):
         return thing.encode(encoding)
@@ -309,10 +311,13 @@ class VowsCoverageReporter(VowsReporter):
     def parse_coverage_xml(self, xml):
         '''Reads `xml` for code coverage statistics, and returns the
         dict `result`.
+        
         '''
+        _coverage = lambda x: float(x.attrib['line-rate'])
+        
         result = {}
         root   = etree.fromstring(xml)
-        result['overall'] = float(root.attrib['line-rate']) * 100
+        result['overall'] = _coverage(root)
         result['classes'] = []
 
         for package in root.findall('.//package'):
@@ -320,11 +325,12 @@ class VowsCoverageReporter(VowsReporter):
             for klass in package.findall('.//class'):
                 result['classes'].append({
                     'name': '.'.join([package_name, klass.attrib['name']]),
-                    'line_rate': float(klass.attrib['line-rate']) * 100,
+                    'line_rate': _coverage(klass),
                     'uncovered_lines': [line.attrib['number']
                                         for line in klass.find('lines')
                                         if  line.attrib['hits'] == '0']
                 })
+        
         return result
 
     #-------------------------------------------------------------------------
@@ -332,6 +338,7 @@ class VowsCoverageReporter(VowsReporter):
     #-------------------------------------------------------------------------
     def print_coverage(self, xml, cover_threshold):
         '''Prints code coverage statistics for your tests.'''
+        
         print self.header('Code Coverage')
 
         root         = self.parse_coverage_xml(xml)
@@ -347,16 +354,16 @@ class VowsCoverageReporter(VowsReporter):
             else:
                 cover_character = self.HONORED
 
-            if 100.0 < max_coverage < coverage:
+            if 1.0 < max_coverage < coverage:
                 max_coverage = coverage
-                if max_coverage == 100.0:
+                if max_coverage == 1.0:
                     print
 
-            coverage = int(round(coverage, 0))
-            progress = int(round(coverage / 100.0 * PROGRESS_SIZE, 0))
-            offset   = (coverage == 0 and 2) or (coverage < 10 and 1 or 0)
+            coverage = float(coverage)
+            progress = int(round( PROGRESS_SIZE * coverage, 0))
+            offset   = (coverage == 0 and 2) or ((0 < coverage < 0.0999) and 1 or 0)
             #   FIXME: explain the `offset` line please?  :)
-                        
+
             if coverage == 0 and not klass['uncovered_lines']:
                 continue
 
@@ -365,15 +372,15 @@ class VowsCoverageReporter(VowsReporter):
                 klass           = klass['name'],
                 space1          = ' ' * (max_length - len(klass['name'])),
                 progress        = progress,
-                cover_pct       = (coverage > 0 and ' ' or '') + '{coverage:.2f}'.format(coverage=coverage),
+                cover_pct       = (coverage > 0 and ' ' or '') + '{coverage:0.1%}'.format(coverage=coverage),
                 space2          = ' ' * (PROGRESS_SIZE - progress + offset),
                 lines           = self.get_uncovered_lines(klass['uncovered_lines']))
 
-        print
+        print ''
 
         total_coverage  = root['overall']
         cover_character = self.HONORED if (total_coverage >= cover_threshold) else self.BROKEN
-        progress        = int(round(total_coverage / 100.0 * PROGRESS_SIZE, 0))
+        progress        = int(total_coverage * PROGRESS_SIZE)
 
         print self.format_overall_coverage(cover_character, max_length, progress, total_coverage)
 
@@ -387,17 +394,18 @@ class VowsCoverageReporter(VowsReporter):
         #       Doesn't this *actually* print coverage for a module, and not a class?
         
         # preprocess raw data...
-        klass       = blue( bold(klass) )
+        klass       = klass.lstrip('.')
+        klass       = blue( klass )
         cover_pct   = white( cover_pct )
         
         # ...then format
-        return ' {0} {klass}{space1}\t{progress}{cover_pct}%{space2} {lines}'.format(
+        return ' {0}  {klass}{space1}\t{progress}{cover_pct}{space2} {lines}'.format(
             # TODO:
             #   * remove manual spacing, use .format() alignment
             cover_character,
             klass     = klass,
             space1    = space1,
-            progress  = dim('♦' * progress),
+            progress  = dim('▪' * progress),
             cover_pct = cover_pct,
             space2    = space2,
             lines     = lines
@@ -410,10 +418,16 @@ class VowsCoverageReporter(VowsReporter):
 
         # preprocess raw data
         overall = blue('OVERALL')
+        overall = bold(overall)
+        
         space   = ' ' * (max_length - len('OVERALL'))
-        total   = white('{total_coverage:.2%}'.format(total_coverage=total_coverage/100))
+        
+        total   = '{total_coverage:.2%}'.format(total_coverage=total_coverage)
+        total   = white(total)
+        total   = bold(total)
+        
         # then format
-        return ' {0} {overall}{space}\t{progress} {total}%'.format(
+        return ' {0}  {overall}{space}{progress} {total}'.format(
             cover_character,
             overall  = overall,
             space    = space,
@@ -429,29 +443,49 @@ class VowsProfileReporter(VowsReporter):
         to test.
         '''
 
-        MAX_PATH_SIZE = 30
+        MAX_PATH_SIZE = 40
         topics = self.result.get_worst_topics(number=10, threshold=threshold)
 
         if topics:
             print self.header('Slowest Topics')
-
-            print yellow('       elapsed     Context File Path                 Context Name')
+            
+            table_header =  yellow('  {0}'.format(dim('#')))
+            table_header += yellow('  Elapsed     Context File Path                         ')
+            table_header += yellow('  Context Name')
+            print table_header
+            
             for index, topic in enumerate(topics):
                 name = self.under_split(topic['context'])
                 name = self.camel_split(name)
-
-                print Style.BRIGHT + ("%s#%02d%s    %.05fs    %s%s%" + str(MAX_PATH_SIZE) + "s%s%s    %s") % (
-                        BLUE,
-                        index + 1,
-                        RESET,
-                        topic['elapsed'],
-                        DIM,
-                        WHITE,
-                        topic['path'][-MAX_PATH_SIZE:],
-                        RESET,
-                        BRIGHT,
-                        name
-                ) + RESET_ALL
+                
+                topic['path'] = os.path.realpath(topic['path'])
+                topic['path'] = '{0!s}'.format(topic['path'])
+                topic['path'] = os.path.relpath(topic['path'], os.path.abspath(os.curdir))
+                
+                data = {
+                    'number': '{number:#2}'.format(number   = index + 1),
+                    'time'  : '{time:.05f}s'.format(time    = topic['elapsed']),
+                    'path'  : '{path:<{width}}'.format(path = topic['path'][-MAX_PATH_SIZE:],
+                                                       width=MAX_PATH_SIZE),
+                    'name'  : '{name}'.format(      name    = name),
+                }
+                
+                for k,v in data.items():
+                    if k == 'number':
+                        colorized = blue
+                    if k == 'time':
+                        colorized = green
+                    if k == 'path':
+                        colorized = lambda x: dim(white(x))
+                    if k == 'name':
+                        colorized = green
+                    
+                    data[k] = colorized(v)
+                                
+                print ' {number}  {time}{0}{path}{0}{name}'.format(
+                    4 * ' ',
+                    **data
+                )
 
             print
 
