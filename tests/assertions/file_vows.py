@@ -7,7 +7,7 @@
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
-from os.path import (abspath, isfile, isdir)
+from os.path import isfile
 
 from pyvows import Vows, expect, VowsAssertionError
 
