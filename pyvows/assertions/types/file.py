@@ -15,7 +15,7 @@ a "file" in your vows.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-from os.path import (isfile, isdir)
+from os.path import isfile
 import types
 
 from pyvows import Vows, VowsAssertionError
