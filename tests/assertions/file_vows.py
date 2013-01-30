@@ -17,6 +17,7 @@ STRINGS = {
 
     'that_are_files':       (
         __file__,
+        unicode(__file__),
         ),
 
     'that_are_not_files':   (
@@ -70,8 +71,8 @@ class WhenMakingFileAssertions(Vows.Context):
         def topic(self):
             for item in STRINGS['that_are_files']:
                 yield item
-
-
+        
+        
         class AssertingTheyAreFiles(Vows.Context):
             def topic(self, parent_topic):
                 return isafile(parent_topic)

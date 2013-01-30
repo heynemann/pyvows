@@ -39,7 +39,7 @@ def to_be_a_file(topic):
     '''
     VAE = VowsAssertionError("Expected topic(%s) to be a file", topic)
 
-    if isinstance(topic, str):
+    if isinstance(topic, basestring):
         if not _isfile(topic):
             raise VAE
     else:
@@ -59,7 +59,7 @@ def not_to_be_a_file(topic):
     '''
     VAE = VowsAssertionError("Expected topic(%s) not to be a file", topic)
 
-    if isinstance(topic, str):
+    if isinstance(topic, basestring):
         if _isfile(topic):
             raise VAE
     else:
