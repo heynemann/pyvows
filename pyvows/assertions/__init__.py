@@ -30,6 +30,7 @@ import pyvows.assertions.types.numeric
 import pyvows.assertions.types.function
 import pyvows.assertions.types.boolean
 import pyvows.assertions.types.classes
+import pyvows.assertions.types.file
 import pyvows.assertions.types.nullable
 import pyvows.assertions.types.regexp
 import pyvows.assertions.types.errors
