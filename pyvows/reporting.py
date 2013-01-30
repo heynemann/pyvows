@@ -12,14 +12,15 @@ have been run.
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 from __future__ import division
 
-import sys
+import os
 import re
+import sys
 import traceback
 
-from xml.etree import ElementTree as etree
+from xml.etree      import ElementTree as etree
 
-from pyvows.color import *
-from pyvows.core import VowsAssertionError
+from pyvows.color   import *
+from pyvows.core    import VowsAssertionError
 
 PROGRESS_SIZE = 50
 
@@ -34,6 +35,7 @@ def ensure_encoded(thing, encoding='utf-8'):
     '''Ensures proper encoding for unicode characters.
     
     Currently used only for characters `✓` and `✗`.
+    
     '''
     if isinstance(thing, unicode):
         return thing.encode(encoding)
@@ -52,8 +54,8 @@ class VowsReporter(object):
         self.result = result
         self.verbosity = verbosity
     
-    HONORED = green('✓')
-    BROKEN  = red('✗')
+    HONORED = green(bold('✓'))
+    BROKEN  = red(bold('✗'))
     TAB     = '  '
     
     #-------------------------------------------------------------------------
@@ -110,10 +112,10 @@ class VowsReporter(object):
         ruler = ' {0}'.format(len(msg) * ruler_character)
         msg   = ' {0}'.format(msg)
 
-        return green('{0}{ruler}{0}{msg}{0}{ruler}{0}'.format(
+        return green(bold('{0}{ruler}{0}{msg}{0}{ruler}{0}'.format(
             '\n',
             ruler = ruler,
-            msg   = msg))
+            msg   = msg)))
     
     def indent_msg(self, msg, indentation=None):
         '''Returns `msg` with the indentation specified by `indentation`.
@@ -174,14 +176,14 @@ class VowsTestReporter(VowsReporter):
         #   FIXME: Add Docstring / Comment description
         #   
         #       *   Why is `vow` unused?
-        sys.stdout.write(VowsReporter.HONORED)
+        sys.stdout.write(cls.honored)
     
     @classmethod
     def handle_error(cls, vow):
         #   FIXME: Add Docstring / Comment description
         #   
         #       *   Why is `vow` unused?
-        sys.stdout.write(VowsReporter.BROKEN)
+        sys.stdout.write(cls.broken)
     
     #-------------------------------------------------------------------------
     #   Printing Methods
@@ -195,7 +197,7 @@ class VowsTestReporter(VowsReporter):
             #   If no vows are found, how could any be broken?
             print '{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
                 indent = self.TAB * self.indent,
-                broken = VowsReporter.BROKEN,
+                broken = self.BROKEN,
             )
             return
 
@@ -207,7 +209,7 @@ class VowsTestReporter(VowsReporter):
 
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
-            VowsReporter.HONORED if self.result.successful else VowsReporter.BROKEN,
+            self.HONORED if self.result.successful else self.BROKEN,
             honored = self.result.successful_tests,
             broken  = self.result.errored_tests,
             time    = self.result.elapsed_time)
@@ -229,7 +231,7 @@ class VowsTestReporter(VowsReporter):
             if test['succeeded']:
                 honored, topic, name = map(
                     ensure_encoded,
-                    (VowsReporter.HONORED, test['topic'], test['name']))
+                    (VowsDefaultReporter.HONORED, test['topic'], test['name']))
                 
                 if self.verbosity == V_VERBOSE:
                     self.humanized_print('{0} {1}'.format(honored, name))
@@ -242,7 +244,7 @@ class VowsTestReporter(VowsReporter):
                 ctx = test['context_instance']
 
                 self.humanized_print('{0} {test}'.format(
-                    VowsReporter.BROKEN,
+                    VowsDefaultReporter.BROKEN,
                     test = test['name']))
 
                 if ctx.generated_topic:
@@ -253,9 +255,9 @@ class VowsTestReporter(VowsReporter):
                     self.humanized_print('\t{value}'.format(value = value))
                     self.humanized_print('\n' * 2)
 
-                if hasattr(test, 'topic')         \
-                   and hasattr(test['topic'], 'error') \
-                   and test['topic']['error'] is not None:
+                if hasattr(test, 'topic') and\
+                   hasattr(test['topic'], 'error') and\
+                   test['topic']['error'] is not None:
                     print self.indent_msg('')
                     print blue(self.indent_msg('Topic Error:'))
                     exc_type, exc_value, exc_traceback = test['topic'].error
@@ -302,17 +304,20 @@ class VowsCoverageReporter(VowsReporter):
                 num_more_uncovered = len(uncovered_lines) - number_of)
                 )
 
-            return ''.join(template_str)
+            return yellow(''.join(template_str))
 
-        return ', '.join(uncovered_lines)
+        return yellow(', '.join(uncovered_lines))
 
     def parse_coverage_xml(self, xml):
         '''Reads `xml` for code coverage statistics, and returns the
         dict `result`.
+        
         '''
+        _coverage = lambda x: float(x.attrib['line-rate'])
+        
         result = {}
         root   = etree.fromstring(xml)
-        result['overall'] = float(root.attrib['line-rate'])
+        result['overall'] = _coverage(root)
         result['classes'] = []
 
         for package in root.findall('.//package'):
@@ -320,11 +325,12 @@ class VowsCoverageReporter(VowsReporter):
             for klass in package.findall('.//class'):
                 result['classes'].append({
                     'name': '.'.join([package_name, klass.attrib['name']]),
-                    'line_rate': float(klass.attrib['line-rate']),
+                    'line_rate': _coverage(klass),
                     'uncovered_lines': [line.attrib['number']
                                         for line in klass.find('lines')
                                         if  line.attrib['hits'] == '0']
                 })
+        
         return result
 
     #-------------------------------------------------------------------------
@@ -332,6 +338,7 @@ class VowsCoverageReporter(VowsReporter):
     #-------------------------------------------------------------------------
     def print_coverage(self, xml, cover_threshold):
         '''Prints code coverage statistics for your tests.'''
+        
         print self.header('Code Coverage')
 
         root         = self.parse_coverage_xml(xml)
@@ -343,26 +350,21 @@ class VowsCoverageReporter(VowsReporter):
             coverage = klass['line_rate']
 
             if coverage < cover_threshold:
-                cover_character = VowsReporter.BROKEN
+                cover_character = self.BROKEN
             else:
-                cover_character = VowsReporter.HONORED
+                cover_character = self.HONORED
 
-            if 100.0 < max_coverage < coverage:
+            if 1.0 < max_coverage < coverage:
                 max_coverage = coverage
-                if max_coverage == 100.0:
+                if max_coverage == 1.0:
                     print
 
-            coverage = coverage
-            progress = int(coverage * PROGRESS_SIZE)
-            
-            if coverage == 0.000:
-                offset = 2
-            elif 0.000 < coverage < 0.1000:
-                offset = 1
-            else:
-                offset = 0
-                        
-            if coverage == 0.000 and not klass['uncovered_lines']:
+            coverage = float(coverage)
+            progress = int(round( PROGRESS_SIZE * coverage, 0))
+            offset   = (coverage == 0 and 2) or ((0 < coverage < 0.0999) and 1 or 0)
+            #   FIXME: explain the `offset` line please?  :)
+
+            if coverage == 0 and not klass['uncovered_lines']:
                 continue
 
             print self.format_class_coverage(
@@ -370,21 +372,21 @@ class VowsCoverageReporter(VowsReporter):
                 klass           = klass['name'],
                 space1          = ' ' * (max_length - len(klass['name'])),
                 progress        = progress,
-                coverage        = coverage,
+                cover_pct       = (coverage > 0 and ' ' or '') + '{coverage:0.1%}'.format(coverage=coverage),
                 space2          = ' ' * (PROGRESS_SIZE - progress + offset),
                 lines           = self.get_uncovered_lines(klass['uncovered_lines']))
 
-        print
+        print ''
 
         total_coverage  = root['overall']
-        cover_character = VowsReporter.HONORED if (total_coverage >= cover_threshold) else VowsReporter.BROKEN
+        cover_character = self.HONORED if (total_coverage >= cover_threshold) else self.BROKEN
         progress        = int(total_coverage * PROGRESS_SIZE)
 
         print self.format_overall_coverage(cover_character, max_length, progress, total_coverage)
 
         print
             
-    def format_class_coverage(self, cover_character, klass, space1, progress, coverage, space2, lines):
+    def format_class_coverage(self, cover_character, klass, space1, progress, cover_pct, space2, lines):
         '''Accepts coverage data for a class and returns a formatted string (intended for 
         humans).
         '''
@@ -392,23 +394,19 @@ class VowsCoverageReporter(VowsReporter):
         #       Doesn't this *actually* print coverage for a module, and not a class?
         
         # preprocess raw data...
+        klass       = klass.lstrip('.')
         klass       = blue( klass )
-        
-        coverage   = '{prefix}{coverage:.1%}'.format(
-            prefix   = ' ' if (coverage > 0.000) else '',
-            coverage = coverage)
-            
-        coverage   = white(coverage)
+        cover_pct   = white( cover_pct )
         
         # ...then format
-        return ' {0} {klass}{space1}\t{progress}{coverage}{space2} {lines}'.format(
+        return ' {0}  {klass}{space1}\t{progress}{cover_pct}{space2} {lines}'.format(
             # TODO:
             #   * remove manual spacing, use .format() alignment
             cover_character,
             klass     = klass,
             space1    = space1,
-            progress  = '•' * progress,
-            coverage  = coverage,
+            progress  = dim('▪' * progress),
+            cover_pct = cover_pct,
             space2    = space2,
             lines     = lines
         )
@@ -420,16 +418,20 @@ class VowsCoverageReporter(VowsReporter):
 
         # preprocess raw data
         overall = blue('OVERALL')
+        overall = bold(overall)
+        
         space   = ' ' * (max_length - len('OVERALL'))
-        total   = '{total_coverage:.1%}'.format(total_coverage = total_coverage)
+        
+        total   = '{total_coverage:.2%}'.format(total_coverage=total_coverage)
         total   = white(total)
+        total   = bold(total)
         
         # then format
-        return ' {0} {overall}{space}\t{progress} {total}'.format(
+        return ' {0}  {overall}{space}{progress} {total}'.format(
             cover_character,
             overall  = overall,
             space    = space,
-            progress = '•' * progress,
+            progress = dim('•' * progress),
             total    = total)
 
 
@@ -441,29 +443,49 @@ class VowsProfileReporter(VowsReporter):
         to test.
         '''
 
-        MAX_PATH_SIZE = 30
+        MAX_PATH_SIZE = 40
         topics = self.result.get_worst_topics(number=10, threshold=threshold)
 
         if topics:
             print self.header('Slowest Topics')
-
-            print yellow('       elapsed     Context File Path                 Context Name')
+            
+            table_header =  yellow('  {0}'.format(dim('#')))
+            table_header += yellow('  Elapsed     Context File Path                         ')
+            table_header += yellow('  Context Name')
+            print table_header
+            
             for index, topic in enumerate(topics):
                 name = self.under_split(topic['context'])
                 name = self.camel_split(name)
-
-                print Style.BRIGHT + ("%s#%02d%s    %.05fs    %s%s%" + str(MAX_PATH_SIZE) + "s%s%s    %s") % (
-                        Fore.BLUE,
-                        index + 1,
-                        Fore.RESET,
-                        topic['elapsed'],
-                        Style.DIM,
-                        Fore.WHITE,
-                        topic['path'][-MAX_PATH_SIZE:],
-                        Fore.RESET,
-                        Style.BRIGHT,
-                        name
-                ) + Style.RESET_ALL
+                
+                topic['path'] = os.path.realpath(topic['path'])
+                topic['path'] = '{0!s}'.format(topic['path'])
+                topic['path'] = os.path.relpath(topic['path'], os.path.abspath(os.curdir))
+                
+                data = {
+                    'number': '{number:#2}'.format(number   = index + 1),
+                    'time'  : '{time:.05f}s'.format(time    = topic['elapsed']),
+                    'path'  : '{path:<{width}}'.format(path = topic['path'][-MAX_PATH_SIZE:],
+                                                       width=MAX_PATH_SIZE),
+                    'name'  : '{name}'.format(      name    = name),
+                }
+                
+                for k,v in data.items():
+                    if k == 'number':
+                        colorized = blue
+                    if k == 'time':
+                        colorized = green
+                    if k == 'path':
+                        colorized = lambda x: dim(white(x))
+                    if k == 'name':
+                        colorized = green
+                    
+                    data[k] = colorized(v)
+                                
+                print ' {number}  {time}{0}{path}{0}{name}'.format(
+                    4 * ' ',
+                    **data
+                )
 
             print
 

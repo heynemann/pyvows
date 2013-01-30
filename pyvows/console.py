@@ -114,6 +114,14 @@ def main():
     '''
 
     arguments = __get_arguments()
+    
+    if arguments.cover and COVERAGE_AVAILABLE:
+        cov = coverage(source       = arguments.cover_package, 
+                       omit         = arguments.cover_omit,
+                       timid        = True,
+                       cover_pylib  = False)
+        cov.erase()
+        cov.start()
 
     path = arguments.path
     pattern = arguments.pattern
@@ -128,13 +136,9 @@ def main():
             if not color_name.startswith('_'):
                 setattr(Fore, color_name, '')
 
-    if arguments.cover and COVERAGE_AVAILABLE:
-        cov = coverage(source = arguments.cover_package, 
-                       omit   = arguments.cover_omit)
-        cov.erase()
-        cov.start()
+    
 
-    verbosity = len(arguments.verbosity) if arguments.verbosity else 2
+    verbosity = 2 if not arguments.verbosity else len(arguments.verbosity)
     result, reporter = run(path, pattern, verbosity, arguments.progress)
 
     if result.successful and arguments.cover:
@@ -145,7 +149,7 @@ def main():
 
             xml = ''
             with tempfile.NamedTemporaryFile() as tmp:
-                cov.xml_report(outfile=tmp.name)
+                cov.xml_report(outfile = tmp.name)
                 tmp.seek(0)
                 xml = tmp.read()
 
