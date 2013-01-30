@@ -46,6 +46,7 @@
   -moz-box-shadow: @x @y @blur @color inset;
   -webkit-box-shadow: @x @y @blur @color inset;
 }
+
 .code () {
   font-family: 'Bitstream Vera Sans Mono',
                'DejaVu Sans Mono',
@@ -53,6 +54,7 @@
                Courier,
                monospace !important;
 }
+
 .wrap () {
   text-wrap: wrap;
   white-space: pre-wrap;       /* css-3 */
@@ -70,7 +72,11 @@ body {
   font-size: 100%;
   overflow-x: hidden;
 }
-nav, header, footer, section, article {
+nav, 
+header, 
+footer, 
+section, 
+article {
 	display: block;
 }
 a {
@@ -93,11 +99,13 @@ ul, li {
 }
 code { .code; }
 code {
-  .string, .regexp { color: @dark }
+  .string, 
+  .regexp  { color: @dark }
   .keyword { font-weight: bold }
   .comment { color: rgba(0, 0, 0, 0.5) }
-  .number { color: @red }
-  .class, .special { color: rgba(0, 50, 100, 0.8) }
+  .number  { color: @red }
+  .class, 
+  .special { color: rgba(0, 50, 100, 0.8) }
 }
 pre {
   padding: 0 30px;
@@ -117,7 +125,9 @@ body > footer {
 nav {
   margin-left: 15px;
 }
-nav a, #dropdown li {
+
+nav a, 
+#dropdown li {
   display: inline-block;
   color: white;
   line-height: 42px;
@@ -125,13 +135,15 @@ nav a, #dropdown li {
   padding: 0px 15px;
   text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.5);
   text-decoration: none;
-  border: 2px solid transparent;
+  border: 0px solid transparent;
   border-width: 0 2px;
+  
   &:hover {
     .dark-red;
     text-decoration: none;
   }
 }
+
 .dark-red {
     border: 2px solid darken(@light-blue, 35%);
     border-left-color: darken(@light-blue, 25%);
@@ -147,16 +159,22 @@ nav a, #dropdown li {
 }
 
 #menu {
+  display:  block;
   position: absolute;
-  width: 100%;
-  z-index: 3;
-  clear: both;
-  display: block;
+  left:     0;
+  width:    100%;
+  margin-left: 0;
+  height:   42px;
+  z-index:  3;
+  clear:    both;
+  
   background-color: darken(@dark-blue, 10%);
-  height: 42px;
+  
   border-top: 2px solid lighten(@dark-blue, 20%);
   border-bottom: 2px solid darken(@dark-blue, 15%);
+  
   .box-shadow(0, 1px, 8px, 0.6);
+  
   -moz-box-shadow: 0 0 0 #000; // Because firefox sucks.
 
   &.docked {
@@ -167,29 +185,35 @@ nav a, #dropdown li {
   }
 
   #dropdown {
+    display: none;
     margin: 0 0 0 84px;
     padding: 0;
     padding-top: 5px;
-    display: none;
     width: 190px;
-    border-top: 2px solid @red;
+    
     color: @highlight;
-    border: 2px solid lighten(@dark-blue, 15%);
-    border-left-color: lighten(@dark-blue, 5%);
+    
+    border-top:         2px solid @red;
+    border:             2px solid lighten(@dark-blue, 15%);
+    border-left-color:  lighten(@dark-blue, 5%);
     border-right-color: lighten(@dark-blue, 5%);
-    border-top-width: 0;
-    background-color: lighten(@dark-blue, 2%);
+    border-top-width:   0;
+    background-color:   lighten(@dark-blue, 2%);
+    
     ul {
       padding: 0px;
     }
+    
     li {
       font-size: 14px;
       display: block;
       text-align: left;
       padding: 0;
       border: 0;
+      
       a {
         display: block;
+        border: none;
         padding: 0px 15px;
         text-decoration: none;
         color: white;
@@ -199,6 +223,7 @@ nav a, #dropdown li {
         }
       }
     }
+    
     .border-radius(5px, bottom);
     .box-shadow(0, 6px, 8px, 0.5);
   }
@@ -211,23 +236,31 @@ hr {
   border: 0;
 }
 
-#main, #about, #docs {
+#main, 
+#about, 
+#docs {
   color: @darkest;
   background-color: @light-blue;
-  pre, code {
+  
+  pre, 
+  code {
     border-color: darken(@highlight, 35%);
     background-color: lighten(@highlight, 5%);
   }
 }
-#main #intro, #about .content, #docs .content {
-  background-color: lighten(@light-blue, 20%);
-  .box-shadow(1px, 0px, 6px, 0.5);
+
+#main #intro, 
+#about .content, 
+#docs .content {
+    background-color: lighten(@light-blue, 20%);
+    .box-shadow(1px, 0px, 6px, 0.5);
 }
 
 #docs .content {
     border-top: 1px solid @light-green;
-  .box-shadow(0, 5px, 5px, 0.4);
+    .box-shadow(0, 5px, 5px, 0.4);
 }
+
 #main {
   margin: 0 auto;
   width: 100%;
@@ -246,6 +279,7 @@ hr {
     border: 2px dashed darken(@light-green, 10%);
     border-bottom: 0;
     border-top: 0;
+    
     h1 {
       text-shadow: 1px 1px 1px white;
       font-family: 'Lobster';
@@ -253,6 +287,7 @@ hr {
       font-size: 96px;
       font-weight: normal;
     }
+    
     h2 {
       span {
         color: @red;
@@ -262,6 +297,7 @@ hr {
       font-size: 28px;
       line-height: 1.3em;
     }
+    
     h3 {
       color: lighten(@dark-blue, 10%);
       line-height: 1.4em;
@@ -270,6 +306,7 @@ hr {
       text-shadow: 0px 0px 0px @lightest;
     }
   }
+  
   #example {
     p {
       font-size: 16px;
@@ -278,9 +315,7 @@ hr {
       font-weight: bold;
       text-shadow: 0px 1px 1px @lightest;
     }
-    pre.command {
-      padding: 15px 25px;
-    }
+
     pre {
       text-shadow: 0 -1px 1px darken(@darkest, 3%);
       background-color: desaturate(@darkest, 8%);
@@ -290,10 +325,21 @@ hr {
       padding: 25px;
       border: 1px dashed @lightest;
       line-height: 15px;
+      
+      code {
+        background-color: inherit; 
+        color: inherit
+      }
+      
       .box-shadow(0, 0px, 15px, 0.5);
       .code;
       .border-radius(2px);
-      .vow, #ok {
+      .command {
+        padding: 15px 25px;
+      }
+      
+      .vow, 
+      #ok {
         color: hsl(90, 40%, 60%);
       }
       .vow.pending {
@@ -309,47 +355,64 @@ hr {
 
 .report {
   pre {
-    .vow, #ok {
+    .vow, 
+    #ok {
       color: hsl(90, 40%, 30%);
     }
   }
 }
 
-#synopsis, #docs, #reference, #about, #installing {
+#synopsis, 
+#docs, 
+#reference, 
+#about, 
+#installing {
   .content {
     width: 870px;
     padding: 45px;
   }
+  
   code { font-size: 16px }
+  
   margin: 0 auto;
   font-family: 'Georgia', serif;
   font-size: 18px;
   line-height: 24px;
+  
   p {
     line-height: 26px;  
   }
+  
   padding: 0 60px;
-  pre, p > code {
+  
+  pre, 
+  p > code {
     padding: 0 3px;
     border-width: 1px;
     border-style: dashed;
   }
+  
   pre {
     padding: 15px;
     margin: 15px 0;
     font-size: 16px;
   }
+  
   h1 {
     font-size: 48px;
     font-family: 'Lobster';
     margin-top: 15px;
     margin-bottom: 30px;
   }
+  
   h2 {
     font-family: 'Droid Serif', 'Georgia', serif;
     margin: 30px 0;
   }
-  p + h2, pre + h2, code + h2 {
+  
+  p + h2, 
+  pre + h2, 
+  code + h2 {
     border-top: 6px solid rgba(255, 255, 255, 0.1);
     padding-top: 30px;
   }
@@ -361,8 +424,11 @@ hr {
   }
 }
 
-#about, #docs {
-  p + h2, pre + h2, code + h2 {
+#about, 
+#docs {
+  p + h2, 
+  pre + h2, 
+  code + h2 {
     border-top: 6px solid rgba(0, 0, 0, 0.1);
   }
   hr {
@@ -373,26 +439,31 @@ hr {
 #installing {
   color: @darkest;
   background-color: lighten(@light-blue, 5%);
+  
   .content {
     clear: both;
     border-color: transparent;
     background-color: lighten(@light-blue, 15%);
     .box-shadow(0, 5px, 5px, 0.4);
   }
+  
   pre {
     background-color: @highlight;
     border-color: darken(@light-yellow, 50%);
   }
-  p + h2, pre + h2, code + h2 {
+  p + h2, 
+  pre + h2, 
+  code + h2 {
     border-top-color: rgba(0, 0, 0, 0.1);
   }
 }
 
 td {
   padding-right: 30px;
-}
-td.usage {
+  
+  .usage {
     width: 205px;
+  }
 }
 
 #synopsis pre {
@@ -400,20 +471,26 @@ td.usage {
     line-height: 18px;
     font-size: 14px;
 }
-#reference, #synopsis {
+
+#reference, 
+#synopsis {
   @bg: desaturate(darken(@darkest, 5%), 20%);
   text-shadow: 0 -1px 1px @bg;
   color: @highlight;
   background-color: @bg;
+  
   .content {
     background-color: desaturate(@darkest, 20%);
     clear: both;
     .box-shadow(0, 5px, 5px, 0.4);
   }
-  pre, p > code {
+  
+  pre, 
+  p > code {
     background-color: @bg;
     border-color: darken(@light-yellow, 5%);
   }
+  
   code {
     .string, .regexp { color: desaturate(@light-green, 15%) }
     .keyword { color: hsl(40, 40%, 60%); font-weight: normal }
@@ -421,6 +498,7 @@ td.usage {
     .number { color: @red }
     .class, .special { color: hsl(190, 20%, 50%) }
   }
+  
   a {
     color: @light-yellow;
     border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
@@ -430,6 +508,7 @@ td.usage {
     }
   }
 }
+
 #synopsis {
   padding-top: 30px;
   background-color: @darkest !important;
@@ -437,6 +516,7 @@ td.usage {
     background-color: desaturate(lighten(@darkest, 3%), 5%);
   }
 }
+
 #about footer {
   margin-top: 30px;
   padding-top: 30px;
@@ -444,6 +524,7 @@ td.usage {
   text-align: center;
   font-size: 16px;
   color: rgba(0, 0, 0, 0.4);
+  
   #copy { font-size: 12px }
 }
 
