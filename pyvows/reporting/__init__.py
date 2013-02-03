@@ -7,10 +7,19 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-import pyvows.reporting.reporting
-from pyvows.reporting.reporting import VowsTestReporter, VowsDefaultReporter
+
+from pyvows.reporting.common    import VowsReporter
+from pyvows.reporting.coverage  import VowsCoverageReporter
+from pyvows.reporting.profile   import VowsProfileReporter
+from pyvows.reporting.test      import VowsTestReporter
 
 
-__all__ = [ 'VowsTestReporter',
-            'VowsDefaultReporter',
+__all__ = [ 'VowsDefaultReporter',
     ]
+
+
+class VowsDefaultReporter(VowsTestReporter,
+                          VowsCoverageReporter,
+                          VowsProfileReporter):
+    '''The all-in-one reporter used by other parts of PyVows.'''
+    pass
