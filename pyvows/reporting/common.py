@@ -116,12 +116,16 @@ class VowsReporter(object):
 
         '''
         ruler = ' {0}'.format(len(msg) * ruler_character)
+        
         msg   = ' {0}'.format(msg)
-
-        return green('{0}{ruler}{0}{msg}{0}{ruler}{0}'.format(
+        msg   = '{0}{ruler}{0}{msg}{0}{ruler}{0}'.format(
             '\n',
             ruler = ruler,
-            msg   = msg))
+            msg   = msg)
+             
+        msg   = green(bold(msg))
+        
+        return msg
 
     def indent_msg(self, msg, indentation=None):
         '''Returns `msg` with the indentation specified by `indentation`.
