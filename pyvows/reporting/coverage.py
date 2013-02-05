@@ -11,20 +11,11 @@ have been run.
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 from __future__ import division
 
-import sys
-import re
-import traceback
-
 from xml.etree import ElementTree as etree
 
 from pyvows.color import *
-from pyvows.core  import VowsAssertionError
 from pyvows.reporting.common import (
     PROGRESS_SIZE,
-    V_EXTRA_VERBOSE,
-    V_VERBOSE,
-    V_NORMAL,
-    V_SILENT,
     VowsReporter,)
 
 
@@ -39,6 +30,7 @@ class VowsCoverageReporter(VowsReporter):
         only explicitly list the first `number_of` uncovered lines, followed
         by ' and ## more' (where '##' is the total number of additional
         uncovered lines.
+
         '''
         if len(uncovered_lines) > number_of:
             template_str = []

@@ -15,7 +15,10 @@ from pyvows.reporting.test      import VowsTestReporter
 
 
 __all__ = [ 'VowsDefaultReporter',
-    ]
+            'VowsTestReporter',
+            'VowsProfileReporter',
+            'VowsCoverageReporter',
+            'VowsReporter',]
 
 
 class VowsDefaultReporter(VowsTestReporter,

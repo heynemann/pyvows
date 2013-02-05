@@ -11,11 +11,8 @@ have been run.
 from __future__ import division
 
 import sys
-import re
-import traceback
 
 from pyvows.color import *
-from pyvows.core  import VowsAssertionError
 from pyvows.reporting.common import (
     ensure_encoded,
     PROGRESS_SIZE,
@@ -89,7 +86,8 @@ class VowsTestReporter(VowsReporter):
         self.indent += 1
         indentation2 = self.TAB * (self.indent + 2)
 
-        if self.verbosity >= V_VERBOSE or not self.result.eval_context(context):
+        if (self.verbosity >= V_VERBOSE or
+            not self.result.eval_context(context)):
             self.humanized_print(name)
 
         for test in context['tests']:
@@ -120,8 +118,8 @@ class VowsTestReporter(VowsReporter):
                     self.humanized_print('\t{value}'.format(value = value))
                     self.humanized_print('\n' * 2)
 
-                if hasattr(test, 'topic')         \
-                   and hasattr(test['topic'], 'error') \
+                if hasattr(test, 'topic')               \
+                   and hasattr(test['topic'], 'error')  \
                    and test['topic']['error'] is not None:
                     print self.indent_msg('')
                     print blue(self.indent_msg('Topic Error:'))

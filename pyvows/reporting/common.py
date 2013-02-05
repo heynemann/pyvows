@@ -11,7 +11,6 @@ have been run.
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 from __future__ import division
 
-import sys
 import re
 import traceback
 
@@ -74,6 +73,7 @@ class VowsReporter(object):
         Returns:
 
             'Some camel case string'
+
         '''
         return re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?=[0-9]\b))', ' ', string).strip()
 
@@ -84,6 +84,7 @@ class VowsReporter(object):
     def format_traceback(self, traceback_list, indentation):
         '''Adds the current level of indentation to a traceback (so it matches
         the current context's indentation).
+
         '''
 
         # TODO:
@@ -102,6 +103,7 @@ class VowsReporter(object):
         Since developers are used to reading `True`, `False`, and `None`
         as capitalized words, it makes sense to match that capitalization
         in reports.
+
         '''
         msg = msg.replace('true', 'True')
         msg = msg.replace('false', 'False')
@@ -111,6 +113,7 @@ class VowsReporter(object):
     def header(self, msg, ruler_character='='):
         '''Returns the string `msg` with a text "ruler".  Also colorizes as
         bright green (when color is available).
+
         '''
         ruler = ' {0}'.format(len(msg) * ruler_character)
         msg   = ' {0}'.format(msg)
@@ -122,6 +125,7 @@ class VowsReporter(object):
 
     def indent_msg(self, msg, indentation=None):
         '''Returns `msg` with the indentation specified by `indentation`.
+
         '''
         msg = msg.capitalize()
         msg = self.format_python_constants(msg)
@@ -137,6 +141,7 @@ class VowsReporter(object):
         '''Passes `msg` through multiple text filters to make the output
         appear more like normal text, then prints it (indented by
         `indentation`).
+
         '''
         msg = self.under_split(msg)
         msg = self.camel_split(msg)
