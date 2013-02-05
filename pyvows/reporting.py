@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-'''Contains the `VowsDefaultReporter` class, which handles output after tests
-have been run.
+'''Contains the `VowsDefaultReporter` class, which handles output
+after tests have been run.
+
 '''
 
 
@@ -32,8 +33,9 @@ V_SILENT = 1
 
 def ensure_encoded(thing, encoding='utf-8'):
     '''Ensures proper encoding for unicode characters.
-    
+
     Currently used only for characters `✓` and `✗`.
+
     '''
     if isinstance(thing, unicode):
         return thing.encode(encoding)
@@ -42,33 +44,35 @@ def ensure_encoded(thing, encoding='utf-8'):
 
 
 class VowsReporter(object):
-    '''Base class for other Reporters to extend.  Contains common attributes
-    and methods.
+    '''Base class for other Reporters to extend.  Contains common
+    attributes and methods.
+
     '''
     #   Should *only* contain attributes and methods that aren't specific
     #   to a particular type of report.
-    
+
     def __init__(self, result, verbosity):
         self.result = result
         self.verbosity = verbosity
-    
+
     HONORED = green('✓')
     BROKEN  = red('✗')
     TAB     = '  '
-    
+
     #-------------------------------------------------------------------------
     #   String Formatting
     #-------------------------------------------------------------------------
     def camel_split(self, string):
-        '''Splits camel-case `string` into separate words.  
-        
-        Example: 
-            
+        '''Splits camel-case `string` into separate words.
+
+        Example:
+
             self.camel_split('SomeCamelCaseString')
-            
+
         Returns:
-            
+
             'Some camel case string'
+
         '''
         return re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?=[0-9]\b))', ' ', string).strip()
 
@@ -79,8 +83,8 @@ class VowsReporter(object):
     def format_traceback(self, traceback_list, indentation):
         '''Adds the current level of indentation to a traceback (so it matches
         the current context's indentation).
-        '''
 
+        '''
         # TODO:
         #   ...Is this a decorator?  If so, please add a comment or docstring
         #   to make it explicit.
@@ -88,24 +92,26 @@ class VowsReporter(object):
             if msg.startswith('  File'):
                 return msg.replace('\n ', '\n {indentation}'.format(indentation=indentation))
             return msg
-        
+
         return indentation.join(map(indent, traceback_list))
 
     def format_python_constants(self, msg):
-        '''Fixes capitalization of Python constants.  
-        
-        Since developers are used to reading `True`, `False`, and `None` 
-        as capitalized words, it makes sense to match that capitalization 
+        '''Fixes capitalization of Python constants.
+
+        Since developers are used to reading `True`, `False`, and `None`
+        as capitalized words, it makes sense to match that capitalization
         in reports.
+
         '''
         msg = msg.replace('true', 'True')
         msg = msg.replace('false', 'False')
         msg = msg.replace('none', 'None')
         return msg
-    
+
     def header(self, msg, ruler_character='='):
-        '''Returns the string `msg` with a text "ruler".  Also colorizes as 
-        bright green (when color is available).
+        '''Returns the string `msg` with a text "ruler".  Also
+        colorizes as bright green (when color is available).
+
         '''
         ruler = ' {0}'.format(len(msg) * ruler_character)
         msg   = ' {0}'.format(msg)
@@ -114,33 +120,39 @@ class VowsReporter(object):
             '\n',
             ruler = ruler,
             msg   = msg))
-    
+
     def indent_msg(self, msg, indentation=None):
-        '''Returns `msg` with the indentation specified by `indentation`.
+        '''Returns `msg` with the indentation specified by
+        `indentation`.
+
         '''
         msg = msg.capitalize()
         msg = self.format_python_constants(msg)
         return '{indent}{msg}'.format(
             indent = indentation or (self.TAB * self.indent),
             msg    = msg)
-    
-    
+
+
     #-------------------------------------------------------------------------
     #   Printing Methods
     #-------------------------------------------------------------------------
     def humanized_print(self, msg, indentation=None):
-        '''Passes `msg` through multiple text filters to make the output
-        appear more like normal text, then prints it (indented by 
-        `indentation`).
+        '''Passes `msg` through multiple text filters to make the
+        output appear more like normal text, then prints it (indented
+        by `indentation`).
+
         '''
         msg = self.under_split(msg)
         msg = self.camel_split(msg)
         msg = msg.replace('  ',' ') # normalize spaces if inserted by
                                     # both of the above
         print self.indent_msg(msg, indentation)
-    
+
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
-        '''Prints a color-formatted traceback with appropriate indentation.'''
+        '''Prints a color-formatted traceback with appropriate
+        indentation.
+
+        '''
         if isinstance(exc_value, VowsAssertionError):
             exc_values_args = tuple(map(lambda arg: red(arg), exc_value.args))
             error_msg = exc_value.msg % exc_values_args
@@ -161,35 +173,35 @@ class VowsReporter(object):
 
 class VowsTestReporter(VowsReporter):
     '''A VowsReporter which prints test results.'''
-    
+
     def __init__(self, result, verbosity):
         super(VowsTestReporter, self).__init__(result, verbosity)
         self.indent    = 1
-    
+
     #-------------------------------------------------------------------------
     #   Class Methods
     #-------------------------------------------------------------------------
     @classmethod
     def handle_success(cls, vow):
         #   FIXME: Add Docstring / Comment description
-        #   
+        #
         #       *   Why is `vow` unused?
         sys.stdout.write(VowsReporter.HONORED)
-    
+
     @classmethod
     def handle_error(cls, vow):
         #   FIXME: Add Docstring / Comment description
-        #   
+        #
         #       *   Why is `vow` unused?
         sys.stdout.write(VowsReporter.BROKEN)
-    
+
     #-------------------------------------------------------------------------
     #   Printing Methods
     #-------------------------------------------------------------------------
     def pretty_print(self):
         '''Prints PyVows test results.'''
         print self.header('Vows Results')
-        
+
         if not self.result.contexts:
             # FIXME:
             #   If no vows are found, how could any be broken?
@@ -211,13 +223,13 @@ class VowsTestReporter(VowsReporter):
             honored = self.result.successful_tests,
             broken  = self.result.errored_tests,
             time    = self.result.elapsed_time)
-        
+
         print
 
     def print_context(self, name, context):
         #   FIXME: Add Docstring
         #
-        #       *   Is this only used in certain cases?  
+        #       *   Is this only used in certain cases?
         #           *   If so, which?
         self.indent += 1
         indentation2 = self.TAB * (self.indent + 2)
@@ -230,7 +242,7 @@ class VowsTestReporter(VowsReporter):
                 honored, topic, name = map(
                     ensure_encoded,
                     (VowsReporter.HONORED, test['topic'], test['name']))
-                
+
                 if self.verbosity == V_VERBOSE:
                     self.humanized_print('{0} {1}'.format(honored, name))
                 elif self.verbosity >= V_EXTRA_VERBOSE:
@@ -247,7 +259,7 @@ class VowsTestReporter(VowsReporter):
 
                 if ctx.generated_topic:
                     value = yellow(self.max_length(test['topic'], 250))
-                    
+
                     self.humanized_print('')
                     self.humanized_print('\tTopic value:')
                     self.humanized_print('\t{value}'.format(value = value))
@@ -285,11 +297,12 @@ class VowsCoverageReporter(VowsReporter):
     def get_uncovered_lines(self, uncovered_lines, number_of=3):
         '''Searches for untested lines of code.  Returns a string
         listing the line numbers.
-        
+
         If the number of uncovered lines is greater than `number_of`, this will
-        only explicitly list the first `number_of` uncovered lines, followed
-        by ' and ## more' (where '##' is the total number of additional 
-        uncovered lines.
+        only explicitly list the first `number_of` uncovered lines,
+        followed by ' and ## more' (where '##' is the total number
+        of additional uncovered lines.
+
         '''
         if len(uncovered_lines) > number_of:
             template_str = []
@@ -307,8 +320,9 @@ class VowsCoverageReporter(VowsReporter):
         return ', '.join(uncovered_lines)
 
     def parse_coverage_xml(self, xml):
-        '''Reads `xml` for code coverage statistics, and returns the
-        dict `result`.
+        '''Reads `xml` for code coverage statistics, and returns
+        the dict `result`.
+
         '''
         result = {}
         root   = etree.fromstring(xml)
@@ -354,14 +368,14 @@ class VowsCoverageReporter(VowsReporter):
 
             coverage = coverage
             progress = int(coverage * PROGRESS_SIZE)
-            
+
             if coverage == 0.000:
                 offset = 2
             elif 0.000 < coverage < 0.1000:
                 offset = 1
             else:
                 offset = 0
-                        
+
             if coverage == 0.000 and not klass['uncovered_lines']:
                 continue
 
@@ -383,23 +397,24 @@ class VowsCoverageReporter(VowsReporter):
         print self.format_overall_coverage(cover_character, max_length, progress, total_coverage)
 
         print
-            
+
     def format_class_coverage(self, cover_character, klass, space1, progress, coverage, space2, lines):
-        '''Accepts coverage data for a class and returns a formatted string (intended for 
-        humans).
+        '''Accepts coverage data for a class and returns a formatted
+        string (intended for humans).
+
         '''
         #   FIXME:
         #       Doesn't this *actually* print coverage for a module, and not a class?
-        
+
         # preprocess raw data...
         klass       = blue( klass )
-        
+
         coverage   = '{prefix}{coverage:.1%}'.format(
             prefix   = ' ' if (coverage > 0.000) else '',
             coverage = coverage)
-            
+
         coverage   = white(coverage)
-        
+
         # ...then format
         return ' {0} {klass}{space1}\t{progress}{coverage}{space2} {lines}'.format(
             # TODO:
@@ -412,10 +427,11 @@ class VowsCoverageReporter(VowsReporter):
             space2    = space2,
             lines     = lines
         )
-        
+
     def format_overall_coverage(self, cover_character, max_length, progress, total_coverage):
-        '''Accepts overall coverage data and returns a formatted string (intended for 
-        humans).
+        '''Accepts overall coverage data and returns a formatted
+        string (intended for humans).
+
         '''
 
         # preprocess raw data
@@ -423,7 +439,7 @@ class VowsCoverageReporter(VowsReporter):
         space   = ' ' * (max_length - len('OVERALL'))
         total   = '{total_coverage:.1%}'.format(total_coverage = total_coverage)
         total   = white(total)
-        
+
         # then format
         return ' {0} {overall}{space}\t{progress} {total}'.format(
             cover_character,
@@ -437,8 +453,9 @@ class VowsProfileReporter(VowsReporter):
     '''A VowsReporter which prints a profile of the 10 slowest topics.'''
 
     def print_profile(self, threshold):
-        '''Prints the 10 slowest topics that took longer than `threshold`
-        to test.
+        '''Prints the 10 slowest topics that took longer than
+        `threshold` to test.
+
         '''
 
         MAX_PATH_SIZE = 30

@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 '''PyVows similarity assertions.  For use with `expect()` (see `pyvows.core`).
 
-The imprecise nature of "like" comparisons is much more complicated than most
-assertions.  All support code lives in this module alongside the assertions.
+The imprecise nature of "like" comparisons is much more complicated
+than most assertions.  All support code lives in this module
+alongside the assertions.
+
 '''
 
 
@@ -20,18 +22,23 @@ from pyvows import Vows
 
 @Vows.create_assertions
 def to_be_like(topic, expected):
-    '''Asserts that `topic` is like (similar to) `expected`. Allows some 
-    leeway.
+    '''Asserts that `topic` is like (similar to) `expected`. Allows
+    some leeway.
+
     '''
     return match_alike(expected, topic)
 
 def compare_alike(expected, topic, modifier, message):
-    '''Asserts that `topic` is like `expected`, as specified by `modifier`.'''
+    '''Asserts that `topic` is like `expected`, as specified by
+    `modifier`.
+
+    '''
     assert modifier(match_alike(expected, topic)), message % (topic, expected)
 
 def match_alike(expected, topic):
-    '''Asserts the "like"-ness of `topic` and `expected` according to their 
-    types.
+    '''Asserts the "like"-ness of `topic` and `expected` according
+    to their types.
+
     '''
     if topic is None:
         return expected is None
@@ -47,8 +54,9 @@ def match_alike(expected, topic):
         raise RuntimeError('Could not compare {expected} and {topic}'.format(expected=expected, topic=topic))
 
 def compare_strings(expected, topic):
-    '''Asserts the "like"-ness of `topic` and `expected` as strings.  Allows 
-    some leeway.  (Strings don't have to exactly match.)
+    '''Asserts the "like"-ness of `topic` and `expected` as strings.
+    Allows some leeway.  (Strings don't have to exactly match.)
+
     '''
     replaced_topic = topic.lower().replace(' ', '').replace('\n', '')
     replaced_expected = expected.lower().replace(' ', '').replace('\n', '')
@@ -66,7 +74,7 @@ def compare_dicts(expected, topic):
     return match_dicts(expected, topic) and match_dicts(topic, expected)
 
 def match_dicts(expected, topic):
-    '''Asserts the "like"-ness of all keys and values in `topic` and 
+    '''Asserts the "like"-ness of all keys and values in `topic` and
     `expected`.
     '''
     for k, v in expected.iteritems():
@@ -79,8 +87,9 @@ def compare_lists(expected, topic):
     return match_lists(expected, topic) and match_lists(topic, expected)
 
 def match_lists(expected, topic):
-    '''Asserts the "like"-ness each item in of `topic` and `expected` (as lists 
-    or tuples). 
+    '''Asserts the "like"-ness each item in of `topic` and `expected`
+    (as lists or tuples).
+
     '''
     for item in expected:
         if isinstance(item, (list, tuple)):

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 '''PyVows' main entry point.  Contains code for command-line I/O,
 running tests, and the almighty `if __name__ == '__main__': main()`.
+
 '''
 
 
@@ -34,7 +35,7 @@ from pyvows import version
 
 class Messages(object):
     '''A simple container for command-line interface strings.'''
-    
+
     summary   = 'Run PyVows tests.'
     path      = 'Directory to look for vows recursively. If a file is passed, the file will be the target for vows. (default: %(default)r).'
     pattern   = 'Pattern of vows files. (default: %(default)r)'
@@ -50,16 +51,16 @@ class Messages(object):
     profile_threshold = 'Tests taking longer than %(metavar)s seconds are considered slow. (default: %(default)s)'
     no_color  = 'Turn off colorized output. (default: %(default)s)'
     progress  = 'Show progress ticks during testing. (default: %(default)s)'
-    
+
 
 def __get_arguments():
     '''Parses arguments from the command-line.'''
-    
+
     current_dir = os.curdir
-    
+
     #Easy underlining, if we ever need it in the future
     #uline   = lambda text: '\033[4m{0}\033[24m'.format(text)
-    
+
     parser  = argparse.ArgumentParser(description     = Messages.summary)
     metavar = lambda metavar: '{0}{metavar}{0}'.format(Style.RESET_ALL, metavar=metavar.upper())
 
@@ -129,7 +130,7 @@ def main():
                 setattr(Fore, color_name, '')
 
     if arguments.cover and COVERAGE_AVAILABLE:
-        cov = coverage(source = arguments.cover_package, 
+        cov = coverage(source = arguments.cover_package,
                        omit   = arguments.cover_omit)
         cov.erase()
         cov.start()

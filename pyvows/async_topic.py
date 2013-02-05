@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-'''Implementation for `Vows.async_topic` decorator. (See `core` module).
+'''Implementation for `Vows.async_topic` decorator. (See `core`
+module).
+
 '''
 
 

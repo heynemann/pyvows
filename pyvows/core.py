@@ -21,8 +21,9 @@ from pyvows.runner import VowsParallelRunner
 
 
 def locate(pattern, root=os.curdir, recursive=True):
-    '''Recursively locates test files when `pyvows` is run from the command
-    line.
+    '''Recursively locates test files when `pyvows` is run from the
+    command line.
+
     '''
     root_path = os.path.abspath(root)
 
@@ -38,13 +39,13 @@ def locate(pattern, root=os.curdir, recursive=True):
 
 class expect(object):
     '''This atypical class provides a key part of the PyVows testing syntax.
-    
+
     For example:
-    
+
         expect(True).to_be_true()
-        
+
     '''
-    
+
     def __init__(self, topic):
         self.topic = topic
         self.not_assert = False
@@ -58,7 +59,7 @@ class expect(object):
             return self
 
         if self.not_assert:
-            method_name = 'not_{name}'.format(name = name)  
+            method_name = 'not_{name}'.format(name = name)
         else:
             method_name = name
 
@@ -68,14 +69,14 @@ class expect(object):
 
         def assert_topic(*args, **kw):
             '''Allows instances (topics) to chain calls to `VowsAssertion`s.
-            
+
             In the following PyVows-test snippet:
-                
+
                 expect(topic).to_be_True()
-                
-            ...This method is what allows `expect(topic)` to call 
+
+            ...This method is what allows `expect(topic)` to call
             `.to_be_True()` (or some other VowsAssertion).
-            
+
             '''
             return getattr(Vows.Assert, method_name)(self.topic, *args, **kw)
 
@@ -120,15 +121,15 @@ class VowsAssertionError(AssertionError):
 class Vows(object):
     '''This class contains almost the entire interface for using PyVows.  (The
     `expect` class usually being the only other necessary import.)
-    
+
         *   Mark test batches with the `Vows.batch` decorator
         *   Build test hierarchies with classes that extend `Vows.Context`
         *   For those who need it, topics with asynchronous code can use the
             `Vows.async_topic` decorator
-      
+
     Other attributes and methods here are for PyVows' internal use.  They
     aren't necessary for writing tests.
-    
+
     '''
     contexts = {}
 
@@ -137,26 +138,26 @@ class Vows(object):
         write `from pyvows import Vows, expect` in your test module, then extend
         `Vows.Context` in your test classes.  If you really wanted, you could
         also import `Context` directly.  But don't do that.)
-        
+
             *   `Vows.Context` subclasses expect one method named `topic`.
                 It should be the first method in any `Vows.Context` subclass,
                 by convention.
             *   Sibling `Context`s run in parallel.
             *   Nested `Context`s run sequentially.
-        
+
         The `setup` and `teardown` methods aren't typically needed.  But
         they are available if your test suite has extra pre- and
-            
+
         post-testing work to be done in any given `Context`.
         '''
-            
+
         def __init__(self, parent=None):
             self.parent = parent
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
             self.ignored_members = ['topic', 'setup', 'teardown', 'ignore']
-        
+
         def _get_first_available_topic(self, index=-1):
             if self.topic_value:
                 if index > -1 and isinstance(self.topic_value, (list, set, tuple)):
@@ -176,29 +177,29 @@ class Vows(object):
             return self.parent._get_first_available_topic(index)
 
         def ignore(self, *args):
-            '''Appends `*args` to `ignored_members`.  (Methods listed in 
+            '''Appends `*args` to `ignored_members`.  (Methods listed in
             `ignored_members` are considered "not a test method" by PyVows.)
             '''
             for arg in args:
                 self.ignored_members.append(arg)
 
         def setup(self):
-            '''For use in your PyVows tests.  Define `setup` in your 
+            '''For use in your PyVows tests.  Define `setup` in your
             `Vows.Context` subclass to define what should happen before
-            that Context's testing begins.  
-            
-            Remember: 
+            that Context's testing begins.
+
+            Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
             '''
             pass
 
         def teardown(self):
-            '''For use in your PyVows tests.  Define `setup` in your 
+            '''For use in your PyVows tests.  Define `setup` in your
             `Vows.Context` subclass to define what should happen after
-            that Context's testing ends.  
-            
-            Remember: 
+            that Context's testing ends.
+
+            Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
             '''
@@ -206,8 +207,8 @@ class Vows(object):
 
     class NotErrorContext(Context):
         #   FIXME: Add Docstring
-        #   
-        #   *   Why does this class exist?  
+        #
+        #   *   Why does this class exist?
         #   *   Does this simply delegate the call to `expect`?
         #   *   If this can be used for some clever form of generative
         #       testing, show an example
@@ -216,8 +217,8 @@ class Vows(object):
 
     class NotEmptyContext(Context):
         #   FIXME: Add Docstring
-        #   
-        #   *   Why does this class exist?  
+        #
+        #   *   Why does this class exist?
         #   *   Does this simply delegate the call to `expect`?
         #   *   If this can be used for some clever form of generative
         #       testing, show an example
@@ -231,8 +232,8 @@ class Vows(object):
     @staticmethod
     def async_topic(topic):
         '''Topic decorator.  Allows PyVows testing of asynchronous topics.
-        
-        Use `@Vows.async_topic` on your `topic` method to mark it as 
+
+        Use `@Vows.async_topic` on your `topic` method to mark it as
         asynchronous.  This allows PyVows to test topics which use callbacks
         instead of return values.
         '''
@@ -251,9 +252,9 @@ class Vows(object):
     @staticmethod
     def batch(method):
         '''Class decorator.  Use on subclasses of `Vows.Context`.
-        
-        Test batches in PyVows are the largest unit of tests. The convention 
-        is to have one test batch per file, and have the batch’s class match 
+
+        Test batches in PyVows are the largest unit of tests. The convention
+        is to have one test batch per file, and have the batch’s class match
         the file name.
         '''
         def method_name(*args, **kw):
@@ -265,25 +266,25 @@ class Vows(object):
 
     @classmethod
     def assertion(cls, method):
-        '''Function decorator.  Provides lower-level control for custom 
+        '''Function decorator.  Provides lower-level control for custom
         assertions than `@Vows.create_assertions`.
-        
-        If you need more control over your error message, or your assertion 
-        doesn’t have a corresponding `not_`, use this decorator and 
+
+        If you need more control over your error message, or your assertion
+        doesn’t have a corresponding `not_`, use this decorator and
         raise a `VowsAssertionError`.
-        
-        By raising a `VowsAssertionError`, you get the benefit of highlighting 
+
+        By raising a `VowsAssertionError`, you get the benefit of highlighting
         the important values when your vows are broken.
 
-        If you still just wanna raise an `AssertionError` like old times, 
+        If you still just wanna raise an `AssertionError` like old times,
         that’s supported, too.
-        
-        It’s recommended to always declare both the assertion and the `not_` 
+
+        It’s recommended to always declare both the assertion and the `not_`
         assertion (if applicable), so they can be used like this:
-        
+
             expect(5).to_be_a_positive_integer()
             expect(-3).Not.to_be_a_positive_integer()
-            
+
         '''
         #   http://pyvows.org/#-assertions
         def method_name(*args, **kw):
@@ -297,35 +298,35 @@ class Vows(object):
 
     @classmethod
     def create_assertions(cls, method):
-        '''Function decorator.  Use to create custom assertions for your 
+        '''Function decorator.  Use to create custom assertions for your
         vows.
-        
-        Creating new assertions for use with `expect` is as simple as using 
-        this decorator on a function. The function expects `topic` as the 
+
+        Creating new assertions for use with `expect` is as simple as using
+        this decorator on a function. The function expects `topic` as the
         first parameter, and `expectation` second:
 
             @Vows.create_assertions
             def to_be_greater_than(topic, expected):
                 return topic > expected
-        
+
         Now, the following expectation…
 
             expect(2).to_be_greater_than(3)
-        
+
         …will report:
 
             Expected topic(2) to be greater than 3.
-        
+
         It will also create the corresponding `not_` assertion:
 
             expect(4).not_to_be_greater_than(3);
-        
+
         …will report:
-        
+
             Expected topic(4) not to be greater than 3.
-            
+
         '''
-        #   http://pyvows.org/#-assertions   
+        #   http://pyvows.org/#-assertions
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
 
         def exec_assertion(*args):
@@ -346,7 +347,7 @@ class Vows(object):
 
         setattr(Vows.Assert, method.__name__, exec_assertion)
         setattr(Vows.Assert, 'not_{method_name}'.format(
-            method_name = method.__name__), 
+            method_name = method.__name__),
             exec_not_assertion)
 
         def wrapper(*args, **kw):
@@ -359,7 +360,7 @@ class Vows(object):
         #   FIXME: Add Docstring
         #
         #       *   Used by `run()` in `console.py`
-        #       *   Please add a useful description if you wrote this! :) 
+        #       *   Please add a useful description if you wrote this! :)
         runner = VowsParallelRunner(Vows.contexts,
                                     Vows.Context,
                                     vow_success_event,

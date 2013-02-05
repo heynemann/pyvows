@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''This module contains the magic that makes PyVows run its tests *fast*.  
+'''This module contains the magic that makes PyVows run its tests *fast*.
 
 Contains the classes `VowsParallelRunner` and `FunctionWrapper`.
 '''
@@ -26,7 +26,7 @@ from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 
 class VowsParallelRunner(object):
     #   FIXME: Add Docstring
-    
+
     def __init__(self, vows, context_class, vow_successful_event, vow_error_event):
         self.vows = vows
         self.context_class = context_class
@@ -36,7 +36,7 @@ class VowsParallelRunner(object):
 
     def run(self):
         #   FIXME: Add Docstring
-        
+
         start_time = time.time()
         result = VowsResult()
 
@@ -55,7 +55,7 @@ class VowsParallelRunner(object):
 
     def async_run_context(self, context_col, name, context_instance, index=-1):
         #   FIXME: Add Docstring
-        
+
         context_obj = {
             'name': name,
             'topic_elapsed': 0,
@@ -159,7 +159,7 @@ class VowsParallelRunner(object):
 
     def async_run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated):
         #   FIXME: Add Docstring
-        
+
         start_time = time.time()
         filename, lineno = self.file_info_for(member._original)
         result_obj = {
@@ -183,7 +183,7 @@ class VowsParallelRunner(object):
                 self.vow_successful_event(result_obj)
 
         except Exception:
-            #   FIXME: 
+            #   FIXME:
             #
             #   Either...
             #       *   Describe why we're catching every exception, or
@@ -262,8 +262,9 @@ class VowsParallelRunner(object):
 
 
 class FunctionWrapper(object):
-    ''' Just calls the passed function when all the wrapped functions have been 
-        called.
+    ''' Just calls the passed function when all the wrapped
+        functions have been called.
+
     '''
     def __init__(self, func):
         self.waiting = 0
