@@ -116,19 +116,21 @@ class VowsReporter(object):
 
         '''
         ruler = ' {0}'.format(len(msg) * ruler_character)
+        
         msg   = ' {0}'.format(msg)
-
-        return green('{0}{ruler}{0}{msg}{0}{ruler}{0}'.format(
+        msg   = '{0}{ruler}{0}{msg}{0}{ruler}{0}'.format(
             '\n',
             ruler = ruler,
-            msg   = msg))
+            msg   = msg)
+             
+        msg   = green(bold(msg))
+        
+        return msg
 
     def indent_msg(self, msg, indentation=None):
         '''Returns `msg` with the indentation specified by `indentation`.
 
         '''
-        msg = msg.capitalize()
-        msg = self.format_python_constants(msg)
         return '{indent}{msg}'.format(
             indent = indentation or (self.TAB * self.indent),
             msg    = msg)
@@ -147,6 +149,9 @@ class VowsReporter(object):
         msg = self.camel_split(msg)
         msg = msg.replace('  ',' ') # normalize spaces if inserted by
                                     # both of the above
+        msg = msg.capitalize()
+        msg = self.format_python_constants(msg)
+        
         print self.indent_msg(msg, indentation)
 
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):

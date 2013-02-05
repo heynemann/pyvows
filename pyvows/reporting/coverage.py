@@ -22,38 +22,42 @@ from pyvows.reporting.common import (
 class VowsCoverageReporter(VowsReporter):
     '''A VowsReporter which prints the code coverage of tests.'''
 
-    def get_uncovered_lines(self, uncovered_lines, number_of=3):
+    def get_uncovered_lines(self, uncovered_lines, max_num=3):
         '''Searches for untested lines of code.  Returns a string
         listing the line numbers.
 
-        If the number of uncovered lines is greater than `number_of`, this will
-        only explicitly list the first `number_of` uncovered lines, followed
+        If the number of uncovered lines is greater than `max_num`, this will
+        only explicitly list the first `max_num` uncovered lines, followed
         by ' and ## more' (where '##' is the total number of additional
         uncovered lines.
 
         '''
-        if len(uncovered_lines) > number_of:
+        if len(uncovered_lines) > max_num:
             template_str = []
-            for i in range(number_of):
-                template_str.append(uncovered_lines[i])
-                if i is not (number_of - 1):
+            for i in range(max_num):
+                line_num = uncovered_lines[i]
+                template_str.append(line_num)
+                if i is not (max_num - 1):
                     template_str.append(', ')
 
-            template_str.append(', and {num_more_uncovered:d} more'.format(
-                num_more_uncovered = len(uncovered_lines) - number_of)
-                )
+            template_str.append(
+                ', and {num_more_uncovered:d} more'.format(
+                    num_more_uncovered = len(uncovered_lines) - max_num
+                ))
 
-            return ''.join(template_str)
+            return yellow(''.join(template_str))
 
-        return ', '.join(uncovered_lines)
+        return yellow(', '.join(uncovered_lines))
 
     def parse_coverage_xml(self, xml):
         '''Reads `xml` for code coverage statistics, and returns the
         dict `result`.
         '''
+        _coverage = lambda x: float(x.attrib['line-rate'])
+
         result = {}
         root   = etree.fromstring(xml)
-        result['overall'] = float(root.attrib['line-rate'])
+        result['overall'] = _coverage(root)
         result['classes'] = []
 
         for package in root.findall('.//package'):
@@ -61,11 +65,12 @@ class VowsCoverageReporter(VowsReporter):
             for klass in package.findall('.//class'):
                 result['classes'].append({
                     'name': '.'.join([package_name, klass.attrib['name']]),
-                    'line_rate': float(klass.attrib['line-rate']),
+                    'line_rate': _coverage(klass),
                     'uncovered_lines': [line.attrib['number']
                                         for line in klass.find('lines')
                                         if  line.attrib['hits'] == '0']
                 })
+
         return result
 
     #-------------------------------------------------------------------------
@@ -95,7 +100,8 @@ class VowsCoverageReporter(VowsReporter):
 
             coverage = coverage
             progress = int(coverage * PROGRESS_SIZE)
-
+            offset   = None
+            
             if coverage == 0.000:
                 offset = 2
             elif 0.000 < coverage < 0.1000:
@@ -113,7 +119,8 @@ class VowsCoverageReporter(VowsReporter):
                 progress        = progress,
                 coverage        = coverage,
                 space2          = ' ' * (PROGRESS_SIZE - progress + offset),
-                lines           = self.get_uncovered_lines(klass['uncovered_lines']))
+                lines           = self.get_uncovered_lines(klass['uncovered_lines']),
+                cover_threshold = cover_threshold)
 
         print
 
@@ -125,7 +132,7 @@ class VowsCoverageReporter(VowsReporter):
 
         print
 
-    def format_class_coverage(self, cover_character, klass, space1, progress, coverage, space2, lines):
+    def format_class_coverage(self, cover_character, klass, space1, progress, coverage, space2, lines, cover_threshold):
         '''Accepts coverage data for a class and returns a formatted string (intended for
         humans).
         '''
@@ -133,11 +140,17 @@ class VowsCoverageReporter(VowsReporter):
         #       Doesn't this *actually* print coverage for a module, and not a class?
 
         # preprocess raw data...
+        klass       = klass.lstrip('.')
         klass       = blue( klass )
-
+        
+        MET_THRESHOLD = coverage >= cover_threshold
+        
         coverage   = '{prefix}{coverage:.1%}'.format(
             prefix   = ' ' if (coverage > 0.000) else '',
             coverage = coverage)
+        
+        if MET_THRESHOLD:
+            coverage = bold(coverage)
 
         coverage   = white(coverage)
 
@@ -148,7 +161,7 @@ class VowsCoverageReporter(VowsReporter):
             cover_character,
             klass     = klass,
             space1    = space1,
-            progress  = '•' * progress,
+            progress  = dim('•' * progress),
             coverage  = coverage,
             space2    = space2,
             lines     = lines
@@ -161,9 +174,10 @@ class VowsCoverageReporter(VowsReporter):
 
         # preprocess raw data
         overall = blue('OVERALL')
+        overall = bold(overall)
         space   = ' ' * (max_length - len('OVERALL'))
         total   = '{total_coverage:.1%}'.format(total_coverage = total_coverage)
-        total   = white(total)
+        total   = white(bold(total))
 
         # then format
         return ' {0} {overall}{space}\t{progress} {total}'.format(
