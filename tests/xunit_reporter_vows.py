@@ -10,7 +10,7 @@
 
 from pyvows import Vows, expect
 from pyvows.reporting import VowsDefaultReporter
-from pyvows.xunit import XUnitReporter
+from pyvows.reporting.xunit import XUnitReporter
 
 class ResultMock():
     pass
