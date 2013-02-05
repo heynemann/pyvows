@@ -29,7 +29,7 @@ except ImportError:
     COVERAGE_AVAILABLE = False
 
 from pyvows.color import *
-from pyvows.xunit import XUnitReporter
+from pyvows.reporting.xunit import XUnitReporter
 from pyvows import version
 
 
