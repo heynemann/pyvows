@@ -147,8 +147,8 @@ class Vows(object):
 
         The `setup` and `teardown` methods aren't typically needed.  But
         they are available if your test suite has extra pre- and
-
         post-testing work to be done in any given `Context`.
+        
         '''
 
         def __init__(self, parent=None):
@@ -179,6 +179,7 @@ class Vows(object):
         def ignore(self, *args):
             '''Appends `*args` to `ignored_members`.  (Methods listed in
             `ignored_members` are considered "not a test method" by PyVows.)
+            
             '''
             for arg in args:
                 self.ignored_members.append(arg)
@@ -191,6 +192,7 @@ class Vows(object):
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
+                
             '''
             pass
 
@@ -202,6 +204,7 @@ class Vows(object):
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
+                
             '''
             pass
 
@@ -236,6 +239,7 @@ class Vows(object):
         Use `@Vows.async_topic` on your `topic` method to mark it as
         asynchronous.  This allows PyVows to test topics which use callbacks
         instead of return values.
+        
         '''
         def wrapper(*args, **kw):
             return VowsAsyncTopic(topic, args, kw)
@@ -246,7 +250,9 @@ class Vows(object):
     @staticmethod
     def asyncTopic(topic):
         #   FIXME: Add Comment
-        warnings.warn('The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.', DeprecationWarning, stacklevel=2)
+        warnings.warn( 'The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.', 
+                        DeprecationWarning, 
+                        stacklevel=2)
         return Vows.async_topic(topic)
 
     @staticmethod
@@ -256,6 +262,7 @@ class Vows(object):
         Test batches in PyVows are the largest unit of tests. The convention
         is to have one test batch per file, and have the batch’s class match
         the file name.
+        
         '''
         def method_name(*args, **kw):
             method(*args, **kw)
