@@ -99,17 +99,17 @@ class VowsAssertion(object):
 
 
 class VowsAssertionError(AssertionError):
-    '''Raised when a VowsAssertion returns False.'''
+    '''Raised when a VowsAssertion returns `False`.'''
 
     def __init__(self, *args):
         msg = args[0]
         if not msg.endswith('.'):
             msg += '.'
         self.msg = msg
-        self.args = tuple(map(repr, args[1:]))
+        self.args = tuple([repr(i) for i in args[1:] ])
 
     def __str__(self):
-        return self.msg % self.args
+        return self.msg.format(self.args)
 
     def __unicode__(self):
         return self.__str__()
