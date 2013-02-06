@@ -102,14 +102,20 @@ class VowsAssertionError(AssertionError):
     '''Raised when a VowsAssertion returns `False`.'''
 
     def __init__(self, *args):
-        msg = args[0]
-        if not msg.endswith('.'):
-            msg += '.'
-        self.msg = msg
-        self.args = tuple([repr(i) for i in args[1:] ])
+        if not isinstance(args[0], str):
+            raise TypeError('VowsAssertionError instances must be created with a string as their first argument')
+        if not len(args) >= 2:
+            raise IndexError('VowsAssertionError must have at least 2 arguments')
+
+        self.raw_msg = args[0]
+        
+        if not self.raw_msg.endswith('.'):
+            self.raw_msg += '.'
+        
+        self.args = tuple([ repr(i) for i in args[1:] ])
 
     def __str__(self):
-        return self.msg.format(self.args)
+        return self.raw_msg.format( *self.args )
 
     def __unicode__(self):
         return self.__str__()
@@ -307,7 +313,7 @@ class Vows(object):
     def create_assertions(cls, method):
         '''Function decorator.  Use to create custom assertions for your
         vows.
-
+        ''' '''
         Creating new assertions for use with `expect` is as simple as using
         this decorator on a function. The function expects `topic` as the
         first parameter, and `expectation` second:
