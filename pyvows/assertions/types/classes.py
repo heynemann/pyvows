@@ -17,11 +17,11 @@ from pyvows import Vows, VowsAssertionError
 def to_be_instance_of(topic, expected):
     '''Asserts that `topic` is an instance of `expected`.'''
     if not isinstance(topic, expected):
-        raise VowsAssertionError('Expected topic(%s) to be an instance of %s, but it was a %s', topic, expected, topic.__class__)
+        raise VowsAssertionError('Expected topic({0}) to be an instance of {1}, but it was a {2}', topic, expected, topic.__class__)
 
 @Vows.assertion
 def not_to_be_instance_of(topic, expected):
     '''Asserts that `topic` is NOT an instance of `expected`.'''
     if isinstance(topic, expected):
-        raise VowsAssertionError('Expected topic(%s) not to be an instance of %s', topic, expected)
+        raise VowsAssertionError('Expected topic({0}) not to be an instance of {1}', topic, expected)
 

@@ -154,21 +154,21 @@ class VowsReporter(object):
         
         print self.indent_msg(msg, indentation)
 
-    def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
+    def print_traceback(self, err_type, err_obj, err_traceback, indentation):
         '''Prints a color-formatted traceback with appropriate indentation.'''
-        if isinstance(exc_value, VowsAssertionError):
-            exc_values_args = tuple(map(lambda arg: red(arg), exc_value.args))
-            error_msg = exc_value.msg % exc_values_args
+        
+        if isinstance(err_obj, VowsAssertionError):
+            error_msg = err_obj
         else:
-            error_msg = unicode(exc_value)
+            error_msg = unicode(err_obj)
 
-        print red('{indent}{error}'.format(
-            indent = indentation,
-            error  = error_msg))
+        print self.indent_msg(  red(error_msg),
+                                indentation=indentation )
 
         if self.verbosity >= V_NORMAL:
-            traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            traceback_msg = traceback.format_exception(err_type, err_obj, err_traceback)
             traceback_msg = self.format_traceback(traceback_msg, indentation)
+            
             print yellow('\n{indent}{traceback}'.format(
                 indent      = indentation,
                 traceback   = traceback_msg))

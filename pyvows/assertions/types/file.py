@@ -37,7 +37,7 @@ def to_be_a_file(topic):
     built-in `file` type.
 
     '''
-    VAE = VowsAssertionError("Expected topic(%s) to be a file", topic)
+    VAE = VowsAssertionError("Expected topic({0}) to be a file", topic)
 
     if isinstance(topic, basestring):
         if not _isfile(topic):
@@ -57,7 +57,7 @@ def not_to_be_a_file(topic):
     built-in `file` type.
 
     '''
-    VAE = VowsAssertionError("Expected topic(%s) not to be a file", topic)
+    VAE = VowsAssertionError("Expected topic({0}) not to be a file", topic)
 
     if isinstance(topic, basestring):
         if _isfile(topic):
