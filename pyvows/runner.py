@@ -67,25 +67,32 @@ class VowsParallelRunner(object):
 
         context_instance.index = index
         context_instance.pool = self.pool
-        context_instance.setup()
-
-        topic = None
-        if hasattr(context_instance, 'topic'):
-            start_time = time.time()
-            try:
-                topic_func = getattr(context_instance, 'topic')
-                topic_list = self.get_topics_for(topic_func, context_instance)
-                topic = topic_func(*topic_list)
-            except:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                topic = exc_value
-                error = (exc_type, exc_value, exc_traceback)
-                topic.error = error
-                context_instance.topic_error = error
-
-            context_obj['topic_elapsed'] = float(round(time.time() - start_time, 6))
+        try:
+            context_instance.setup()
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            topic = exc_value
+            error = ("setup", exc_type, exc_value, exc_traceback)
+            topic.error = error
+            context_instance.topic_error = error
         else:
-            topic = context_instance._get_first_available_topic(index)
+            topic = None
+            if hasattr(context_instance, 'topic'):
+                start_time = time.time()
+                try:
+                    topic_func = getattr(context_instance, 'topic')
+                    topic_list = self.get_topics_for(topic_func, context_instance)
+                    topic = topic_func(*topic_list)
+                except:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    topic = exc_value
+                    error = (exc_type, exc_value, exc_traceback)
+                    topic.error = error
+                    context_instance.topic_error = error
+
+                context_obj['topic_elapsed'] = float(round(time.time() - start_time, 6))
+            else:
+                topic = context_instance._get_first_available_topic(index)
 
         teardown = FunctionWrapper(context_instance.teardown)
 
@@ -150,8 +157,14 @@ class VowsParallelRunner(object):
         else:
             run_with_topic(topic)
 
-        teardown()
-
+        try:
+            teardown()
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            topic = exc_value
+            error = ("teardown", exc_type, exc_value, exc_traceback)
+            topic.error = error
+            context_instance.topic_error = error
 
     def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
         #   FIXME: Add Docstring
