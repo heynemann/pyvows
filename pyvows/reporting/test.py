@@ -111,7 +111,7 @@ class VowsTestReporter(VowsReporter):
                     test = test['name']))
 
                 if ctx.generated_topic:
-                    value = yellow(self.max_length(test['topic'], 250))
+                    value = yellow(test['topic'])
 
                     self.humanized_print('')
                     self.humanized_print('\tTopic value:')
