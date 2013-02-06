@@ -341,23 +341,24 @@ class Vows(object):
         '''
         #   http://pyvows.org/#-assertions
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
-
-        def exec_assertion(*args):
-            raw_msg = 'Expected topic(%s) {assertion}'.format(assertion=humanized_method_name)
+        
+        def _assertion_msg(assertion_clause=None, *args):
+            raw_msg = 'Expected topic({{0}}) {assertion_clause}'.format(
+                assertion_clause = assertion_clause)
             if len(args) is 2:
-                raw_msg += ' %s'
-
+                raw_msg += ' {1}'
+            return raw_msg
+            
+        def exec_assertion(*args):
+            raw_msg = _assertion_msg(humanized_method_name, *args)
             if not method(*args):
                 raise VowsAssertionError(raw_msg, *args)
 
         def exec_not_assertion(*args):
-            raw_msg = 'Expected topic(%s) not {not_assertion}'.format(not_assertion=humanized_method_name)
-            if len(args) is 2:
-                raw_msg += ' %s'
-
+            raw_msg = _assertion_msg('not {0}'.format(humanized_method_name), *args)
             if method(*args):
                 raise VowsAssertionError(raw_msg, *args)
-
+        
         setattr(Vows.Assert, method.__name__, exec_assertion)
         setattr(Vows.Assert, 'not_{method_name}'.format(
             method_name = method.__name__),
