@@ -286,5 +286,4 @@ class Vows(object):
         return runner.run()
 
     def exclude(cls, test_name_pattern):
-        print 'pattern is ', test_name_pattern
         cls.exclusion_patterns = test_name_pattern

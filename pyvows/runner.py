@@ -146,6 +146,12 @@ class VowsParallelRunner(object):
             'filename': inspect.getsourcefile(ctx_instance.__class__)
         }
 
+        for e in self.exclusion_patterns:
+            if name.find(e) == -1:
+                ctx_collection.append(context_obj)
+            else:
+                return
+
         ctx_collection.append(context_obj)
 
         ctx_instance.index = index
