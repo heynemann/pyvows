@@ -92,9 +92,10 @@ class VowsTestReporter(VowsReporter):
 
         for test in context['tests']:
             if test['succeeded']:
-                honored, topic, name = map(
-                    ensure_encoded,
-                    (VowsReporter.HONORED, test['topic'], test['name']))
+                honored, topic, name = (ensure_encoded(item) for item in 
+                                           (VowsReporter.HONORED, 
+                                            test['topic'], 
+                                            test['name']))
 
                 if self.verbosity == V_VERBOSE:
                     self.humanized_print('{0} {1}'.format(honored, name))

@@ -60,8 +60,10 @@ class VowsResult(object):
             contexts = self.contexts
 
         for context in contexts:
-            test_count += sum(map(count_func, context['tests']))
-            test_count += self.count_tests(contexts=context['contexts'], first=False, count_func=count_func)
+            test_count += sum([count_func(i) for i in context['tests']])
+            test_count += self.count_tests( contexts   = context['contexts'], 
+                                            first      = False, 
+                                            count_func = count_func)
 
         return test_count
 

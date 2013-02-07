@@ -95,7 +95,7 @@ class VowsReporter(object):
                 return msg.replace('\n ', '\n {indentation}'.format(indentation=indentation))
             return msg
 
-        return indentation.join(map(indent, traceback_list))
+        return indentation.join([indent(i) for i in traceback_list])
 
     def format_python_constants(self, msg):
         '''Fixes capitalization of Python constants.
