@@ -100,7 +100,6 @@ class Vows(object):
         The `setup` and `teardown` methods aren't typically needed.  But
         they are available if your test suite has extra pre- and
         post-testing work to be done in any given `Context`.
-
         '''
 
         def __init__(self, parent=None):
@@ -131,7 +130,6 @@ class Vows(object):
         def ignore(self, *args):
             '''Appends `*args` to `ignored_members`.  (Methods listed in
             `ignored_members` are considered "not a test method" by PyVows.)
-
             '''
             for arg in args:
                 self.ignored_members.append(arg)
@@ -144,7 +142,6 @@ class Vows(object):
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
-
             '''
             pass
 
@@ -156,7 +153,6 @@ class Vows(object):
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
-
             '''
             pass
 
@@ -289,4 +285,5 @@ class Vows(object):
 
     @classmethod
     def exclude(cls, test_name_pattern):
+        print 'pattern is ', test_name_pattern
         cls.exclusion_patterns = test_name_pattern

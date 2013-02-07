@@ -10,7 +10,8 @@
 
 from pyvows import Vows, expect
 from pyvows import console
-#from pyvows.reporting import VowsDefaultReporter
+
+from pyvows.runner import VowsParallelRunner
 
 
 @Vows.batch
@@ -32,5 +33,17 @@ class SingleVowFromCommandLine(Vows.Context):
         def topic(self):
             return Vows
 
-        def should_have_prune_method(self, topic):
-            expect(topic.prune).to_be_a_function()
+        def should_have_exclude_method(self, topic):
+            expect(topic.exclude).to_be_a_function()
+
+    class VowsParallelRunner(Vows.Context):
+
+        def topic(self):
+            return VowsParallelRunner
+
+        def can_be_initialized_with_5_arguments(self, topic):
+            try:
+                topic(None,None,None,None,None)
+            except Exception as e:
+                expect.Not.to_be_instance_of(TypeError)
+

@@ -27,6 +27,7 @@ except ImportError:
     COVERAGE_AVAILABLE = False
 
 from pyvows.color import yellow, Style, Fore
+from pyvows.reporting import VowsDefaultReporter
 from pyvows.reporting.xunit import XUnitReporter
 from pyvows import version
 
@@ -57,7 +58,7 @@ class Messages(object):  # pragma: no cover
 class Parser(argparse.ArgumentParser):
     def __init__(self, description=Messages.summary, **kwargs):
         super(Parser, self).__init__(
-            description = description,
+            description=description,
             **kwargs)
 
         #Easy underlining, if we ever need it in the future
@@ -111,7 +112,7 @@ class Parser(argparse.ArgumentParser):
         self.add_argument('path', nargs='?', default=os.curdir, help=Messages.path)
 
 
-def run(path, pattern, verbosity, show_progress):
+def run(path, pattern, verbosity, show_progress, exclusion_pattern=None):
     #   FIXME: Add Docstring
 
     # This calls Vows.run(), which then calls VowsParallelRunner.run()
@@ -120,6 +121,9 @@ def run(path, pattern, verbosity, show_progress):
     from pyvows.core import Vows
 
     Vows.collect(path, pattern)
+
+    if exclusion_pattern:
+        Vows.exclude(exclusion_pattern)
 
     on_success = show_progress and VowsDefaultReporter.on_vow_success or None
     on_error = show_progress and VowsDefaultReporter.on_vow_error or None
@@ -153,8 +157,12 @@ def main():
         cov.erase()
         cov.start()
 
+    prune = None
+    if arguments.exclude:
+        prune = arguments.exclude
+
     verbosity = len(arguments.verbosity) if arguments.verbosity else 2
-    result = run(path, pattern, verbosity, arguments.progress)
+    result = run(path, pattern, verbosity, arguments.progress, prune)
     reporter = VowsDefaultReporter(result, verbosity)
 
     # Print test results first
@@ -189,7 +197,6 @@ def main():
 
             arguments.cover_threshold /= 100.0
             reporter.print_coverage(xml, arguments.cover_threshold)
-
 
     # Write XUnit if necessary
     if arguments.xunit_output:
