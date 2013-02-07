@@ -99,17 +99,23 @@ class VowsAssertion(object):
 
 
 class VowsAssertionError(AssertionError):
-    '''Raised when a VowsAssertion returns False.'''
+    '''Raised when a VowsAssertion returns `False`.'''
 
     def __init__(self, *args):
-        msg = args[0]
-        if not msg.endswith('.'):
-            msg += '.'
-        self.msg = msg
-        self.args = tuple(map(repr, args[1:]))
+        if not isinstance(args[0], str):
+            raise TypeError('VowsAssertionError instances must be created with a string as their first argument')
+        if not len(args) >= 2:
+            raise IndexError('VowsAssertionError must have at least 2 arguments')
+
+        self.raw_msg = args[0]
+        
+        if not self.raw_msg.endswith('.'):
+            self.raw_msg += '.'
+        
+        self.args = tuple([ repr(i) for i in args[1:] ])
 
     def __str__(self):
-        return self.msg % self.args
+        return self.raw_msg.format( *self.args )
 
     def __unicode__(self):
         return self.__str__()
@@ -307,7 +313,7 @@ class Vows(object):
     def create_assertions(cls, method):
         '''Function decorator.  Use to create custom assertions for your
         vows.
-
+        ''' '''
         Creating new assertions for use with `expect` is as simple as using
         this decorator on a function. The function expects `topic` as the
         first parameter, and `expectation` second:
@@ -335,23 +341,24 @@ class Vows(object):
         '''
         #   http://pyvows.org/#-assertions
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
-
-        def exec_assertion(*args):
-            raw_msg = 'Expected topic(%s) {assertion}'.format(assertion=humanized_method_name)
+        
+        def _assertion_msg(assertion_clause=None, *args):
+            raw_msg = 'Expected topic({{0}}) {assertion_clause}'.format(
+                assertion_clause = assertion_clause)
             if len(args) is 2:
-                raw_msg += ' %s'
-
+                raw_msg += ' {1}'
+            return raw_msg
+            
+        def exec_assertion(*args):
+            raw_msg = _assertion_msg(humanized_method_name, *args)
             if not method(*args):
                 raise VowsAssertionError(raw_msg, *args)
 
         def exec_not_assertion(*args):
-            raw_msg = 'Expected topic(%s) not {not_assertion}'.format(not_assertion=humanized_method_name)
-            if len(args) is 2:
-                raw_msg += ' %s'
-
+            raw_msg = _assertion_msg('not {0}'.format(humanized_method_name), *args)
             if method(*args):
                 raise VowsAssertionError(raw_msg, *args)
-
+        
         setattr(Vows.Assert, method.__name__, exec_assertion)
         setattr(Vows.Assert, 'not_{method_name}'.format(
             method_name = method.__name__),
