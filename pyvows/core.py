@@ -10,15 +10,13 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 import os
-import re
 import sys
 import warnings
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
-from pyvows.decorators  import _assertion, _batch, _create_assertions, async_topic
-from pyvows.errors      import _AssertionNotFoundError, VowsAssertionError
-from pyvows.runner      import VowsParallelRunner
-from pyvows.utils       import locate, VowsAssertion
+from pyvows.decorators import _assertion, _batch, _create_assertions, async_topic
+from pyvows.runner import VowsParallelRunner
+from pyvows.utils import locate, VowsAssertion
 
 
 class expect(object):
@@ -43,13 +41,13 @@ class expect(object):
             return self
 
         if self.not_assert:
-            method_name = 'not_{name}'.format(name = name)
+            method_name = 'not_{name}'.format(name=name)
         else:
             method_name = name
 
         if not hasattr(Vows.Assert, method_name):
             raise AttributeError('Assertion {method_name} was not found!'.format(
-                method_name = method_name))
+                method_name=method_name))
 
         def assert_topic(*args, **kw):
             '''Allows instances (topics) to chain calls to `VowsAssertion`s.
@@ -80,11 +78,10 @@ class Vows(object):
     aren't necessary for writing tests.
 
     '''
-    contexts        = {}
-    AsyncTopic      = VowsAsyncTopic
+    contexts = {}
+    AsyncTopic = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
-    Assert          = VowsAssertion()
-
+    Assert = VowsAssertion()
 
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
@@ -181,7 +178,6 @@ class Vows(object):
         def should_not_be_empty(self, topic):
             expect(topic).not_to_be_empty()
 
-
     @staticmethod
     def async_topic(topic):
         return async_topic(topic)
@@ -189,9 +185,9 @@ class Vows(object):
     @staticmethod
     def asyncTopic(topic):
         #   FIXME: Add Comment
-        warnings.warn( 'The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.',
-                        DeprecationWarning,
-                        stacklevel=2)
+        warnings.warn('The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.',
+                      DeprecationWarning,
+                      stacklevel=2)
         return async_topic(topic)
 
     @staticmethod
@@ -269,7 +265,7 @@ class Vows(object):
         #   FIXME: Add Docstring
         #
         #   *   Only used in `cli.py`
-        path  = os.path.abspath(path)
+        path = os.path.abspath(path)
         files = locate(pattern, path)
         sys.path.insert(0, path)
 
@@ -289,6 +285,6 @@ class Vows(object):
                                     on_vow_error)
         return runner.run()
 
-    def prune(cls, test_name_pattern):
-       for k in Vows.contexts:
-           print Vows.contexts[k]
+    def exclude(cls, test_name_pattern):
+        print 'pattern is ', test_name_pattern
+        cls.exclusion_patterns = test_name_pattern
