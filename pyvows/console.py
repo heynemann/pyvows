@@ -78,7 +78,7 @@ def __get_arguments():
 
     filter_group = parser.add_argument_group('Filtering')
     filter_group.add_argument('-e', '--exclude', action='append', default=[], help="don't run vows matching the given pattern")
-    filter_group.add_argument('-a', '--allow', action='append', default=[], help="only run vows matching the given pattern")
+    # filter_group.add_argument('-a', '--allow', action='append', default=[], help="only run vows matching the given pattern")
 
     profile_group = parser.add_argument_group('Profiling')
     profile_group.add_argument('--profile', action='store_true', dest='profile', default=False, help=Messages.profile)
@@ -95,17 +95,17 @@ def __get_arguments():
     arguments = parser.parse_args()
     return arguments
 
-def run(path, pattern, verbosity, progress, exclusion_pattern=None):
+def run(path, pattern, verbosity, progress, exclusion_patterns=None):
     #   FIXME: Add Docstring
 
     # they need to be imported here, else the no-color option won't work
     from pyvows.core import Vows
     from pyvows.reporting import VowsDefaultReporter
 
-    Vows.gather(path, pattern)
+    if exclusion_patterns:
+        Vows.exclude(exclusion_patterns)
 
-    if exclusion_pattern:
-        Vows.exclude(exclusion_pattern)
+    Vows.gather(path, pattern)
 
     handle_success = progress and VowsDefaultReporter.handle_success or None
     handle_error = progress and VowsDefaultReporter.handle_error or None
@@ -140,9 +140,7 @@ def main():
         cov.erase()
         cov.start()
 
-    prune = None
-    if arguments.exclude:
-        prune = arguments.exclude
+    prune = arguments.exclude
 
     verbosity = len(arguments.verbosity) if arguments.verbosity else 2
     result, reporter = run(path, pattern, verbosity, arguments.progress, prune)

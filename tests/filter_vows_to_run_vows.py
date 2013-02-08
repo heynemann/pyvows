@@ -8,6 +8,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2013 Nathan Dotz nathan.dotz@gmail.com
 
+import os
 from pyvows import Vows, expect
 from pyvows import console
 
@@ -17,14 +18,23 @@ from pyvows.runner import VowsParallelRunner
 @Vows.batch
 class FilterOutVowsFromCommandLine(Vows.Context):
 
-    def topic(self):
-        return console
+    class Console(Vows.Context):
+        def topic(self):
+            return console
 
-    def should_be_not_error_when_called_with_5_args(self, topic):
-        try:
-            topic.run(None, None, None, None, None)
-        except Exception as e:
-            expect(e).Not.to_be_instance_of(TypeError)
+        def should_be_not_error_when_called_with_5_args(self, topic):
+            try:
+                topic.run(None, None, None, None, None)
+            except Exception as e:
+                expect(e).Not.to_be_instance_of(TypeError)
+
+        def should_hand_off_exclusions_to_Vows_class(self, topic):
+
+            patterns = ['foo', 'bar', 'baz']
+            try:
+                topic.run(None, '*_vows.py', 2, False, patterns)
+            except Exception as e:
+                expect(Vows.exclusion_patterns).to_equal(patterns)
 
     # TODO: add vow checking that there is a message about vow matching
 
@@ -46,4 +56,3 @@ class FilterOutVowsFromCommandLine(Vows.Context):
                 topic(None,None,None,None,None)
             except Exception as e:
                 expect.Not.to_be_instance_of(TypeError)
-

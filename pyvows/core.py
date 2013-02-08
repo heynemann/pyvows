@@ -83,6 +83,8 @@ class Vows(object):
     AsyncTopicValue = VowsAsyncTopicValue
     Assert = VowsAssertion()
 
+    exclusion_patterns = []
+
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
         write `from pyvows import Vows, expect` in your test module, then extend
