@@ -64,14 +64,16 @@ class VowsTestReporter(VowsReporter):
             return
 
         if self.verbosity >= V_VERBOSE or self.result.errored_tests:
-            print '' * 2
+            print
 
         for context in self.result.contexts:
             self.print_context(context['name'], context)
-
+        
+        passfail_symbol = VowsReporter.HONORED if self.result.successful else VowsReporter.BROKEN
+        
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
-            VowsReporter.HONORED if self.result.successful else VowsReporter.BROKEN,
+            passfail_symbol,
             honored = self.result.successful_tests,
             broken  = self.result.errored_tests,
             time    = self.result.elapsed_time)

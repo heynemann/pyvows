@@ -38,6 +38,7 @@ def ensure_encoded(thing, encoding='utf-8'):
     '''Ensures proper encoding for unicode characters.
 
     Currently used only for characters `✓` and `✗`.
+    
     '''
     if isinstance(thing, unicode):
         return thing.encode(encoding)
