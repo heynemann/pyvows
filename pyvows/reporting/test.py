@@ -28,10 +28,10 @@ class VowsTestReporter(VowsReporter):
 
     def __init__(self, result, verbosity):
         super(VowsTestReporter, self).__init__(result, verbosity)
-        self.indent    = 1
     
     @property
     def status_symbol(self):
+        '''Returns the symbol indicating whether all tests passed.'''
         if self.result.successful:
             return VowsReporter.HONORED  
         else:
@@ -91,7 +91,6 @@ class VowsTestReporter(VowsReporter):
         #       *   Is this only used in certain cases?
         #           *   If so, which?
         self.indent += 1
-        indentation2 = self.TAB * (self.indent + 2)
 
         if (self.verbosity >= V_VERBOSE or
             not self.result.eval_context(context)):
@@ -113,11 +112,35 @@ class VowsTestReporter(VowsReporter):
                     
         def _print_failed_context():
             ctx = test['context_instance']
-
+            
+            def _print_traceback():
+                
+                self.indent += 2
+            
+                if hasattr(test, 'topic')               \
+                   and hasattr(test['topic'], 'error')  \
+                   and test['topic']['error'] is not None:
+                    print '\n' + self.indent_msg(blue('Topic Error:'))
+                    exc_type, exc_value, exc_traceback = test['topic'].error
+                    self.print_traceback(exc_type, exc_value, exc_traceback)
+                else:
+                    err = test['error']
+                    self.print_traceback(err['type'], err['value'], err['traceback'])
+        
+                # print file and line number
+                if 'file' in test:
+                    file_msg = 'found in {test[file]} at line {test[lineno]}'.format(test=test)
+                    print
+                    print self.indent_msg(red(file_msg))
+                    print
+        
+                self.indent -= 2
+                
             self.humanized_print('{0} {test}'.format(
                 VowsReporter.BROKEN,
                 test = test['name']))
-
+            
+            # print generated topic (if applicable)
             if ctx.generated_topic:
                 value = yellow(test['topic'])
                 self.humanized_print('')
@@ -126,25 +149,9 @@ class VowsTestReporter(VowsReporter):
                 self.humanized_print('\n' * 2)
             
             # print traceback
-            if hasattr(test, 'topic')               \
-               and hasattr(test['topic'], 'error')  \
-               and test['topic']['error'] is not None:
-                print self.indent_msg('')
-                print blue(self.indent_msg('Topic Error:'))
-                exc_type, exc_value, exc_traceback = test['topic'].error
-                self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
-            else:
-                error = test['error']
-                exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
-                self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
-
-            if 'file' in test:
-                print
-                print red('{indent}found in {test[file]} at line {test[lineno]}'.format(
-                    indent= indentation2,
-                    test  = test))
-                print
-
+            _print_traceback():
+            
+            
         for test in context['tests']:
             if test['succeeded']:
                 _print_successful_context()
