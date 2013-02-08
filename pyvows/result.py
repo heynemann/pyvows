@@ -107,6 +107,9 @@ class VowsResult(object):
         than `threshold` to test.
 
         '''
-        times = [time for time in self.get_topic_times() if time['elapsed'] > 0 and time['elapsed'] >= threshold]
-        return list(reversed(sorted(times, key=lambda x: x['elapsed'])))[:number]
+        times = [time for time in self.get_topic_times() 
+                if  time['elapsed'] > 0 and 
+                    time['elapsed'] >= threshold]
+        times.sort(key=lambda x: x['elapsed'], reverse=True)
+        return times[:number]
 
