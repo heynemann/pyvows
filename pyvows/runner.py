@@ -37,15 +37,15 @@ class VowsParallelRunner(object):
     def run(self):
         #   FIXME: Add Docstring
 
-        start_time = time.time()
-        result = VowsResult()
+        start_time  = time.time()
+        result      = VowsResult()
 
         for name, context in self.vows.iteritems():
             self.run_context(result.contexts, name, context(None))
 
         self.pool.join()
 
-        end_time = time.time()
+        end_time            = time.time()
         result.elapsed_time = float(end_time - start_time)
         return result
 
@@ -230,7 +230,7 @@ class VowsParallelRunner(object):
         code = self._get_code_for(member)
 
         filename = code.co_filename
-        lineno = code.co_firstlineno
+        lineno   = code.co_firstlineno
 
         return filename, lineno
 
@@ -238,12 +238,15 @@ class VowsParallelRunner(object):
         #   FIXME: Add Docstring
         if not context_instance.parent:
             return []
-
-        async = False
+        
+        # check for async topic
         if hasattr(topic_function, '_original'):
-            topic_function = topic_function._original
-            async = True
+            topic_function  = topic_function._original
+            async           = True
+        else:
+            async           = False
 
+        
         code = self._get_code_for(topic_function)
 
         if not code:
@@ -255,21 +258,25 @@ class VowsParallelRunner(object):
         if async:
             expected_args -= 1
 
-        topics = []
-
-        child = context_instance
+        # prepare to create `topics` list
+        topics  = []
+        child   = context_instance
         context = context_instance.parent
+        
+        # populate `topics` list
         for i in range(expected_args):
+            topic = context.topic_value
+            
             if context.generated_topic:
-                topics.append(context.topic_value[child.index])
-            else:
-                topics.append(context.topic_value)
+                topic = topic[child.index]
+            
+            topics.append(topic)
 
             if not context.parent:
                 break
 
             context = context.parent
-            child = child.parent
+            child   = child.parent
 
         return topics
 
