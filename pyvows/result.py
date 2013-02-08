@@ -14,8 +14,10 @@ each vow.
 
 class VowsResult(object):
     '''Collects success/failure/total statistics (as well as elapsed
-    time) for the outcomes of tests.
-
+    time) for the outcomes of tests. 
+    
+    Only one instance of this class is created when PyVows is run.
+    
     '''
 
     def __init__(self):
