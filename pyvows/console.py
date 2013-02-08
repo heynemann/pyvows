@@ -14,13 +14,12 @@ running tests, and the almighty `if __name__ == '__main__': main()`.
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 from __future__ import division
 
-import sys
+import argparse
+import inspect
 import os
 from os.path import isfile, split
+import sys
 import tempfile
-import inspect
-
-import argparse
 
 try:
     from coverage import coverage

@@ -9,6 +9,7 @@ have been run.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 from __future__ import division
+
 import os
 
 from pyvows.color import *

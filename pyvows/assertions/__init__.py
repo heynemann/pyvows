@@ -20,18 +20,18 @@ Aren't they convenient?
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-from pyvows.assertions.emptiness import *
-from pyvows.assertions.equality import *
-from pyvows.assertions.inclusion import *
-from pyvows.assertions.length import *
-from pyvows.assertions.like import *
+from pyvows.assertions.emptiness    import *
+from pyvows.assertions.equality     import *
+from pyvows.assertions.inclusion    import *
+from pyvows.assertions.length       import *
+from pyvows.assertions.like         import *
 
-from pyvows.assertions.types.numeric import *
-from pyvows.assertions.types.function import *
-from pyvows.assertions.types.boolean import *
-from pyvows.assertions.types.classes import *
-from pyvows.assertions.types.file import *
-from pyvows.assertions.types.nullable import *
-from pyvows.assertions.types.regexp import *
-from pyvows.assertions.types.errors import *
+from pyvows.assertions.types.numeric    import *
+from pyvows.assertions.types.function   import *
+from pyvows.assertions.types.boolean    import *
+from pyvows.assertions.types.classes    import *
+from pyvows.assertions.types.file       import *
+from pyvows.assertions.types.nullable   import *
+from pyvows.assertions.types.regexp     import *
+from pyvows.assertions.types.errors     import *
 

@@ -12,10 +12,10 @@ Contains the classes `VowsParallelRunner` and `FunctionWrapper`.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+from functools import wraps
 import inspect
 import sys
 import time
-from functools import wraps
 
 #import eventlet
 from gevent.pool import Pool
@@ -47,6 +47,10 @@ class VowsParallelRunner(object):
 
         end_time            = time.time()
         result.elapsed_time = float(end_time - start_time)
+        
+        from pprint import pprint 
+        pprint(result.__dict__)
+        
         return result
 
     def run_context(self, context_col, name, context_instance):

@@ -9,9 +9,9 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-import os
 import fnmatch
 import glob
+import os
 import re
 import sys
 import warnings
