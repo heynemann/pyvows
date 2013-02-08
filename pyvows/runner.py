@@ -48,8 +48,9 @@ class VowsParallelRunner(object):
         end_time            = time.time()
         result.elapsed_time = float(end_time - start_time)
         
-        from pprint import pprint 
-        pprint(result.__dict__)
+        # helpful for debugging
+        #from pprint import pprint 
+        #pprint(result.__dict__)
         
         return result
 
