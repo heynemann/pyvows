@@ -15,7 +15,7 @@ from pyvows.runner import VowsParallelRunner
 
 
 @Vows.batch
-class SingleVowFromCommandLine(Vows.Context):
+class FilterOutVowsFromCommandLine(Vows.Context):
 
     def topic(self):
         return console
