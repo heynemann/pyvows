@@ -29,7 +29,14 @@ class VowsTestReporter(VowsReporter):
     def __init__(self, result, verbosity):
         super(VowsTestReporter, self).__init__(result, verbosity)
         self.indent    = 1
-
+    
+    @property
+    def status_symbol(self):
+        if self.result.successful:
+            return VowsReporter.HONORED  
+        else:
+            return VowsReporter.BROKEN
+            
     #-------------------------------------------------------------------------
     #   Class Methods
     #-------------------------------------------------------------------------
@@ -69,11 +76,9 @@ class VowsTestReporter(VowsReporter):
         for context in self.result.contexts:
             self.print_context(context['name'], context)
         
-        passfail_symbol = VowsReporter.HONORED if self.result.successful else VowsReporter.BROKEN
-        
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
-            passfail_symbol,
+            self.status_symbol,
             honored = self.result.successful_tests,
             broken  = self.result.errored_tests,
             time    = self.result.elapsed_time)
@@ -91,56 +96,62 @@ class VowsTestReporter(VowsReporter):
         if (self.verbosity >= V_VERBOSE or
             not self.result.eval_context(context)):
             self.humanized_print(name)
+                
+        def _print_successful_context():
+            honored, topic, name = (ensure_encoded(item) for item in 
+                                       (VowsReporter.HONORED, 
+                                        test['topic'], 
+                                        test['name']))
+
+            if self.verbosity == V_VERBOSE:
+                self.humanized_print('{0} {1}'.format(honored, name))
+            elif self.verbosity >= V_EXTRA_VERBOSE:
+                if test['enumerated']:
+                    self.humanized_print('{0} {1} - {2}'.format(honored, topic, name))
+                else:
+                    self.humanized_print('{0} {1}'.format(honored, name))
+                    
+        def _print_failed_context():
+            ctx = test['context_instance']
+
+            self.humanized_print('{0} {test}'.format(
+                VowsReporter.BROKEN,
+                test = test['name']))
+
+            if ctx.generated_topic:
+                value = yellow(test['topic'])
+                self.humanized_print('')
+                self.humanized_print('\tTopic value:')
+                self.humanized_print('\t{value}'.format(value = value))
+                self.humanized_print('\n' * 2)
+            
+            # print traceback
+            if hasattr(test, 'topic')               \
+               and hasattr(test['topic'], 'error')  \
+               and test['topic']['error'] is not None:
+                print self.indent_msg('')
+                print blue(self.indent_msg('Topic Error:'))
+                exc_type, exc_value, exc_traceback = test['topic'].error
+                self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
+            else:
+                error = test['error']
+                exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
+                self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
+
+            if 'file' in test:
+                print
+                print red('{indent}found in {test[file]} at line {test[lineno]}'.format(
+                    indent= indentation2,
+                    test  = test))
+                print
 
         for test in context['tests']:
             if test['succeeded']:
-                honored, topic, name = (ensure_encoded(item) for item in 
-                                           (VowsReporter.HONORED, 
-                                            test['topic'], 
-                                            test['name']))
-
-                if self.verbosity == V_VERBOSE:
-                    self.humanized_print('{0} {1}'.format(honored, name))
-                elif self.verbosity >= V_EXTRA_VERBOSE:
-                    if test['enumerated']:
-                        self.humanized_print('{0} {1} - {2}'.format(honored, topic, name))
-                    else:
-                        self.humanized_print('{0} {1}'.format(honored, name))
+                _print_successful_context()
             else:
-                ctx = test['context_instance']
-
-                self.humanized_print('{0} {test}'.format(
-                    VowsReporter.BROKEN,
-                    test = test['name']))
-
-                if ctx.generated_topic:
-                    value = yellow(test['topic'])
-
-                    self.humanized_print('')
-                    self.humanized_print('\tTopic value:')
-                    self.humanized_print('\t{value}'.format(value = value))
-                    self.humanized_print('\n' * 2)
-
-                if hasattr(test, 'topic')               \
-                   and hasattr(test['topic'], 'error')  \
-                   and test['topic']['error'] is not None:
-                    print self.indent_msg('')
-                    print blue(self.indent_msg('Topic Error:'))
-                    exc_type, exc_value, exc_traceback = test['topic'].error
-                    self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
-                else:
-                    error = test['error']
-                    exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
-
-                    self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
-
-                if 'file' in test:
-                    print
-                    print red('{indent}found in {test[file]} at line {test[lineno]}'.format(
-                        indent= indentation2,
-                        test  = test))
-                    print
-
+                _print_failed_context()
+        
+        # I hereby (re)curse you...!
         for context in context['contexts']:
             self.print_context(context['name'], context)
 
