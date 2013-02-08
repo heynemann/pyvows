@@ -138,7 +138,11 @@ class Vows(object):
 
     '''
     contexts = {}
-
+    
+    AsyncTopic      = VowsAsyncTopic
+    AsyncTopicValue = VowsAsyncTopicValue
+    Assert          = VowsAssertion()
+    
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
         write `from pyvows import Vows, expect` in your test module, then extend
@@ -233,10 +237,6 @@ class Vows(object):
         #       testing, show an example
         def should_not_be_empty(self, topic):
             expect(topic).not_to_be_empty()
-
-    AsyncTopic = VowsAsyncTopic
-    AsyncTopicValue = VowsAsyncTopicValue
-    Assert = VowsAssertion()
 
     @staticmethod
     def async_topic(topic):
