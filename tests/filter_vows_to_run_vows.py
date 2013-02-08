@@ -56,3 +56,17 @@ class FilterOutVowsFromCommandLine(Vows.Context):
                 topic(None,None,None,None,None)
             except Exception as e:
                 expect.Not.to_be_instance_of(TypeError)
+
+        def removes_appropriate_contexts(self, topic):
+            r = topic(None, None, None, None, ['foo','bar'])
+            col = []
+            r.async_run_context(col, 'footer', r)
+            expect(len(col)).to_equal(0)
+
+        def leaves_unmatched_contexts(self, topic):
+            VowsParallelRunner.teardown = None
+            r = topic(None, None, None, None, ['foo','bar'])
+            col = []
+            r.async_run_context(col, 'baz', r)
+            expect(len(col)).to_equal(1)
+
