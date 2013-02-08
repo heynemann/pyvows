@@ -147,9 +147,7 @@ class VowsParallelRunner(object):
         }
 
         for e in self.exclusion_patterns:
-            if name.find(e) == -1:
-                ctx_collection.append(context_obj)
-            else:
+            if name.find(e) != -1:
                 return
 
         ctx_collection.append(context_obj)
@@ -270,6 +268,12 @@ class VowsParallelRunner(object):
 
     def run_vow(self, tests_collection, topic, ctx_instance, member, member_name, enumerated=False):
         #   FIXME: Add Docstring
+
+        for e in self.exclusion_patterns:
+            if member_name.find(e) != -1:
+                print member_name
+                return
+
         self.pool.spawn(self.run_vow_async, tests_collection, topic, ctx_instance, member, member_name, enumerated)
 
     def run_vow_async(self, tests_collection, topic, ctx_instance, member, member_name, enumerated):
