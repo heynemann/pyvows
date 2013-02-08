@@ -112,7 +112,7 @@ class Parser(argparse.ArgumentParser):
         self.add_argument('path', nargs='?', default=os.curdir, help=Messages.path)
 
 
-def run(path, pattern, verbosity, show_progress, exclusion_pattern=None):
+def run(path, pattern, verbosity, show_progress, exclusion_patterns=None):
     #   FIXME: Add Docstring
 
     # This calls Vows.run(), which then calls VowsParallelRunner.run()
@@ -120,10 +120,10 @@ def run(path, pattern, verbosity, show_progress, exclusion_pattern=None):
     # needs to be imported here, else the no-color option won't work
     from pyvows.core import Vows
 
-    Vows.collect(path, pattern)
+    if exclusion_patterns:
+        Vows.exclude(exclusion_patterns)
 
-    if exclusion_pattern:
-        Vows.exclude(exclusion_pattern)
+    Vows.collect(path, pattern)
 
     on_success = show_progress and VowsDefaultReporter.on_vow_success or None
     on_error = show_progress and VowsDefaultReporter.on_vow_error or None
@@ -157,9 +157,7 @@ def main():
         cov.erase()
         cov.start()
 
-    prune = None
-    if arguments.exclude:
-        prune = arguments.exclude
+    prune = arguments.exclude
 
     verbosity = len(arguments.verbosity) if arguments.verbosity else 2
     result = run(path, pattern, verbosity, arguments.progress, prune)

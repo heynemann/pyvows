@@ -8,7 +8,6 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2013 Nathan Dotz nathan.dotz@gmail.com
 
-import os
 from pyvows import Vows, expect
 from pyvows import console
 
@@ -33,7 +32,7 @@ class FilterOutVowsFromCommandLine(Vows.Context):
             patterns = ['foo', 'bar', 'baz']
             try:
                 topic.run(None, '*_vows.py', 2, False, patterns)
-            except Exception as e:
+            except Exception:
                 expect(Vows.exclusion_patterns).to_equal(patterns)
 
     # TODO: add vow checking that there is a message about vow matching
@@ -53,22 +52,21 @@ class FilterOutVowsFromCommandLine(Vows.Context):
 
         def can_be_initialized_with_5_arguments(self, topic):
             try:
-                topic(None,None,None,None,None)
+                topic(None, None, None, None, None)
             except Exception as e:
-                expect.Not.to_be_instance_of(TypeError)
+                expect(e).Not.to_be_instance_of(TypeError)
 
         def removes_appropriate_contexts(self, topic):
-            r = topic(None, None, None, None, ['foo','bar'])
+            r = topic(None, None, None, None, ['foo', 'bar'])
             col = []
             r.async_run_context(col, 'footer', r)
             expect(len(col)).to_equal(0)
 
         def leaves_unmatched_contexts(self, topic):
             VowsParallelRunner.teardown = None
-            r = topic(None, None, None, None, ['foo','bar'])
+            r = topic(None, None, None, None, ['foo', 'bar'])
             col = []
             r.async_run_context(col, 'baz', r)
             expect(len(col)).to_equal(1)
             r.async_run_context(col, 'bip', r)
             expect(len(col)).to_equal(2)
-
