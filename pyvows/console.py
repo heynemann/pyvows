@@ -68,20 +68,20 @@ def __get_arguments():
 
     cover_group = parser.add_argument_group('Test Coverage')
     cover_group.add_argument('-c', '--cover',           action='store_true', default=False, help=Messages.cover)
-    cover_group.add_argument('-l', '--cover_package',   action='append',     default=[],    help=Messages.cover_package, metavar=metavar('package'))
-    cover_group.add_argument('-o', '--cover_omit',      action='append',     default=[],    help=Messages.cover_omit,    metavar=metavar('file'))
-    cover_group.add_argument('-t', '--cover_threshold', type=float,          default=80.0,  help=Messages.cover_threshold, metavar=metavar('number'))
-    cover_group.add_argument('-r', '--cover_report',    action='store',      default=None,  help=Messages.cover_report, metavar=metavar('file'))
+    cover_group.add_argument('-l', '--cover-package',   action='append',     default=[],    help=Messages.cover_package, metavar=metavar('package'))
+    cover_group.add_argument('-o', '--cover-omit',      action='append',     default=[],    help=Messages.cover_omit,    metavar=metavar('file'))
+    cover_group.add_argument('-t', '--cover-threshold', type=float,          default=80.0,  help=Messages.cover_threshold, metavar=metavar('number'))
+    cover_group.add_argument('-r', '--cover-report',    action='store',      default=None,  help=Messages.cover_report, metavar=metavar('file'))
 
     xunit_group = parser.add_argument_group('XUnit')
-    xunit_group.add_argument('-x', '--xunit_output', action='store_true', default=False,        help=Messages.xunit_output)
-    xunit_group.add_argument('-f', '--xunit_file',   action='store',      default='pyvows.xml', help=Messages.xunit_file, metavar=metavar('file'))
+    xunit_group.add_argument('-x', '--xunit-output', action='store_true', default=False,        help=Messages.xunit_output)
+    xunit_group.add_argument('-f', '--xunit-file',   action='store',      default='pyvows.xml', help=Messages.xunit_file, metavar=metavar('file'))
 
     profile_group = parser.add_argument_group('Profiling')
     profile_group.add_argument('--profile', action='store_true', dest='profile', default=False, help=Messages.profile)
-    profile_group.add_argument('--profile_threshold', type=float,                default=0.1,   help=Messages.profile_threshold, metavar=metavar('num'))
+    profile_group.add_argument('--profile-threshold', type=float,                default=0.1,   help=Messages.profile_threshold, metavar=metavar('num'))
 
-    parser.add_argument('--no_color', action='store_true',                  default=False, help=Messages.no_color)
+    parser.add_argument('--no-color', action='store_true',                  default=False, help=Messages.no_color)
     parser.add_argument('--progress', action='store_true', dest='progress', default=False, help=Messages.progress)
 
     parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(version.to_str()))
@@ -90,7 +90,6 @@ def __get_arguments():
     parser.add_argument('path', nargs='?', default=current_dir, help=Messages.path)
 
     arguments = parser.parse_args()
-
     return arguments
 
 def run(path, pattern, verbosity, progress):
