@@ -96,11 +96,11 @@ class VowsResult(object):
         for context in contexts:
             topic_times.append({
                 'context': context['name'],
-                'path': context['filename'],
+                'path':    context['filename'],
                 'elapsed': context['topic_elapsed']
             })
-
-            topic_times.extend(self.get_topic_times(context['contexts']))
+            ctx_topic_times = self.get_topic_times(context['contexts'])
+            topic_times.extend(ctx_topic_times)
 
         return topic_times
 
