@@ -49,6 +49,7 @@ class Messages(object):  # pragma: no cover
     cover_report = 'Store coverage report as %(metavar)s. (default: %(default)r)'
     xunit_output = 'Enable XUnit output. (default: %(default)s)'
     xunit_file = 'Store XUnit output as %(metavar)s. (default: %(default)r)'
+    exclude = 'Exclude tests and contexts that match regex-pattern %(metavar)s'
     profile = 'Prints the 10 slowest topics. (default: %(default)s)'
     profile_threshold = 'Tests taking longer than %(metavar)s seconds are considered slow. (default: %(default)s)'
     no_color = 'Turn off colorized output. (default: %(default)s)'
