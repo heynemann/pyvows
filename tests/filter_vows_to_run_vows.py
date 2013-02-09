@@ -69,4 +69,6 @@ class FilterOutVowsFromCommandLine(Vows.Context):
             col = []
             r.async_run_context(col, 'baz', r)
             expect(len(col)).to_equal(1)
+            r.async_run_context(col, 'bip', r)
+            expect(len(col)).to_equal(2)
 

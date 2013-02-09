@@ -271,7 +271,6 @@ class VowsParallelRunner(object):
 
         for e in self.exclusion_patterns:
             if member_name.find(e) != -1:
-                print member_name
                 return
 
         self.pool.spawn(self.run_vow_async, tests_collection, topic, ctx_instance, member, member_name, enumerated)
