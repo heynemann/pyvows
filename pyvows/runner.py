@@ -15,6 +15,7 @@ Contains the classes `VowsParallelRunner` and `FunctionWrapper`.
 import inspect
 import sys
 import time
+import re
 
 from gevent.pool import Pool
 
@@ -122,9 +123,7 @@ class VowsParallelRunner(object):
 
         result.elapsed_time = elapsed(start_time)
 
-        # helpful for debugging
-        #from pprint import pprint
-        #pprint(result.__dict__)
+        self.exclusion_patterns = [re.compile(x) for x in self.exclusion_patterns]
 
         return result
 
@@ -147,7 +146,7 @@ class VowsParallelRunner(object):
         }
 
         for e in self.exclusion_patterns:
-            if name.find(e) != -1:
+            if re.search(e, name):
                 return
 
         ctx_collection.append(context_obj)
@@ -270,7 +269,7 @@ class VowsParallelRunner(object):
         #   FIXME: Add Docstring
 
         for e in self.exclusion_patterns:
-            if member_name.find(e) != -1:
+            if re.search(e, member_name):
                 return
 
         self.pool.spawn(self.run_vow_async, tests_collection, topic, ctx_instance, member, member_name, enumerated)
