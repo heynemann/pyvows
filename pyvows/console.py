@@ -46,6 +46,7 @@ class Messages(object):
     cover_report    = 'Store coverage report as %(metavar)s. (default: %(default)r)'
     xunit_output    = 'Enable XUnit output. (default: %(default)s)'
     xunit_file      = 'Store XUnit output as %(metavar)s. (default: %(default)r)'
+    exclude         = 'Exclude tests and contexts that match regex-pattern %(metavar)s'
     profile           = 'Prints the 10 slowest topics. (default: %(default)s)'
     profile_threshold = 'Tests taking longer than %(metavar)s seconds are considered slow. (default: %(default)s)'
     no_color  = 'Turn off colorized output. (default: %(default)s)'
@@ -77,7 +78,7 @@ def __get_arguments():
     xunit_group.add_argument('-f', '--xunit-file',   action='store',      default='pyvows.xml', help=Messages.xunit_file, metavar=metavar('file'))
 
     filter_group = parser.add_argument_group('Filtering')
-    filter_group.add_argument('-e', '--exclude', action='append', default=[], help="don't run vows matching the given pattern")
+    filter_group.add_argument('-e', '--exclude', action='append', default=[], help=Messages.exclude)
     # filter_group.add_argument('-a', '--allow', action='append', default=[], help="only run vows matching the given pattern")
 
     profile_group = parser.add_argument_group('Profiling')
