@@ -149,7 +149,7 @@ class VowsTestReporter(VowsReporter):
                 self.humanized_print('\n' * 2)
             
             # print traceback
-            _print_traceback():
+            _print_traceback()
             
             
         for test in context['tests']:
