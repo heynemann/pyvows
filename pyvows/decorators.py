@@ -14,6 +14,14 @@ from functools import wraps
 from pyvows.async_topic import VowsAsyncTopic
 
 
+def _batch(method):
+    # This is underscored-prefixed because the only intended use (via 
+    # `Vows.batch`) expands on this core functionality
+    def method_name(*args, **kw):
+        method(*args, **kw)
+    return method_name
+    
+    
 def async_topic(topic):
     '''Topic decorator.  Allows PyVows testing of asynchronous topics.
 
@@ -29,13 +37,7 @@ def async_topic(topic):
     return wrapper
     
     
-def _batch(method):
-    # This is underscored-prefixed because the only intended use is via 
-    # `Vows.batch`.  Also, `Vows.batch` expands on this core implementation.
-    def method_name(*args, **kw):
-        method(*args, **kw)
 
-    return method_name
     
     
 class FunctionWrapper(object):
