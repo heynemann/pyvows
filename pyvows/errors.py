@@ -10,6 +10,9 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 
+from pyvows.utils import VowsAssertion
+
+
 class _AssertionNotFoundError(AttributeError):
     #   This is underscore-prefixed because it is not intended to be accessed
     #   directly. Instead, it should be accessed as 
