@@ -17,6 +17,7 @@ import sys
 import warnings
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
+from pyvows.decorators import async_topic
 from pyvows.errors import _AssertionNotFoundError, VowsAssertionError
 from pyvows.runner import VowsParallelRunner
 
@@ -213,18 +214,7 @@ class Vows(object):
 
     @staticmethod
     def async_topic(topic):
-        '''Topic decorator.  Allows PyVows testing of asynchronous topics.
-
-        Use `@Vows.async_topic` on your `topic` method to mark it as
-        asynchronous.  This allows PyVows to test topics which use callbacks
-        instead of return values.
-        
-        '''
-        def wrapper(*args, **kw):
-            return VowsAsyncTopic(topic, args, kw)
-        wrapper._original = topic
-        wrapper.__name__ = topic.__name__
-        return wrapper
+        return async_topic(topic)
 
     @staticmethod
     def asyncTopic(topic):
