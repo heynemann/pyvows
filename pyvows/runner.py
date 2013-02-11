@@ -287,8 +287,8 @@ class VowsParallelRunner(object):
 
 
 class FunctionWrapper(object):
-    ''' Just calls the passed function when all the wrapped
-        functions have been called.
+    '''Function decorator.  Simply calls the decorated function when all 
+    the wrapped functions have been called.
 
     '''
     def __init__(self, func):
