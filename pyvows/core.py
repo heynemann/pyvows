@@ -17,6 +17,7 @@ import sys
 import warnings
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
+from pyvows.decorators import async_topic
 from pyvows.errors import _AssertionNotFoundError, VowsAssertionError
 from pyvows.runner import VowsParallelRunner
 
@@ -60,13 +61,13 @@ class expect(object):
             return self
 
         if self.not_assert:
-            method_name = 'not_{name}'.format(name=name)
+            method_name = 'not_{name}'.format(name = name)
         else:
             method_name = name
 
         if not hasattr(Vows.Assert, method_name):
             raise AttributeError('Assertion {method_name} was not found!'.format(
-                method_name=method_name))
+                method_name = method_name))
 
         def assert_topic(*args, **kw):
             '''Allows instances (topics) to chain calls to `VowsAssertion`s.
@@ -89,7 +90,7 @@ class VowsAssertion(object):
 
     AssertionNotFoundError = _AssertionNotFoundError
     '''Raised when a `VowsAssertion` cannot be found.'''
-
+    
     def __getattr__(self, name):
         if not hasattr(self, name):
             raise VowsAssertion.AssertionNotFoundError(name)
@@ -110,11 +111,12 @@ class Vows(object):
 
     '''
     contexts = {}
-
-    AsyncTopic = VowsAsyncTopic
+    
+    AsyncTopic      = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
-    Assert = VowsAssertion()
-
+    Assert          = VowsAssertion()
+  
+  
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
         write `from pyvows import Vows, expect` in your test module, then extend
@@ -130,6 +132,7 @@ class Vows(object):
         The `setup` and `teardown` methods aren't typically needed.  But
         they are available if your test suite has extra pre- and
         post-testing work to be done in any given `Context`.
+        
         '''
 
         def __init__(self, parent=None):
@@ -160,6 +163,7 @@ class Vows(object):
         def ignore(self, *args):
             '''Appends `*args` to `ignored_members`.  (Methods listed in
             `ignored_members` are considered "not a test method" by PyVows.)
+            
             '''
             for arg in args:
                 self.ignored_members.append(arg)
@@ -172,6 +176,7 @@ class Vows(object):
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
+                
             '''
             pass
 
@@ -183,6 +188,7 @@ class Vows(object):
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
+                
             '''
             pass
 
@@ -208,27 +214,14 @@ class Vows(object):
 
     @staticmethod
     def async_topic(topic):
-        '''Topic decorator.  Allows PyVows testing of asynchronous topics.
-
-        Use `@Vows.async_topic` on your `topic` method to mark it as
-        asynchronous.  This allows PyVows to test topics which use callbacks
-        instead of return values.
-
-        '''
-        def wrapper(*args, **kw):
-            return VowsAsyncTopic(topic, args, kw)
-        wrapper._original = topic
-        wrapper.__name__ = topic.__name__
-        return wrapper
+        return async_topic(topic)
 
     @staticmethod
     def asyncTopic(topic):
         #   FIXME: Add Comment
-        warnings.warn(
-            'The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.',
-            DeprecationWarning,
-            stacklevel=2
-        )
+        warnings.warn( 'The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.', 
+                        DeprecationWarning, 
+                        stacklevel=2)
         return Vows.async_topic(topic)
 
     @staticmethod
@@ -238,7 +231,7 @@ class Vows(object):
         Test batches in PyVows are the largest unit of tests. The convention
         is to have one test batch per file, and have the batch’s class match
         the file name.
-
+        
         '''
         def method_name(*args, **kw):
             method(*args, **kw)
@@ -311,14 +304,14 @@ class Vows(object):
         '''
         #   http://pyvows.org/#-assertions
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
-
+        
         def _assertion_msg(assertion_clause=None, *args):
             raw_msg = 'Expected topic({{0}}) {assertion_clause}'.format(
-                assertion_clause=assertion_clause)
+                assertion_clause = assertion_clause)
             if len(args) is 2:
                 raw_msg += ' {1}'
             return raw_msg
-
+            
         def exec_assertion(*args):
             raw_msg = _assertion_msg(humanized_method_name, *args)
             if not method(*args):
@@ -328,10 +321,10 @@ class Vows(object):
             raw_msg = _assertion_msg('not {0}'.format(humanized_method_name), *args)
             if method(*args):
                 raise VowsAssertionError(raw_msg, *args)
-
+        
         setattr(Vows.Assert, method.__name__, exec_assertion)
         setattr(Vows.Assert, 'not_{method_name}'.format(
-            method_name=method.__name__),
+            method_name = method.__name__),
             exec_not_assertion)
 
         def wrapper(*args, **kw):
@@ -344,10 +337,10 @@ class Vows(object):
         #   FIXME: Add Docstring
         #
         #   *   Only used in `cli.py`
-        path = os.path.abspath(path)
+        path  = os.path.abspath(path)
         files = locate(pattern, path)
         sys.path.insert(0, path)
-
+        
         for module_path in files:
             module_name = os.path.splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
             __import__(module_name)
