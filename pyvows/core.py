@@ -20,6 +20,7 @@ from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators  import async_topic, _batch
 from pyvows.errors      import _AssertionNotFoundError, VowsAssertionError
 from pyvows.runner      import VowsParallelRunner
+from pyvows.utils       import VowsAssertion
 
 
 def locate(pattern, root=os.curdir, recursive=True):
@@ -83,18 +84,6 @@ class expect(object):
             return getattr(Vows.Assert, method_name)(self.topic, *args, **kw)
 
         return assert_topic
-
-
-class VowsAssertion(object):
-    '''Used by the `Vows` class for various assertion-related functionality.'''
-
-    AssertionNotFoundError = _AssertionNotFoundError
-    '''Raised when a `VowsAssertion` cannot be found.'''
-    
-    def __getattr__(self, name):
-        if not hasattr(self, name):
-            raise VowsAssertion.AssertionNotFoundError(name)
-        return super(VowsAssertion, self).__getattr__(name)
 
 
 class Vows(object):
