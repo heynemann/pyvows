@@ -33,11 +33,8 @@ def async_topic(topic):
     def wrapper(*args, **kw):
         return VowsAsyncTopic(topic, args, kw)
     wrapper._original = topic
-    wrapper.__name__ = topic.__name__
+    wrapper.__name__  = topic.__name__
     return wrapper
-    
-    
-
     
     
 class FunctionWrapper(object):

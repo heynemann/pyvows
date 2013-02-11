@@ -17,9 +17,9 @@ import sys
 import warnings
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
-from pyvows.decorators import async_topic, _batch
-from pyvows.errors import _AssertionNotFoundError, VowsAssertionError
-from pyvows.runner import VowsParallelRunner
+from pyvows.decorators  import async_topic, _batch
+from pyvows.errors      import _AssertionNotFoundError, VowsAssertionError
+from pyvows.runner      import VowsParallelRunner
 
 
 def locate(pattern, root=os.curdir, recursive=True):
