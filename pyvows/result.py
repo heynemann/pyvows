@@ -23,31 +23,8 @@ class VowsResult(object):
     def __init__(self):
         self.contexts = []
         self.elapsed_time = 0.0
-
-    @property
-    def successful(self):
-        '''Returns a boolean, indicating whether the current
-        `VowsResult` was 100% successful.
-
-        '''
-        return self.successful_tests == self.total_test_count
-
-    @property
-    def total_test_count(self):
-        '''Returns the total number of tests.'''
-        return self.count_tests(contexts=None, first=True, count_func=lambda test: 1)
-
-    @property
-    def successful_tests(self):
-        '''Returns the number of tests that passed.'''
-        return self.count_tests(contexts=None, first=True, count_func=lambda test: 1 if test['succeeded'] else 0)
-
-    @property
-    def errored_tests(self):
-        '''Returns the number of tests that failed.'''
-        return self.count_tests(contexts=None, first=True, count_func=lambda test: 0 if test['succeeded'] else 1)
-
-    def count_tests(self, contexts=None, first=True, count_func=lambda test: 1):
+    
+    def _count_tests(self, contexts=None, first=True, count_func=lambda test: 1):
         '''Used interally for class properties
         `total_test_count`, `successful_tests`, and `errored_tests`.
 
@@ -63,11 +40,34 @@ class VowsResult(object):
 
         for context in contexts:
             test_count += sum([count_func(i) for i in context['tests']])
-            test_count += self.count_tests( contexts   = context['contexts'], 
+            test_count += self._count_tests( contexts   = context['contexts'], 
                                             first      = False, 
                                             count_func = count_func)
 
         return test_count
+    
+    @property
+    def successful(self):
+        '''Returns a boolean, indicating whether the current
+        `VowsResult` was 100% successful.
+
+        '''
+        return self.successful_tests == self.total_test_count
+
+    @property
+    def total_test_count(self):
+        '''Returns the total number of tests.'''
+        return self._count_tests(contexts=None, first=True, count_func=lambda test: 1)
+
+    @property
+    def successful_tests(self):
+        '''Returns the number of tests that passed.'''
+        return self._count_tests(contexts=None, first=True, count_func=lambda test: 1 if test['succeeded'] else 0)
+
+    @property
+    def errored_tests(self):
+        '''Returns the number of tests that failed.'''
+        return self._count_tests(contexts=None, first=True, count_func=lambda test: 0 if test['succeeded'] else 1)
 
     def eval_context(self, context):
         '''Returns a boolean indicating whether `context` tested
