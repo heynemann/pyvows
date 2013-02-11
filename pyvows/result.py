@@ -46,6 +46,27 @@ class VowsResult(object):
 
         return test_count
     
+    def _get_topic_times(self, contexts=None):
+        '''Returns a dict describing how long testing took for
+        each topic in `contexts`.
+
+        '''
+        topic_times = []
+
+        if contexts is None:
+            contexts = self.contexts
+
+        for context in contexts:
+            topic_times.append({
+                'context': context['name'],
+                'path':    context['filename'],
+                'elapsed': context['topic_elapsed']
+            })
+            ctx_topic_times = self.get_topic_times(context['contexts'])
+            topic_times.extend(ctx_topic_times)
+
+        return topic_times
+
     @property
     def successful(self):
         '''Returns a boolean, indicating whether the current
@@ -82,27 +103,6 @@ class VowsResult(object):
             succeeded = succeeded and test['succeeded']
 
         return succeeded
-
-    def get_topic_times(self, contexts=None):
-        '''Returns a dict describing how long testing took for
-        each topic in `contexts`.
-
-        '''
-        topic_times = []
-
-        if contexts is None:
-            contexts = self.contexts
-
-        for context in contexts:
-            topic_times.append({
-                'context': context['name'],
-                'path':    context['filename'],
-                'elapsed': context['topic_elapsed']
-            })
-            ctx_topic_times = self.get_topic_times(context['contexts'])
-            topic_times.extend(ctx_topic_times)
-
-        return topic_times
 
     def get_worst_topics(self, number=10, threshold=0.1):
         '''Returns the top `number` slowest topics which took longer
