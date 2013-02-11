@@ -17,7 +17,7 @@ import sys
 import warnings
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
-from pyvows.decorators import async_topic
+from pyvows.decorators import async_topic, _batch
 from pyvows.errors import _AssertionNotFoundError, VowsAssertionError
 from pyvows.runner import VowsParallelRunner
 
@@ -233,12 +233,8 @@ class Vows(object):
         the file name.
         
         '''
-        def method_name(*args, **kw):
-            method(*args, **kw)
-
         Vows.contexts[method.__name__] = method
-
-        return method_name
+        _batch(method)
 
     @classmethod
     def assertion(cls, method):
