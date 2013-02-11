@@ -319,8 +319,8 @@ class Vows(object):
                 raise VowsAssertionError(raw_msg, *args)
         
         setattr(Vows.Assert, method.__name__, exec_assertion)
-        setattr(Vows.Assert, 'not_{method_name}'.format(
-            method_name = method.__name__),
+        setattr(Vows.Assert, 'not_{method.__name__}'.format(
+            method = method),
             exec_not_assertion)
 
         def wrapper(*args, **kw):
