@@ -91,17 +91,17 @@ def __get_arguments():
     arguments = parser.parse_args()
     return arguments
 
-def run(path, pattern, verbosity, progress):
+def run(path, pattern, verbosity, show_progress):
     #   FIXME: Add Docstring
 
     # they need to be imported here, else the no-color option won't work
     from pyvows.core import Vows
     from pyvows.reporting import VowsDefaultReporter
 
-    Vows.gather(path, pattern)
+    Vows.collect(path, pattern)
 
-    handle_success = progress and VowsDefaultReporter.handle_success or None
-    handle_error = progress and VowsDefaultReporter.handle_error or None
+    handle_success = show_progress and VowsDefaultReporter.handle_success or None
+    handle_error = show_progress and VowsDefaultReporter.handle_error or None
     result = Vows.ensure(handle_success, handle_error)
 
     reporter = VowsDefaultReporter(result, verbosity)

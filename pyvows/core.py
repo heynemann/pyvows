@@ -342,6 +342,19 @@ class Vows(object):
         return wrapper
 
     @classmethod
+    def collect(cls, path, pattern):
+        #   FIXME: Add Docstring
+        #
+        #   *   Only used in `console.py`
+        path  = os.path.abspath(path)
+        files = locate(pattern, path)
+        sys.path.insert(0, path)
+        
+        for module_path in files:
+            module_name = os.path.splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
+            __import__(module_name)
+
+    @classmethod
     def ensure(cls, vow_success_event, vow_error_event):
         #   FIXME: Add Docstring
         #
@@ -352,16 +365,3 @@ class Vows(object):
                                     vow_success_event,
                                     vow_error_event)
         return runner.run()
-
-    @classmethod
-    def gather(cls, path, pattern):
-        #   FIXME: Add Docstring
-        #
-        #   *   Only used in `console.py`
-        path = os.path.abspath(path)
-
-        files = locate(pattern, path)
-        sys.path.insert(0, path)
-        for module_path in files:
-            module_name = os.path.splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
-            __import__(module_name)
