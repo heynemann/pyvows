@@ -86,7 +86,7 @@ class VowsParallelRunner(object):
                 start_time = time.time()
                 try:
                     topic_func = getattr(context_instance, 'topic')
-                    topic_list = self.get_topics_for(topic_func, context_instance)
+                    topic_list = self._get_topics_for(topic_func, context_instance)
                     topic = topic_func(*topic_list)
                 except:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -179,7 +179,7 @@ class VowsParallelRunner(object):
         #   FIXME: Add Docstring
 
         start_time = time.time()
-        filename, lineno = self.file_info_for(member._original)
+        filename, lineno = self._file_info_for(member._original)
         result_obj = {
             'context_instance': context_instance,
             'name': member_name,
@@ -230,7 +230,7 @@ class VowsParallelRunner(object):
             code = obj.__func__.__code__
         return code
 
-    def file_info_for(self, member):
+    def _file_info_for(self, member):
         #   FIXME: Add Docstring
         code = self._get_code_for(member)
 
@@ -239,7 +239,7 @@ class VowsParallelRunner(object):
 
         return filename, lineno
 
-    def get_topics_for(self, topic_function, context_instance):
+    def _get_topics_for(self, topic_function, context_instance):
         #   FIXME: Add Docstring
         if not context_instance.parent:
             return []
