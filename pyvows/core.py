@@ -17,6 +17,7 @@ import sys
 import warnings
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
+from pyvows.errors import _AssertionNotFoundError, VowsAssertionError
 from pyvows.runner import VowsParallelRunner
 
 
@@ -86,42 +87,13 @@ class expect(object):
 class VowsAssertion(object):
     '''Used by the `Vows` class for various assertion-related functionality.'''
 
-    class AssertionNotFoundError(AttributeError):
-        '''Raised when a VowsAssertion cannot be found.'''
-        def __init__(self, name):
-            super(VowsAssertion.AssertionNotFoundError, self).__init__(
-                'Assertion "{name!s}" was not found!'.format(name = name))
-
+    AssertionNotFoundError = _AssertionNotFoundError
+    '''Raised when a `VowsAssertion` cannot be found.'''
+    
     def __getattr__(self, name):
         if not hasattr(self, name):
             raise VowsAssertion.AssertionNotFoundError(name)
         return super(VowsAssertion, self).__getattr__(name)
-
-
-class VowsAssertionError(AssertionError):
-    '''Raised when a VowsAssertion returns `False`.'''
-
-    def __init__(self, *args):
-        if not isinstance(args[0], str):
-            raise TypeError('VowsAssertionError instances must be created with a string as their first argument')
-        if not len(args) >= 2:
-            raise IndexError('VowsAssertionError must have at least 2 arguments')
-
-        self.raw_msg = args[0]
-        
-        if not self.raw_msg.endswith('.'):
-            self.raw_msg += '.'
-        
-        self.args = tuple([ repr(i) for i in args[1:] ])
-
-    def __str__(self):
-        return self.raw_msg.format( *self.args )
-
-    def __unicode__(self):
-        return self.__str__()
-
-    def __repr__(self):
-        return "VowsAssertionError('{0!s}',)".format(self)
 
 
 class Vows(object):
