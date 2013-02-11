@@ -9,33 +9,16 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-import fnmatch
-import glob
 import os
 import re
 import sys
 import warnings
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
-from pyvows.errors import _AssertionNotFoundError, VowsAssertionError
-from pyvows.runner import VowsParallelRunner
-
-
-def locate(pattern, root=os.curdir, recursive=True):
-    '''Recursively locates test files when `pyvows` is run from the
-    command line.
-
-    '''
-    root_path = os.path.abspath(root)
-
-    if recursive:
-        return_files = []
-        for path, dirs, files in os.walk(root_path):
-            for filename in fnmatch.filter(files, pattern):
-                return_files.append(os.path.join(path, filename))
-        return return_files
-    else:
-        return glob(os.path.join(root_path, pattern))
+from pyvows.decorators  import _assertion, _batch, _create_assertions, async_topic
+from pyvows.errors      import _AssertionNotFoundError, VowsAssertionError
+from pyvows.runner      import VowsParallelRunner
+from pyvows.utils       import locate, VowsAssertion
 
 
 class expect(object):
@@ -84,18 +67,6 @@ class expect(object):
         return assert_topic
 
 
-class VowsAssertion(object):
-    '''Used by the `Vows` class for various assertion-related functionality.'''
-
-    AssertionNotFoundError = _AssertionNotFoundError
-    '''Raised when a `VowsAssertion` cannot be found.'''
-    
-    def __getattr__(self, name):
-        if not hasattr(self, name):
-            raise VowsAssertion.AssertionNotFoundError(name)
-        return super(VowsAssertion, self).__getattr__(name)
-
-
 class Vows(object):
     '''This class contains almost the entire interface for using PyVows.  (The
     `expect` class usually being the only other necessary import.)
@@ -109,8 +80,7 @@ class Vows(object):
     aren't necessary for writing tests.
 
     '''
-    contexts = {}
-    
+    contexts        = {}
     AsyncTopic      = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
     Assert          = VowsAssertion()
@@ -211,20 +181,10 @@ class Vows(object):
         def should_not_be_empty(self, topic):
             expect(topic).not_to_be_empty()
 
+
     @staticmethod
     def async_topic(topic):
-        '''Topic decorator.  Allows PyVows testing of asynchronous topics.
-
-        Use `@Vows.async_topic` on your `topic` method to mark it as
-        asynchronous.  This allows PyVows to test topics which use callbacks
-        instead of return values.
-        
-        '''
-        def wrapper(*args, **kw):
-            return VowsAsyncTopic(topic, args, kw)
-        wrapper._original = topic
-        wrapper.__name__ = topic.__name__
-        return wrapper
+        return async_topic(topic)
 
     @staticmethod
     def asyncTopic(topic):
@@ -232,7 +192,7 @@ class Vows(object):
         warnings.warn( 'The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.', 
                         DeprecationWarning, 
                         stacklevel=2)
-        return Vows.async_topic(topic)
+        return async_topic(topic)
 
     @staticmethod
     def batch(method):
@@ -243,12 +203,8 @@ class Vows(object):
         the file name.
         
         '''
-        def method_name(*args, **kw):
-            method(*args, **kw)
-
         Vows.contexts[method.__name__] = method
-
-        return method_name
+        _batch(method)
 
     @classmethod
     def assertion(cls, method):
@@ -273,14 +229,7 @@ class Vows(object):
 
         '''
         #   http://pyvows.org/#-assertions
-        def method_name(*args, **kw):
-            method(*args, **kw)
-
-        def exec_assertion(*args, **kw):
-            return method_name(*args, **kw)
-
-        setattr(Vows.Assert, method.__name__, exec_assertion)
-        return method_name
+        return _assertion(method, Vows.Assert)
 
     @classmethod
     def create_assertions(cls, method):
@@ -313,34 +262,7 @@ class Vows(object):
 
         '''
         #   http://pyvows.org/#-assertions
-        humanized_method_name = re.sub(r'_+', ' ', method.__name__)
-        
-        def _assertion_msg(assertion_clause=None, *args):
-            raw_msg = 'Expected topic({{0}}) {assertion_clause}'.format(
-                assertion_clause = assertion_clause)
-            if len(args) is 2:
-                raw_msg += ' {1}'
-            return raw_msg
-            
-        def exec_assertion(*args):
-            raw_msg = _assertion_msg(humanized_method_name, *args)
-            if not method(*args):
-                raise VowsAssertionError(raw_msg, *args)
-
-        def exec_not_assertion(*args):
-            raw_msg = _assertion_msg('not {0}'.format(humanized_method_name), *args)
-            if method(*args):
-                raise VowsAssertionError(raw_msg, *args)
-        
-        setattr(Vows.Assert, method.__name__, exec_assertion)
-        setattr(Vows.Assert, 'not_{method_name}'.format(
-            method_name = method.__name__),
-            exec_not_assertion)
-
-        def wrapper(*args, **kw):
-            return method(*args, **kw)
-
-        return wrapper
+        return _create_assertions(method, Vows.Assert)
 
     @classmethod
     def collect(cls, path, pattern):

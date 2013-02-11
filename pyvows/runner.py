@@ -20,8 +20,10 @@ import time
 #import eventlet
 from gevent.pool import Pool
 
-from pyvows.result import VowsResult
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
+from pyvows.decorators  import FunctionWrapper
+from pyvows.result      import VowsResult
+
 
 
 class VowsParallelRunner(object):
@@ -284,33 +286,3 @@ class VowsParallelRunner(object):
         tests_col.append(result_obj)
 
         return result_obj
-
-
-class FunctionWrapper(object):
-    '''Function decorator.  Simply calls the decorated function when all 
-    the wrapped functions have been called.
-
-    '''
-    def __init__(self, func):
-        self.waiting = 0
-        self.func = func
-
-    def wrap(self, method):
-        self.waiting += 1
-
-        @wraps(method)
-        def wrapper(*args, **kw):
-            try:
-                ret = method(*args, **kw)
-                return ret
-            finally:
-                self.waiting -= 1
-                self()
-
-        wrapper._original = method
-        return wrapper
-
-    def __call__(self):
-        if self.waiting == 0:
-            self.func()
-
