@@ -222,7 +222,7 @@ class Vows(object):
         warnings.warn( 'The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.', 
                         DeprecationWarning, 
                         stacklevel=2)
-        return Vows.async_topic(topic)
+        return async_topic(topic)
 
     @staticmethod
     def batch(method):
