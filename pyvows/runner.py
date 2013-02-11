@@ -33,7 +33,71 @@ class VowsParallelRunner(object):
         self.pool = Pool(1000)
         self.vow_successful_event = vow_successful_event
         self.vow_error_event = vow_error_event
+    
+    def _file_info_for(self, member):
+        #   FIXME: Add Docstring
+        code = self._get_code_for(member)
 
+        filename = code.co_filename
+        lineno   = code.co_firstlineno
+
+        return filename, lineno
+
+    def _get_code_for(self, obj):
+        #   FIXME: Add Comment description
+        code = None
+        if hasattr(obj, '__code__'):
+            code = obj.__code__
+        elif hasattr(obj, '__func__'):
+            code = obj.__func__.__code__
+        return code
+
+    def _get_topics_for(self, topic_function, context_instance):
+        #   FIXME: Add Docstring
+        if not context_instance.parent:
+            return []
+        
+        # check for async topic
+        if hasattr(topic_function, '_original'):
+            topic_function  = topic_function._original
+            async           = True
+        else:
+            async           = False
+
+        
+        code = self._get_code_for(topic_function)
+
+        if not code:
+            raise RuntimeError('Function %s does not have a code property')
+
+        expected_args = code.co_argcount - 1
+
+        # taking the callback argument into consideration
+        if async:
+            expected_args -= 1
+
+        # prepare to create `topics` list
+        topics  = []
+        child   = context_instance
+        context = context_instance.parent
+        
+        # populate `topics` list
+        for i in range(expected_args):
+            topic = context.topic_value
+            
+            if context.generated_topic:
+                topic = topic[child.index]
+            
+            topics.append(topic)
+
+            if not context.parent:
+                break
+
+            context = context.parent
+            child   = child.parent
+
+        return topics
+        
     def run(self):
         #   FIXME: Add Docstring
 
@@ -220,70 +284,6 @@ class VowsParallelRunner(object):
         tests_col.append(result_obj)
 
         return result_obj
-
-    def _get_code_for(self, obj):
-        #   FIXME: Add Comment description
-        code = None
-        if hasattr(obj, '__code__'):
-            code = obj.__code__
-        elif hasattr(obj, '__func__'):
-            code = obj.__func__.__code__
-        return code
-
-    def _file_info_for(self, member):
-        #   FIXME: Add Docstring
-        code = self._get_code_for(member)
-
-        filename = code.co_filename
-        lineno   = code.co_firstlineno
-
-        return filename, lineno
-
-    def _get_topics_for(self, topic_function, context_instance):
-        #   FIXME: Add Docstring
-        if not context_instance.parent:
-            return []
-        
-        # check for async topic
-        if hasattr(topic_function, '_original'):
-            topic_function  = topic_function._original
-            async           = True
-        else:
-            async           = False
-
-        
-        code = self._get_code_for(topic_function)
-
-        if not code:
-            raise RuntimeError('Function %s does not have a code property')
-
-        expected_args = code.co_argcount - 1
-
-        # taking the callback argument into consideration
-        if async:
-            expected_args -= 1
-
-        # prepare to create `topics` list
-        topics  = []
-        child   = context_instance
-        context = context_instance.parent
-        
-        # populate `topics` list
-        for i in range(expected_args):
-            topic = context.topic_value
-            
-            if context.generated_topic:
-                topic = topic[child.index]
-            
-            topics.append(topic)
-
-            if not context.parent:
-                break
-
-            context = context.parent
-            child   = child.parent
-
-        return topics
 
 
 class FunctionWrapper(object):
