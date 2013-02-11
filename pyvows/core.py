@@ -114,7 +114,8 @@ class Vows(object):
     AsyncTopic      = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
     Assert          = VowsAssertion()
-    
+  
+  
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
         write `from pyvows import Vows, expect` in your test module, then extend
@@ -355,7 +356,7 @@ class Vows(object):
             __import__(module_name)
 
     @classmethod
-    def ensure(cls, vow_success_event, vow_error_event):
+    def run(cls, vow_success_event, vow_error_event):
         #   FIXME: Add Docstring
         #
         #       *   Used by `run()` in `console.py`

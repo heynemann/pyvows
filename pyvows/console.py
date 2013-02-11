@@ -102,7 +102,7 @@ def run(path, pattern, verbosity, show_progress):
 
     handle_success = show_progress and VowsDefaultReporter.handle_success or None
     handle_error = show_progress and VowsDefaultReporter.handle_error or None
-    result = Vows.ensure(handle_success, handle_error)
+    result = Vows.run(handle_success, handle_error)
 
     reporter = VowsDefaultReporter(result, verbosity)
 
