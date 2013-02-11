@@ -24,3 +24,12 @@ def async_topic(topic):
     wrapper._original = topic
     wrapper.__name__ = topic.__name__
     return wrapper
+    
+    
+def _batch(method):
+    # This is underscored-prefixed because the only intended use is via 
+    # `Vows.batch`.  Also, `Vows.batch` expands on this core implementation.
+    def method_name(*args, **kw):
+        method(*args, **kw)
+
+    return method_name
