@@ -32,7 +32,8 @@ To learn more, check out:   http://pyvows.org
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 try:
-    from pyvows.core import Vows, expect, VowsAssertionError
+    from pyvows.core import Vows, expect
+    from pyvows.errors import VowsAssertionError
     from pyvows.assertions import *
 except ImportError:
     pass
