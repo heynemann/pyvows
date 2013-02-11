@@ -50,7 +50,7 @@ more(http://pyvows.org).
 
     entry_points = {
         'console_scripts': [
-            'pyvows = pyvows.console:main'
+            'pyvows = pyvows.cli:main'
         ],
     },
 

@@ -346,7 +346,7 @@ class Vows(object):
     def collect(cls, path, pattern):
         #   FIXME: Add Docstring
         #
-        #   *   Only used in `console.py`
+        #   *   Only used in `cli.py`
         path  = os.path.abspath(path)
         files = locate(pattern, path)
         sys.path.insert(0, path)
@@ -359,7 +359,7 @@ class Vows(object):
     def run(cls, vow_success_event, vow_error_event):
         #   FIXME: Add Docstring
         #
-        #       *   Used by `run()` in `console.py`
+        #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
         runner = VowsParallelRunner(Vows.contexts,
                                     Vows.Context,

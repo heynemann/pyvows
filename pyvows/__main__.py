@@ -4,7 +4,7 @@
 
 import sys
 
-from pyvows.console import main
+from pyvows.cli import main
 
 if __name__ == '__main__':
     sys.exit(main())
