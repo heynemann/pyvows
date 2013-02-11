@@ -17,7 +17,7 @@ import sys
 import warnings
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
-from pyvows.decorators  import async_topic, _batch
+from pyvows.decorators  import _assertion, _batch, _create_assertions, async_topic
 from pyvows.errors      import _AssertionNotFoundError, VowsAssertionError
 from pyvows.runner      import VowsParallelRunner
 from pyvows.utils       import VowsAssertion
@@ -248,14 +248,7 @@ class Vows(object):
 
         '''
         #   http://pyvows.org/#-assertions
-        def method_name(*args, **kw):
-            method(*args, **kw)
-
-        def exec_assertion(*args, **kw):
-            return method_name(*args, **kw)
-
-        setattr(Vows.Assert, method.__name__, exec_assertion)
-        return method_name
+        return _assertion(method, Vows.Assert)
 
     @classmethod
     def create_assertions(cls, method):
@@ -288,34 +281,7 @@ class Vows(object):
 
         '''
         #   http://pyvows.org/#-assertions
-        humanized_method_name = re.sub(r'_+', ' ', method.__name__)
-        
-        def _assertion_msg(assertion_clause=None, *args):
-            raw_msg = 'Expected topic({{0}}) {assertion_clause}'.format(
-                assertion_clause = assertion_clause)
-            if len(args) is 2:
-                raw_msg += ' {1}'
-            return raw_msg
-            
-        def exec_assertion(*args):
-            raw_msg = _assertion_msg(humanized_method_name, *args)
-            if not method(*args):
-                raise VowsAssertionError(raw_msg, *args)
-
-        def exec_not_assertion(*args):
-            raw_msg = _assertion_msg('not {0}'.format(humanized_method_name), *args)
-            if method(*args):
-                raise VowsAssertionError(raw_msg, *args)
-        
-        setattr(Vows.Assert, method.__name__, exec_assertion)
-        setattr(Vows.Assert, 'not_{method.__name__}'.format(
-            method = method),
-            exec_not_assertion)
-
-        def wrapper(*args, **kw):
-            return method(*args, **kw)
-
-        return wrapper
+        return _create_assertions(method, Vows.Assert)
 
     @classmethod
     def collect(cls, path, pattern):
