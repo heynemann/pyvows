@@ -62,7 +62,7 @@ class VowsResult(object):
                 'path':    context['filename'],
                 'elapsed': context['topic_elapsed']
             })
-            ctx_topic_times = self.get_topic_times(context['contexts'])
+            ctx_topic_times = self._get_topic_times(context['contexts'])
             topic_times.extend(ctx_topic_times)
 
         return topic_times
@@ -110,7 +110,7 @@ class VowsResult(object):
 
         '''
         times = [
-            time for time in self.get_topic_times()
+            time for time in self._get_topic_times()
             if time['elapsed'] > 0 and time['elapsed'] >= threshold
         ]
         times.sort(key=lambda x: x['elapsed'], reverse=True)
