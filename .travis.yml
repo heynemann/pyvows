@@ -8,7 +8,7 @@ install:
     - sudo apt-get update -y
 
     # install aptitude packages
-    - LDFLAGS=-lm sudo aptitude install -y $(< requirements-travis.txt)
+    - LDFLAGS=-lm sudo apt-get install -y $(< requirements-travis.txt)
 
     # install python requirements
     - pip install -r test_requirements.txt --use-mirrors
