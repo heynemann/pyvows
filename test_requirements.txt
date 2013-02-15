@@ -1,2 +1,4 @@
 gevent>=0.13.6
+coverage
+colorama
 argparse
