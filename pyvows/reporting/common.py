@@ -40,6 +40,7 @@ def ensure_encoded(thing, encoding='utf-8'):
     '''Ensures proper encoding for unicode characters.
 
     Currently used only for characters `✓` and `✗`.
+
     '''
     if isinstance(thing, unicode):
         return thing.encode(encoding)
@@ -54,13 +55,14 @@ class VowsReporter(object):
     #   Should *only* contain attributes and methods that aren't specific
     #   to a particular type of report.
 
-    def __init__(self, result, verbosity):
-        self.result = result
-        self.verbosity = verbosity
-
     HONORED = green('✓')
     BROKEN = red('✗')
     TAB = '  '
+
+    def __init__(self, result, verbosity):
+        self.result = result
+        self.verbosity = verbosity
+        self.indent = 1
 
     #-------------------------------------------------------------------------
     #   String Formatting
@@ -83,7 +85,7 @@ class VowsReporter(object):
         '''Replaces all underscores in `string` with spaces.'''
         return ' '.join(string.split('_'))
 
-    def format_traceback(self, traceback_list, indentation):
+    def format_traceback(self, traceback_list):
         '''Adds the current level of indentation to a traceback (so it matches
         the current context's indentation).
 
@@ -92,12 +94,13 @@ class VowsReporter(object):
         # TODO:
         #   ...Is this a decorator?  If so, please add a comment or docstring
         #   to make it explicit.
-        def indent(msg):
+        def _indent(msg):
             if msg.startswith('  File'):
-                return msg.replace('\n ', '\n {indentation}'.format(indentation=indentation))
+                return self.indent_msg(msg)
             return msg
 
-        return indentation.join(map(indent, traceback_list))
+        tb_list = [_indent(tb) for tb in traceback_list]
+        return ''.join(tb_list)
 
     def format_python_constants(self, msg):
         '''Fixes capitalization of Python constants.
@@ -133,9 +136,15 @@ class VowsReporter(object):
         '''Returns `msg` with the indentation specified by `indentation`.
 
         '''
+        if indentation is not None:
+            indent = self.TAB * indentation
+        else:
+            indent = self.TAB * self.indent
+
         return '{indent}{msg}'.format(
-            indent=indentation or (self.TAB * self.indent),
-            msg=msg)
+            indent=indent,
+            msg=msg
+        )
 
     #-------------------------------------------------------------------------
     #   Printing Methods
@@ -155,21 +164,18 @@ class VowsReporter(object):
 
         print self.indent_msg(msg, indentation)
 
-    def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
+    def print_traceback(self, err_type, err_obj, err_traceback):
         '''Prints a color-formatted traceback with appropriate indentation.'''
-        if isinstance(exc_value, VowsAssertionError):
-            exc_values_args = tuple(map(lambda arg: red(arg), exc_value.args))
-            error_msg = exc_value.msg % exc_values_args
+        if isinstance(err_obj, VowsAssertionError):
+            error_msg = err_obj
         else:
-            error_msg = unicode(exc_value)
+            error_msg = unicode(err_obj)
 
-        print red('{indent}{error}'.format(
-            indent=indentation,
-            error=error_msg))
+        print self.indent_msg(red(error_msg))
 
         if self.verbosity >= V_NORMAL:
-            traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
-            traceback_msg = self.format_traceback(traceback_msg, indentation)
-            print yellow('\n{indent}{traceback}'.format(
-                indent=indentation,
-                traceback=traceback_msg))
+            traceback_msg = traceback.format_exception(err_type, err_obj, err_traceback)
+            traceback_msg = self.format_traceback(traceback_msg)
+            traceback_msg = '\n{traceback}'.format(traceback=traceback_msg)
+            traceback_msg = self.indent_msg(yellow(traceback_msg))
+            print traceback_msg

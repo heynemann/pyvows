@@ -23,7 +23,7 @@ def to_be_an_error_like(topic, expected):
     '''
     if not isinstance(topic, expected):
         raise VowsAssertionError(
-            'Expected topic(%s) to be an error of type %s, but it was a %s',
+            'Expected topic({0}) to be an error of type {1}, but it was a {2}',
             topic, expected, topic.__class__
         )
 
@@ -32,7 +32,7 @@ def to_be_an_error_like(topic, expected):
 def to_have_an_error_message_of(topic, expected):
     '''Asserts that `topic` has an error message of `expected`.'''
     if str(topic) != expected:
-        raise VowsAssertionError('Expected topic(%s) to be an error with message %s', topic, expected)
+        raise VowsAssertionError('Expected topic({0}) to be an error with message {1}', topic, expected)
 
 
 @Vows.create_assertions

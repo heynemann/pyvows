@@ -18,11 +18,11 @@ from pyvows import Vows, VowsAssertionError
 def to_length(topic, expected):
     '''Asserts that `len(topic)` == `expected`.'''
     if len(topic) != expected:
-        raise VowsAssertionError('Expected topic(%s) to have %s of length, but it has %s', topic, expected, len(topic))
+        raise VowsAssertionError('Expected topic({0}) to have {1} of length, but it has {2}', topic, expected, len(topic))
 
 
 @Vows.assertion
 def not_to_length(topic, expected):
     '''Asserts that `len(topic)` != `expected`.'''
     if len(topic) == expected:
-        raise VowsAssertionError('Expected topic(%s) not to have %s of length', topic, expected)
+        raise VowsAssertionError('Expected topic({0}) not to have {1} of length', topic, expected)

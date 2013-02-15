@@ -12,12 +12,11 @@ Contains the classes `VowsParallelRunner` and `FunctionWrapper`.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+from functools import wraps
 import inspect
 import sys
 import time
-from functools import wraps
 
-#import eventlet
 from gevent.pool import Pool
 
 from pyvows.result import VowsResult
@@ -34,6 +33,69 @@ class VowsParallelRunner(object):
         self.vow_successful_event = vow_successful_event
         self.vow_error_event = vow_error_event
 
+    def _file_info_for(self, member):
+        #   FIXME: Add Docstring
+        code = self._get_code_for(member)
+
+        filename = code.co_filename
+        lineno = code.co_firstlineno
+
+        return filename, lineno
+
+    def _get_code_for(self, obj):
+        #   FIXME: Add Comment description
+        code = None
+        if hasattr(obj, '__code__'):
+            code = obj.__code__
+        elif hasattr(obj, '__func__'):
+            code = obj.__func__.__code__
+        return code
+
+    def _get_topics_for(self, topic_function, context_instance):
+        #   FIXME: Add Docstring
+        if not context_instance.parent:
+            return []
+
+        # check for async topic
+        if hasattr(topic_function, '_original'):
+            topic_function = topic_function._original
+            async = True
+        else:
+            async = False
+
+        code = self._get_code_for(topic_function)
+
+        if not code:
+            raise RuntimeError('Function %s does not have a code property')
+
+        expected_args = code.co_argcount - 1
+
+        # taking the callback argument into consideration
+        if async:
+            expected_args -= 1
+
+        # prepare to create `topics` list
+        topics = []
+        child = context_instance
+        context = context_instance.parent
+
+        # populate `topics` list
+        for i in range(expected_args):
+            topic = context.topic_value
+
+            if context.generated_topic:
+                topic = topic[child.index]
+
+            topics.append(topic)
+
+            if not context.parent:
+                break
+
+            context = context.parent
+            child = child.parent
+
+        return topics
+
     def run(self):
         #   FIXME: Add Docstring
 
@@ -47,6 +109,11 @@ class VowsParallelRunner(object):
 
         end_time = time.time()
         result.elapsed_time = float(end_time - start_time)
+
+        # helpful for debugging
+        #from pprint import pprint
+        #pprint(result.__dict__)
+
         return result
 
     def run_context(self, context_col, name, context_instance):
@@ -81,7 +148,7 @@ class VowsParallelRunner(object):
                 start_time = time.time()
                 try:
                     topic_func = getattr(context_instance, 'topic')
-                    topic_list = self.get_topics_for(topic_func, context_instance)
+                    topic_list = self._get_topics_for(topic_func, context_instance)
                     topic = topic_func(*topic_list)
                 except:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -181,7 +248,7 @@ class VowsParallelRunner(object):
         #   FIXME: Add Docstring
 
         start_time = time.time()
-        filename, lineno = self.file_info_for(member._original)
+        filename, lineno = self._file_info_for(member._original)
         result_obj = {
             'context_instance': context_instance,
             'name': member_name,
@@ -223,67 +290,10 @@ class VowsParallelRunner(object):
 
         return result_obj
 
-    def _get_code_for(self, obj):
-        #   FIXME: Add Comment description
-        code = None
-        if hasattr(obj, '__code__'):
-            code = obj.__code__
-        elif hasattr(obj, '__func__'):
-            code = obj.__func__.__code__
-        return code
-
-    def file_info_for(self, member):
-        #   FIXME: Add Docstring
-        code = self._get_code_for(member)
-
-        filename = code.co_filename
-        lineno = code.co_firstlineno
-
-        return filename, lineno
-
-    def get_topics_for(self, topic_function, context_instance):
-        #   FIXME: Add Docstring
-        if not context_instance.parent:
-            return []
-
-        async = False
-        if hasattr(topic_function, '_original'):
-            topic_function = topic_function._original
-            async = True
-
-        code = self._get_code_for(topic_function)
-
-        if not code:
-            raise RuntimeError('Function %s does not have a code property')
-
-        expected_args = code.co_argcount - 1
-
-        # taking the callback argument into consideration
-        if async:
-            expected_args -= 1
-
-        topics = []
-
-        child = context_instance
-        context = context_instance.parent
-        for i in range(expected_args):
-            if context.generated_topic:
-                topics.append(context.topic_value[child.index])
-            else:
-                topics.append(context.topic_value)
-
-            if not context.parent:
-                break
-
-            context = context.parent
-            child = child.parent
-
-        return topics
-
 
 class FunctionWrapper(object):
-    ''' Just calls the passed function when all the wrapped
-        functions have been called.
+    '''Function decorator.  Simply calls the decorated function when all
+    the wrapped functions have been called.
 
     '''
     def __init__(self, func):

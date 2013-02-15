@@ -25,7 +25,14 @@ class VowsTestReporter(VowsReporter):
 
     def __init__(self, result, verbosity):
         super(VowsTestReporter, self).__init__(result, verbosity)
-        self.indent = 1
+
+    @property
+    def status_symbol(self):
+        '''Returns the symbol indicating whether all tests passed.'''
+        if self.result.successful:
+            return VowsReporter.HONORED
+        else:
+            return VowsReporter.BROKEN
 
     #-------------------------------------------------------------------------
     #   Class Methods
@@ -61,14 +68,14 @@ class VowsTestReporter(VowsReporter):
             return
 
         if self.verbosity >= V_VERBOSE or self.result.errored_tests:
-            print '' * 2
+            print
 
         for context in self.result.contexts:
             self.print_context(context['name'], context)
 
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
-            VowsReporter.HONORED if self.result.successful else VowsReporter.BROKEN,
+            self.status_symbol,
             honored=self.result.successful_tests,
             broken=self.result.errored_tests,
             time=self.result.elapsed_time)
@@ -81,60 +88,72 @@ class VowsTestReporter(VowsReporter):
         #       *   Is this only used in certain cases?
         #           *   If so, which?
         self.indent += 1
-        indentation2 = self.TAB * (self.indent + 2)
 
         if (self.verbosity >= V_VERBOSE or
                 not self.result.eval_context(context)):
             self.humanized_print(name)
 
-        for test in context['tests']:
-            if test['succeeded']:
-                honored, topic, name = map(
-                    ensure_encoded,
-                    (VowsReporter.HONORED, test['topic'], test['name']))
+        def _print_successful_context():
+            honored = ensure_encoded(VowsReporter.HONORED)
+            topic = ensure_encoded(test['topic'])
+            name = ensure_encoded(test['name'])
 
-                if self.verbosity == V_VERBOSE:
+            if self.verbosity == V_VERBOSE:
+                self.humanized_print('{0} {1}'.format(honored, name))
+            elif self.verbosity >= V_EXTRA_VERBOSE:
+                if test['enumerated']:
+                    self.humanized_print('{0} {1} - {2}'.format(honored, topic, name))
+                else:
                     self.humanized_print('{0} {1}'.format(honored, name))
-                elif self.verbosity >= V_EXTRA_VERBOSE:
-                    if test['enumerated']:
-                        self.humanized_print('{0} {1} - {2}'.format(honored, topic, name))
-                    else:
-                        self.humanized_print('{0} {1}'.format(honored, name))
-            else:
-                ctx = test['context_instance']
 
-                self.humanized_print('{0} {test}'.format(
-                    VowsReporter.BROKEN,
-                    test=test['name']))
+        def _print_failed_context():
+            ctx = test['context_instance']
 
-                if ctx.generated_topic:
-                    value = yellow(test['topic'])
+            def _print_traceback():
 
-                    self.humanized_print('')
-                    self.humanized_print('\tTopic value:')
-                    self.humanized_print('\t{value}'.format(value=value))
-                    self.humanized_print('\n' * 2)
+                self.indent += 2
 
                 if hasattr(test, 'topic') \
-                        and hasattr(test['topic'], 'error') \
+                        and hasattr(test['topic'], 'error')  \
                         and test['topic']['error'] is not None:
-                    print self.indent_msg('')
-                    print blue(self.indent_msg('Topic Error:'))
+                    print '\n' + self.indent_msg(blue('Topic Error:'))
                     exc_type, exc_value, exc_traceback = test['topic'].error
-                    self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
+                    self.print_traceback(exc_type, exc_value, exc_traceback)
                 else:
-                    error = test['error']
-                    exc_type, exc_value, exc_traceback = error['type'], error['value'], error['traceback']
+                    err = test['error']
+                    self.print_traceback(err['type'], err['value'], err['traceback'])
 
-                    self.print_traceback(exc_type, exc_value, exc_traceback, indentation2)
-
+                # print file and line number
                 if 'file' in test:
+                    file_msg = 'found in {test[file]} at line {test[lineno]}'.format(test=test)
                     print
-                    print red('{indent}found in {test[file]} at line {test[lineno]}'.format(
-                        indent=indentation2,
-                        test=test))
+                    print self.indent_msg(red(file_msg))
                     print
 
+                self.indent -= 2
+
+            self.humanized_print('{0} {test}'.format(
+                VowsReporter.BROKEN,
+                test=test['name']))
+
+            # print generated topic (if applicable)
+            if ctx.generated_topic:
+                value = yellow(test['topic'])
+                self.humanized_print('')
+                self.humanized_print('\tTopic value:')
+                self.humanized_print('\t{value}'.format(value=value))
+                self.humanized_print('\n' * 2)
+
+            # print traceback
+            _print_traceback()
+
+        for test in context['tests']:
+            if test['succeeded']:
+                _print_successful_context()
+            else:
+                _print_failed_context()
+
+        # I hereby (re)curse you...!
         for context in context['contexts']:
             self.print_context(context['name'], context)
 

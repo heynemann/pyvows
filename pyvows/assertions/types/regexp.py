@@ -23,7 +23,7 @@ def to_match(topic, expected):
 
     '''
     if not re.match(expected, topic):
-        raise VowsAssertionError('Expected topic(%s) to match the regular expression %s', topic, expected)
+        raise VowsAssertionError('Expected topic({0}) to match the regular expression {1}', topic, expected)
 
 
 @Vows.assertion
@@ -33,4 +33,4 @@ def not_to_match(topic, expected):
 
     '''
     if re.match(expected, topic):
-        raise VowsAssertionError('Expected topic(%s) not to match the regular expression %s', topic, expected)
+        raise VowsAssertionError('Expected topic({0}) not to match the regular expression {1}', topic, expected)

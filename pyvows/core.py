@@ -9,14 +9,15 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-import os
 import fnmatch
 import glob
+import os
 import re
 import sys
 import warnings
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
+from pyvows.errors import _AssertionNotFoundError, VowsAssertionError
 from pyvows.runner import VowsParallelRunner
 
 
@@ -86,36 +87,13 @@ class expect(object):
 class VowsAssertion(object):
     '''Used by the `Vows` class for various assertion-related functionality.'''
 
-    class AssertionNotFoundError(AttributeError):
-        '''Raised when a VowsAssertion cannot be found.'''
-        def __init__(self, name):
-            super(VowsAssertion.AssertionNotFoundError, self).__init__(
-                'Assertion "{name!s}" was not found!'.format(name=name))
+    AssertionNotFoundError = _AssertionNotFoundError
+    '''Raised when a `VowsAssertion` cannot be found.'''
 
     def __getattr__(self, name):
         if not hasattr(self, name):
             raise VowsAssertion.AssertionNotFoundError(name)
         return super(VowsAssertion, self).__getattr__(name)
-
-
-class VowsAssertionError(AssertionError):
-    '''Raised when a VowsAssertion returns False.'''
-
-    def __init__(self, *args):
-        msg = args[0]
-        if not msg.endswith('.'):
-            msg += '.'
-        self.msg = msg
-        self.args = tuple(map(repr, args[1:]))
-
-    def __str__(self):
-        return self.msg % self.args
-
-    def __unicode__(self):
-        return self.__str__()
-
-    def __repr__(self):
-        return "VowsAssertionError('{0!s}',)".format(self)
 
 
 class Vows(object):
@@ -132,6 +110,10 @@ class Vows(object):
 
     '''
     contexts = {}
+
+    AsyncTopic = VowsAsyncTopic
+    AsyncTopicValue = VowsAsyncTopicValue
+    Assert = VowsAssertion()
 
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
@@ -224,10 +206,6 @@ class Vows(object):
         def should_not_be_empty(self, topic):
             expect(topic).not_to_be_empty()
 
-    AsyncTopic = VowsAsyncTopic
-    AsyncTopicValue = VowsAsyncTopicValue
-    Assert = VowsAssertion()
-
     @staticmethod
     def async_topic(topic):
         '''Topic decorator.  Allows PyVows testing of asynchronous topics.
@@ -305,7 +283,7 @@ class Vows(object):
     def create_assertions(cls, method):
         '''Function decorator.  Use to create custom assertions for your
         vows.
-
+        ''' '''
         Creating new assertions for use with `expect` is as simple as using
         this decorator on a function. The function expects `topic` as the
         first parameter, and `expectation` second:
@@ -334,19 +312,20 @@ class Vows(object):
         #   http://pyvows.org/#-assertions
         humanized_method_name = re.sub(r'_+', ' ', method.__name__)
 
-        def exec_assertion(*args):
-            raw_msg = 'Expected topic(%s) {assertion}'.format(assertion=humanized_method_name)
+        def _assertion_msg(assertion_clause=None, *args):
+            raw_msg = 'Expected topic({{0}}) {assertion_clause}'.format(
+                assertion_clause=assertion_clause)
             if len(args) is 2:
-                raw_msg += ' %s'
+                raw_msg += ' {1}'
+            return raw_msg
 
+        def exec_assertion(*args):
+            raw_msg = _assertion_msg(humanized_method_name, *args)
             if not method(*args):
                 raise VowsAssertionError(raw_msg, *args)
 
         def exec_not_assertion(*args):
-            raw_msg = 'Expected topic(%s) not {not_assertion}'.format(not_assertion=humanized_method_name)
-            if len(args) is 2:
-                raw_msg += ' %s'
-
+            raw_msg = _assertion_msg('not {0}'.format(humanized_method_name), *args)
             if method(*args):
                 raise VowsAssertionError(raw_msg, *args)
 
@@ -361,26 +340,26 @@ class Vows(object):
         return wrapper
 
     @classmethod
-    def ensure(cls, vow_success_event, vow_error_event):
+    def collect(cls, path, pattern):
         #   FIXME: Add Docstring
         #
-        #       *   Used by `run()` in `console.py`
+        #   *   Only used in `cli.py`
+        path = os.path.abspath(path)
+        files = locate(pattern, path)
+        sys.path.insert(0, path)
+
+        for module_path in files:
+            module_name = os.path.splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
+            __import__(module_name)
+
+    @classmethod
+    def run(cls, vow_success_event, vow_error_event):
+        #   FIXME: Add Docstring
+        #
+        #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
         runner = VowsParallelRunner(Vows.contexts,
                                     Vows.Context,
                                     vow_success_event,
                                     vow_error_event)
         return runner.run()
-
-    @classmethod
-    def gather(cls, path, pattern):
-        #   FIXME: Add Docstring
-        #
-        #   *   Only used in `console.py`
-        path = os.path.abspath(path)
-
-        files = locate(pattern, path)
-        sys.path.insert(0, path)
-        for module_path in files:
-            module_name = os.path.splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
-            __import__(module_name)

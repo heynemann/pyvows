@@ -13,13 +13,12 @@ running tests, and the almighty `if __name__ == '__main__': main()`.
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 from __future__ import division
 
-import sys
+import argparse
+import inspect
 import os
 from os.path import isfile, split
+import sys
 import tempfile
-import inspect
-
-import argparse
 
 try:
     from coverage import coverage
@@ -71,64 +70,60 @@ def __get_arguments():
     cover_group = parser.add_argument_group('Test Coverage')
     cover_group.add_argument('-c', '--cover', action='store_true', default=False, help=Messages.cover)
     cover_group.add_argument(
-        '-l', '--cover_package', action='append', default=[],
+        '-l', '--cover-package', action='append', default=[],
         help=Messages.cover_package, metavar=metavar('package')
     )
     cover_group.add_argument(
-        '-o', '--cover_omit', action='append', default=[], help=Messages.cover_omit,
-        metavar=metavar('file')
+        '-o', '--cover-omit', action='append', default=[],
+        help=Messages.cover_omit, metavar=metavar('file')
     )
     cover_group.add_argument(
-        '-t', '--cover_threshold', type=float, default=80.0,
+        '-t', '--cover-threshold', type=float, default=80.0,
         help=Messages.cover_threshold, metavar=metavar('number')
     )
     cover_group.add_argument(
-        '-r', '--cover_report', action='store', default=None,
+        '-r', '--cover-report', action='store', default=None,
         help=Messages.cover_report, metavar=metavar('file')
     )
 
     xunit_group = parser.add_argument_group('XUnit')
+    xunit_group.add_argument('-x', '--xunit-output', action='store_true', default=False, help=Messages.xunit_output)
     xunit_group.add_argument(
-        '-x', '--xunit_output', action='store_true', default=False,
-        help=Messages.xunit_output
-    )
-    xunit_group.add_argument(
-        '-f', '--xunit_file', action='store', default='pyvows.xml',
+        '-f', '--xunit-file', action='store', default='pyvows.xml',
         help=Messages.xunit_file, metavar=metavar('file')
     )
 
     profile_group = parser.add_argument_group('Profiling')
     profile_group.add_argument('--profile', action='store_true', dest='profile', default=False, help=Messages.profile)
     profile_group.add_argument(
-        '--profile_threshold', type=float, default=0.1,
+        '--profile-threshold', type=float, default=0.1,
         help=Messages.profile_threshold, metavar=metavar('num')
     )
 
-    parser.add_argument('--no_color', action='store_true',                  default=False, help=Messages.no_color)
+    parser.add_argument('--no-color', action='store_true', default=False, help=Messages.no_color)
     parser.add_argument('--progress', action='store_true', dest='progress', default=False, help=Messages.progress)
 
     parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(version.to_str()))
-    parser.add_argument('-v',        action='append_const', dest='verbosity', const=1, help=Messages.verbosity)
+    parser.add_argument('-v', action='append_const', dest='verbosity', const=1, help=Messages.verbosity)
 
     parser.add_argument('path', nargs='?', default=current_dir, help=Messages.path)
 
     arguments = parser.parse_args()
-
     return arguments
 
 
-def run(path, pattern, verbosity, progress):
+def run(path, pattern, verbosity, show_progress):
     #   FIXME: Add Docstring
 
     # they need to be imported here, else the no-color option won't work
     from pyvows.core import Vows
     from pyvows.reporting import VowsDefaultReporter
 
-    Vows.gather(path, pattern)
+    Vows.collect(path, pattern)
 
-    handle_success = progress and VowsDefaultReporter.handle_success or None
-    handle_error = progress and VowsDefaultReporter.handle_error or None
-    result = Vows.ensure(handle_success, handle_error)
+    handle_success = show_progress and VowsDefaultReporter.handle_success or None
+    handle_error = show_progress and VowsDefaultReporter.handle_error or None
+    result = Vows.run(handle_success, handle_error)
 
     reporter = VowsDefaultReporter(result, verbosity)
 

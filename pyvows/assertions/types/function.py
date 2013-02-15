@@ -20,11 +20,11 @@ from pyvows import Vows, VowsAssertionError
 def to_be_a_function(topic):
     '''Asserts that `topic` is a function.'''
     if not (inspect.ismethod(topic) or inspect.isfunction(topic)):
-        raise VowsAssertionError('Expected topic(%s) to be a function or a method, but it was a %s', topic, topic.__class__)
+        raise VowsAssertionError('Expected topic({0}) to be a function or a method, but it was a {1}', topic, topic.__class__)
 
 
 @Vows.assertion
 def not_to_be_a_function(topic):
     '''Asserts that `topic` is NOT a function.'''
     if inspect.ismethod(topic) or inspect.isfunction(topic):
-        raise VowsAssertionError('Expected topic(%s) not to be a function or a method', topic)
+        raise VowsAssertionError('Expected topic({0}) not to be a function or a method', topic)

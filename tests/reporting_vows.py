@@ -23,7 +23,7 @@ class CoverageXMLParser(Vows.Context):
 
     class WhenParseCoverageXMLResult:
         """
-            {'overall': 99.0, 'classes': [ {'name': 'pyvows.console', 'line_rate': 0.0568, 'uncovered_lines':[ 12, 13 ] }, ] }
+            {'overall': 99.0, 'classes': [ {'name': 'pyvows.cli', 'line_rate': 0.0568, 'uncovered_lines':[ 12, 13 ] }, ] }
         """
 
         def topic(self, default_reporter):
@@ -34,7 +34,7 @@ class CoverageXMLParser(Vows.Context):
     <packages>
         <package branch-rate="0" complexity="0" line-rate="0.99" name="pyvows">
             <classes>
-                <class branch-rate="0" complexity="0" filename="pyvows/console.py" line-rate="0.568" name="console">
+                <class branch-rate="0" complexity="0" filename="pyvows/cli.py" line-rate="0.568" name="cli">
                     <methods/>
                     <lines>
                         <line hits="0" number="12"/>
@@ -73,8 +73,8 @@ class CoverageXMLParser(Vows.Context):
             def topic(self, result):
                 return result['classes'][0]
 
-            def should_be_pyvowsconsole(self, klass):
-                expect(klass['name']).to_equal('pyvows.console')
+            def should_be_pyvows_cli(self, klass):
+                expect(klass['name']).to_equal('pyvows.cli')
 
             def should_contain_linehate(self, klass):
                 expect(klass['line_rate']).to_equal(0.568)
