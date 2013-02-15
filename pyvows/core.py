@@ -280,7 +280,8 @@ class Vows(object):
         runner = VowsParallelRunner(Vows.contexts,
                                     Vows.Context,
                                     on_vow_success,
-                                    on_vow_error)
+                                    on_vow_error,
+                                    cls.exclusion_patterns)
         return runner.run()
 
     @classmethod

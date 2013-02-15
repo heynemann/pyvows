@@ -9,7 +9,7 @@
 # Copyright (c) 2013 Nathan Dotz nathan.dotz@gmail.com
 
 from pyvows import Vows, expect
-from pyvows import console
+from pyvows import cli
 
 from pyvows.runner import VowsParallelRunner
 
@@ -19,7 +19,7 @@ class FilterOutVowsFromCommandLine(Vows.Context):
 
     class Console(Vows.Context):
         def topic(self):
-            return console
+            return cli
 
         def should_be_not_error_when_called_with_5_args(self, topic):
             try:
