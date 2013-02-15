@@ -6,7 +6,6 @@ module.
 
 '''
 
-
 # pyvows testing engine
 # https://github.com/heynemann/pyvows
 
@@ -27,7 +26,7 @@ except ImportError:
         def __getattr__(self, *args, **kwargs):
             return ''
 
-    Fore  = NoColor()
+    Fore = NoColor()
     Style = NoColor()
 
 
@@ -41,43 +40,45 @@ __all__ = [
 #
 #   Color convenience vars
 #
-BLACK  = Fore.BLACK 
-BLUE   = Fore.BLUE  
-CYAN   = Fore.CYAN  
-GREEN  = Fore.GREEN 
-RED    = Fore.RED   
+BLACK = Fore.BLACK
+BLUE = Fore.BLUE
+CYAN = Fore.CYAN
+GREEN = Fore.GREEN
+RED = Fore.RED
 YELLOW = Fore.YELLOW
-WHITE  = Fore.WHITE 
+WHITE = Fore.WHITE
 #
-BOLD   = Style.BRIGHT
-DIM    = Style.DIM
+BOLD = Style.BRIGHT
+DIM = Style.DIM
 #
-RESET     = Fore.RESET
+RESET = Fore.RESET
 RESET_ALL = Style.RESET_ALL
-
-
 
 #
 #   Functions
 #
+
+
 def _colorize(msg, color, reset=True):
     reset = RESET if reset else ''
     return '{COLOR}{0!s}{RESET}'.format(msg, COLOR=color, RESET=reset)
 
+
 def _bold(msg):
     return '{BOLD}{0!s}{RESET_ALL}'.format(msg, BOLD=BOLD, RESET_ALL=RESET_ALL)
-    
+
+
 def _dim(msg):
     return '{DIM}{0!s}{RESET_ALL}'.format(msg, DIM=DIM, RESET_ALL=RESET_ALL)
-    
 
-black  = lambda msg: _colorize(msg, BLACK)
-blue   = lambda msg: _colorize(msg, BLUE)
-cyan   = lambda msg: _colorize(msg, CYAN)
-green  = lambda msg: _colorize(msg, GREEN)
-red    = lambda msg: _colorize(msg, RED)
+
+black = lambda msg: _colorize(msg, BLACK)
+blue = lambda msg: _colorize(msg, BLUE)
+cyan = lambda msg: _colorize(msg, CYAN)
+green = lambda msg: _colorize(msg, GREEN)
+red = lambda msg: _colorize(msg, RED)
 yellow = lambda msg: _colorize(msg, YELLOW)
-white  = lambda msg: _colorize(msg, WHITE)
+white = lambda msg: _colorize(msg, WHITE)
 
-bold   = lambda msg: _bold(msg)
-dim    = lambda msg: _dim(msg)
+bold = lambda msg: _bold(msg)
+dim = lambda msg: _dim(msg)

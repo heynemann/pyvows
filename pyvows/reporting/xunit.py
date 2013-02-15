@@ -35,7 +35,6 @@ class XUnitReporter(object):
 
     def summarize_results(self, result):
         #   FIXME: Add Docstring
-        
         result_summary = {
             'total': result.successful_tests + result.errored_tests,
             'errors': 0,
@@ -49,7 +48,6 @@ class XUnitReporter(object):
 
     def create_report_document(self):
         #   FIXME: Add Docstring
-        
         result_summary = self.result_summary
 
         document = Document()
@@ -71,7 +69,6 @@ class XUnitReporter(object):
 
     def create_test_case_elements(self, document, parent_node, context):
         #   FIXME: Add Docstring
-        
         for test in context['tests']:
 
             test_stats = {
@@ -89,9 +86,10 @@ class XUnitReporter(object):
             if not test['succeeded']:
                 error = test['error']
                 error_msg = traceback.format_exception(
-                        error['type'],
-                        error['value'], 
-                        error['traceback'])
+                    error['type'],
+                    error['value'],
+                    error['traceback']
+                )
 
                 if isinstance(test['topic'], Exception):
                     exc_type, exc_value, exc_traceback = test['context_instance'].topic_error

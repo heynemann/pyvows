@@ -12,6 +12,7 @@
 
 __version__ = (1, 1, 16)
 
+
 def to_str():
     '''Returns a string containing PyVows' version number.'''
     return '.'.join([str(item) for item in __version__])

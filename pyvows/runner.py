@@ -126,7 +126,13 @@ class VowsParallelRunner(object):
             def iterate_members(topic, index=-1, enumerated=False):
                 for member_name, member in context_members:
                     if inspect.ismethod(member):
-                        self.run_vow(context_obj['tests'], topic, context_instance, teardown.wrap(member), member_name, enumerated=enumerated)
+                        self.run_vow(
+                            context_obj['tests'],
+                            topic,
+                            context_instance,
+                            teardown.wrap(member),
+                            member_name,
+                            enumerated=enumerated)
 
                 for member_name, member in context_members:
                     if inspect.isclass(member):
@@ -136,7 +142,8 @@ class VowsParallelRunner(object):
                         child_context_instance = member(context_instance)
                         child_context_instance.pool = self.pool
                         child_context_instance.teardown = teardown.wrap(child_context_instance.teardown)
-                        self.pool.spawn(self.async_run_context,
+                        self.pool.spawn(
+                            self.async_run_context,
                             context_obj['contexts'], member_name, child_context_instance, index
                         )
 
@@ -301,4 +308,3 @@ class FunctionWrapper(object):
     def __call__(self):
         if self.waiting == 0:
             self.func()
-

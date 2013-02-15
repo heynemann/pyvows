@@ -12,14 +12,11 @@ from __future__ import division
 
 import sys
 
-from pyvows.color import *
+from pyvows.color import yellow, red, blue
 from pyvows.reporting.common import (
     ensure_encoded,
-    PROGRESS_SIZE,
     V_EXTRA_VERBOSE,
     V_VERBOSE,
-    V_NORMAL,
-    V_SILENT,
     VowsReporter,)
 
 
@@ -28,7 +25,7 @@ class VowsTestReporter(VowsReporter):
 
     def __init__(self, result, verbosity):
         super(VowsTestReporter, self).__init__(result, verbosity)
-        self.indent    = 1
+        self.indent = 1
 
     #-------------------------------------------------------------------------
     #   Class Methods
@@ -58,8 +55,8 @@ class VowsTestReporter(VowsReporter):
             # FIXME:
             #   If no vows are found, how could any be broken?
             print '{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
-                indent = self.TAB * self.indent,
-                broken = VowsReporter.BROKEN,
+                indent=self.TAB * self.indent,
+                broken=VowsReporter.BROKEN,
             )
             return
 
@@ -72,9 +69,9 @@ class VowsTestReporter(VowsReporter):
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
             VowsReporter.HONORED if self.result.successful else VowsReporter.BROKEN,
-            honored = self.result.successful_tests,
-            broken  = self.result.errored_tests,
-            time    = self.result.elapsed_time)
+            honored=self.result.successful_tests,
+            broken=self.result.errored_tests,
+            time=self.result.elapsed_time)
 
         print
 
@@ -87,7 +84,7 @@ class VowsTestReporter(VowsReporter):
         indentation2 = self.TAB * (self.indent + 2)
 
         if (self.verbosity >= V_VERBOSE or
-            not self.result.eval_context(context)):
+                not self.result.eval_context(context)):
             self.humanized_print(name)
 
         for test in context['tests']:
@@ -108,19 +105,19 @@ class VowsTestReporter(VowsReporter):
 
                 self.humanized_print('{0} {test}'.format(
                     VowsReporter.BROKEN,
-                    test = test['name']))
+                    test=test['name']))
 
                 if ctx.generated_topic:
                     value = yellow(test['topic'])
 
                     self.humanized_print('')
                     self.humanized_print('\tTopic value:')
-                    self.humanized_print('\t{value}'.format(value = value))
+                    self.humanized_print('\t{value}'.format(value=value))
                     self.humanized_print('\n' * 2)
 
-                if hasattr(test, 'topic')               \
-                   and hasattr(test['topic'], 'error')  \
-                   and test['topic']['error'] is not None:
+                if hasattr(test, 'topic') \
+                        and hasattr(test['topic'], 'error') \
+                        and test['topic']['error'] is not None:
                     print self.indent_msg('')
                     print blue(self.indent_msg('Topic Error:'))
                     exc_type, exc_value, exc_traceback = test['topic'].error
@@ -134,8 +131,8 @@ class VowsTestReporter(VowsReporter):
                 if 'file' in test:
                     print
                     print red('{indent}found in {test[file]} at line {test[lineno]}'.format(
-                        indent= indentation2,
-                        test  = test))
+                        indent=indentation2,
+                        test=test))
                     print
 
         for context in context['contexts']:

@@ -13,6 +13,7 @@
 
 from pyvows import Vows
 
+
 @Vows.create_assertions
 def to_equal(topic, expected):
     '''Asserts that `topic == expected`.'''

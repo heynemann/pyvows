@@ -11,10 +11,9 @@ have been run.
 from __future__ import division
 import os
 
-from pyvows.color import *
+from pyvows.color import yellow, blue, dim, green, white
 from pyvows.reporting.common import (
     VowsReporter,)
-
 
 
 class VowsProfileReporter(VowsReporter):
@@ -36,7 +35,7 @@ class VowsProfileReporter(VowsReporter):
         if topics:
             print self.header('Slowest Topics')
 
-            table_header =  yellow('  {0}'.format(dim('#')))
+            table_header = yellow('  {0}'.format(dim('#')))
             table_header += yellow('  Elapsed     Context File Path                         ')
             table_header += yellow('  Context Name')
             print table_header
@@ -50,14 +49,15 @@ class VowsProfileReporter(VowsReporter):
                 topic['path'] = os.path.relpath(topic['path'], os.path.abspath(os.curdir))
 
                 data = {
-                    'number': '{number:#2}'.format(number   = index + 1),
-                    'time'  : '{time:.05f}s'.format(time    = topic['elapsed']),
-                    'path'  : '{path:<{width}}'.format(path = topic['path'][-MAX_PATH_SIZE:],
-                                                       width=MAX_PATH_SIZE),
-                    'name'  : '{name}'.format(      name    = name),
+                    'number': '{number:#2}'.format(number=index + 1),
+                    'time': '{time:.05f}s'.format(time=topic['elapsed']),
+                    'path': '{path:<{width}}'.format(
+                        path=topic['path'][-MAX_PATH_SIZE:],
+                        width=MAX_PATH_SIZE),
+                    'name': '{name}'.format(name=name),
                 }
 
-                for k,v in data.items():
+                for k, v in data.items():
                     if k == 'number':
                         colorized = blue
                     if k == 'time':

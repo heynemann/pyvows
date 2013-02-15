@@ -31,6 +31,8 @@ To learn more, check out:   http://pyvows.org
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+# flake8: noqa
+
 try:
     from pyvows.core import Vows, expect, VowsAssertionError
     from pyvows.assertions import *

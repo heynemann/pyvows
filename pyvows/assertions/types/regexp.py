@@ -15,6 +15,7 @@ import re
 
 from pyvows import Vows, VowsAssertionError
 
+
 @Vows.assertion
 def to_match(topic, expected):
     '''Asserts that `topic` matches the regular expression
@@ -24,6 +25,7 @@ def to_match(topic, expected):
     if not re.match(expected, topic):
         raise VowsAssertionError('Expected topic(%s) to match the regular expression %s', topic, expected)
 
+
 @Vows.assertion
 def not_to_match(topic, expected):
     '''Asserts that `topic` DOES NOT match the regular expression
@@ -32,4 +34,3 @@ def not_to_match(topic, expected):
     '''
     if re.match(expected, topic):
         raise VowsAssertionError('Expected topic(%s) not to match the regular expression %s', topic, expected)
-

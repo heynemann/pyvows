@@ -8,17 +8,19 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 
-from pyvows.reporting.common    import VowsReporter
-from pyvows.reporting.coverage  import VowsCoverageReporter
-from pyvows.reporting.profile   import VowsProfileReporter
-from pyvows.reporting.test      import VowsTestReporter
+from pyvows.reporting.common import VowsReporter
+from pyvows.reporting.coverage import VowsCoverageReporter
+from pyvows.reporting.profile import VowsProfileReporter
+from pyvows.reporting.test import VowsTestReporter
 
 
-__all__ = [ 'VowsDefaultReporter',
-            'VowsTestReporter',
-            'VowsProfileReporter',
-            'VowsCoverageReporter',
-            'VowsReporter',]
+__all__ = [
+    'VowsDefaultReporter',
+    'VowsTestReporter',
+    'VowsProfileReporter',
+    'VowsCoverageReporter',
+    'VowsReporter',
+]
 
 
 class VowsDefaultReporter(VowsTestReporter,

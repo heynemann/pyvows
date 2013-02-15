@@ -14,24 +14,26 @@ from __future__ import division
 import re
 import traceback
 
-from pyvows.color import *
-from pyvows.core  import VowsAssertionError
+from pyvows.color import yellow, green, red, bold
+from pyvows.core import VowsAssertionError
 
-__all__ = [ 'PROGRESS_SIZE',
-            'V_EXTRA_VERBOSE',
-            'V_VERBOSE',
-            'V_NORMAL',
-            'V_SILENT',
-            'ensure_encoded',
-            'VowsReporter',]
+__all__ = [
+    'PROGRESS_SIZE',
+    'V_EXTRA_VERBOSE',
+    'V_VERBOSE',
+    'V_NORMAL',
+    'V_SILENT',
+    'ensure_encoded',
+    'VowsReporter',
+]
 
-PROGRESS_SIZE   = 50
+PROGRESS_SIZE = 50
 
 # verbosity levels
 V_EXTRA_VERBOSE = 4
-V_VERBOSE       = 3
-V_NORMAL        = 2
-V_SILENT        = 1
+V_VERBOSE = 3
+V_NORMAL = 2
+V_SILENT = 1
 
 
 def ensure_encoded(thing, encoding='utf-8'):
@@ -57,8 +59,8 @@ class VowsReporter(object):
         self.verbosity = verbosity
 
     HONORED = green('✓')
-    BROKEN  = red('✗')
-    TAB     = '  '
+    BROKEN = red('✗')
+    TAB = '  '
 
     #-------------------------------------------------------------------------
     #   String Formatting
@@ -116,15 +118,15 @@ class VowsReporter(object):
 
         '''
         ruler = ' {0}'.format(len(msg) * ruler_character)
-        
-        msg   = ' {0}'.format(msg)
-        msg   = '{0}{ruler}{0}{msg}{0}{ruler}{0}'.format(
+
+        msg = ' {0}'.format(msg)
+        msg = '{0}{ruler}{0}{msg}{0}{ruler}{0}'.format(
             '\n',
-            ruler = ruler,
-            msg   = msg)
-             
-        msg   = green(bold(msg))
-        
+            ruler=ruler,
+            msg=msg)
+
+        msg = green(bold(msg))
+
         return msg
 
     def indent_msg(self, msg, indentation=None):
@@ -132,9 +134,8 @@ class VowsReporter(object):
 
         '''
         return '{indent}{msg}'.format(
-            indent = indentation or (self.TAB * self.indent),
-            msg    = msg)
-
+            indent=indentation or (self.TAB * self.indent),
+            msg=msg)
 
     #-------------------------------------------------------------------------
     #   Printing Methods
@@ -147,11 +148,11 @@ class VowsReporter(object):
         '''
         msg = self.under_split(msg)
         msg = self.camel_split(msg)
-        msg = msg.replace('  ',' ') # normalize spaces if inserted by
-                                    # both of the above
+        msg = msg.replace('  ', ' ')  # normalize spaces if inserted by
+                                      # both of the above
         msg = msg.capitalize()
         msg = self.format_python_constants(msg)
-        
+
         print self.indent_msg(msg, indentation)
 
     def print_traceback(self, exc_type, exc_value, exc_traceback, indentation):
@@ -163,13 +164,12 @@ class VowsReporter(object):
             error_msg = unicode(exc_value)
 
         print red('{indent}{error}'.format(
-            indent = indentation,
-            error  = error_msg))
+            indent=indentation,
+            error=error_msg))
 
         if self.verbosity >= V_NORMAL:
             traceback_msg = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_msg = self.format_traceback(traceback_msg, indentation)
             print yellow('\n{indent}{traceback}'.format(
-                indent      = indentation,
-                traceback   = traceback_msg))
-
+                indent=indentation,
+                traceback=traceback_msg))

@@ -4,13 +4,13 @@ each vow.
 
 '''
 
-
 # pyvows testing engine
 # https://github.com/heynemann/pyvows
 
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
+
 
 class VowsResult(object):
     '''Collects success/failure/total statistics (as well as elapsed
@@ -107,4 +107,3 @@ class VowsResult(object):
         '''
         times = [time for time in self.get_topic_times() if time['elapsed'] > 0 and time['elapsed'] >= threshold]
         return list(reversed(sorted(times, key=lambda x: x['elapsed'])))[:number]
-

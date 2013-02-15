@@ -22,8 +22,8 @@ from pyvows import Vows, VowsAssertionError
 
 
 # Helpers
-_isfile         = lambda topic: isfile(topic)
-_is_file_obj    = lambda topic: isinstance(topic, types.FileType)
+_isfile = lambda topic: isfile(topic)
+_is_file_obj = lambda topic: isinstance(topic, types.FileType)
 
 
 @Vows.assertion
@@ -45,6 +45,7 @@ def to_be_a_file(topic):
     else:
         if not _is_file_obj(topic):
             raise VAE
+
 
 @Vows.assertion
 def not_to_be_a_file(topic):

@@ -14,6 +14,7 @@ module).
 
 import sys
 
+
 class VowsAsyncTopic(object):
     #   FIXME: Add Docstring
     def __init__(self, func, args, kw):
@@ -56,5 +57,3 @@ class VowsAsyncTopicValue(object):
             return self.attr
 
         raise AttributeError
-
-
