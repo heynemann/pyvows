@@ -10,6 +10,7 @@
 
 from pyvows import Vows, expect
 
+
 @Vows.batch
 class MultipleTopics(Vows.Context):
     class FirstLevel(Vows.Context):
@@ -41,5 +42,3 @@ class MultipleTopics(Vows.Context):
 
                 def is_c(self, topic):
                     expect(topic[2]).to_equal('c')
-
-
