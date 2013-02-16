@@ -53,5 +53,3 @@ class AssertionEquality(Vows.Context):
 
         def we_get_the_last_topic(self, topic):
             expect(topic).to_equal('test')
-
-
