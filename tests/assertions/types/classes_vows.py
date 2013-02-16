@@ -11,8 +11,13 @@
 from pyvows import Vows, expect
 
 
-class SomeClass(object): pass
-class OtherClass(object): pass
+class SomeClass(object):
+    pass
+
+
+class OtherClass(object):
+    pass
+
 
 @Vows.batch
 class AssertionIsInstance(Vows.Context):
@@ -31,7 +36,7 @@ class AssertionIsInstance(Vows.Context):
 
             def we_get_an_understandable_message(self, topic):
                 expect(topic).to_have_an_error_message_of(
-                        'Expected topic(2) to be an instance of {0!s}, but it was a {1!s}.'.format(str, int))
+                    'Expected topic(2) to be an instance of {0!s}, but it was a {1!s}.'.format(str, int))
 
     class WhenIsNotInstance(Vows.Context):
 
@@ -45,6 +50,4 @@ class AssertionIsInstance(Vows.Context):
 
             def we_get_an_understandable_message(self, topic):
                 expect(topic).to_have_an_error_message_of(
-                        'Expected topic(2) not to be an instance of {0!s}.'.format(int))
-
-
+                    'Expected topic(2) not to be an instance of {0!s}.'.format(int))
