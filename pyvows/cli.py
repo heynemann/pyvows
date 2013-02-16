@@ -115,9 +115,8 @@ def __get_arguments():
 def run(path, pattern, verbosity, show_progress):
     #   FIXME: Add Docstring
 
-    # they need to be imported here, else the no-color option won't work
+    # needs to be imported here, else the no-color option won't work
     from pyvows.core import Vows
-    from pyvows.reporting import VowsDefaultReporter
 
     Vows.collect(path, pattern)
 
@@ -125,17 +124,16 @@ def run(path, pattern, verbosity, show_progress):
     handle_error = show_progress and VowsDefaultReporter.handle_error or None
     result = Vows.run(handle_success, handle_error)
 
-    reporter = VowsDefaultReporter(result, verbosity)
-
-    return result, reporter
+    return result
 
 
 def main():
     '''PyVows' runtime implementation.
     '''
+    # needs to be imported here, else the no-color option won't work
+    from pyvows.reporting import VowsDefaultReporter
 
     arguments = __get_arguments()
-
     path = arguments.path
     pattern = arguments.pattern
 
@@ -155,8 +153,11 @@ def main():
         cov.erase()
         cov.start()
 
+
+
     verbosity = len(arguments.verbosity) if arguments.verbosity else 2
-    result, reporter = run(path, pattern, verbosity, arguments.progress)
+    result = run(path, pattern, verbosity, arguments.progress)
+    reporter = VowsDefaultReporter(result, verbosity)
 
     if result.successful and arguments.cover:
         if COVERAGE_AVAILABLE:
