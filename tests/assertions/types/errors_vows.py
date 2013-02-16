@@ -29,10 +29,10 @@ class AssertionErrors(Vows.Context):
 
                 def we_get_an_understandable_message(self, topic):
                     expect(topic).to_have_an_error_message_of(
-                            'Expected topic({0!r}) to be an error of type {1!r}, but it was a {2!r}.'.format(
-                                NotImplementedError('no'), 
-                                OSError, 
-                                NotImplementedError))
+                        'Expected topic({0!r}) to be an error of type {1!r}, but it was a {2!r}.'.format(
+                            NotImplementedError('no'),
+                            OSError,
+                            NotImplementedError))
 
         class HaveErrorMessageOf(Vows.Context):
 
@@ -46,9 +46,9 @@ class AssertionErrors(Vows.Context):
 
                 def we_get_an_understandable_message(self, topic):
                     expect(topic).to_have_an_error_message_of(
-                            "Expected topic({0!r}) to be an error with message '{1!s}'.".format(
-                                ValueError('some bogus error'), 
-                                'some bogus'))
+                        "Expected topic({0!r}) to be an error with message '{1!s}'.".format(
+                            ValueError('some bogus error'),
+                            'some bogus'))
 
         class ToBeAnError(Vows.Context):
 
@@ -77,6 +77,7 @@ class AssertionErrors(Vows.Context):
 
                 def we_get_an_understandable_message(self, topic):
                     expect(topic).to_have_an_error_message_of("Expected topic({0!s}) not to be an error.".format(ValueError))
+
         class TheExceptionClass(Vows.Context):
             def topic(self, error):
                 return ValueError
@@ -84,12 +85,9 @@ class AssertionErrors(Vows.Context):
             def we_can_see_that_is_an_error_class(self, topic):
                 expect(topic).to_be_an_error()
 
-
     class WhenDontRaise(Vows.Context):
         def topic(self):
             return 0
 
         def we_can_see_that_is_not_an_error(self, topic):
             expect(topic).Not.to_be_an_error()
-
-
