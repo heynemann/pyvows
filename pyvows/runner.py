@@ -105,8 +105,6 @@ class VowsParallelRunner(object):
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
 
-        self.exclusion_patterns = exclusion_patterns
-
     def run(self):
         #   FIXME: Add Docstring
 
