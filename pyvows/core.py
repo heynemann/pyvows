@@ -353,13 +353,13 @@ class Vows(object):
             __import__(module_name)
 
     @classmethod
-    def run(cls, vow_success_event, vow_error_event):
+    def run(cls, on_vow_success, on_vow_error):
         #   FIXME: Add Docstring
         #
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
         runner = VowsParallelRunner(Vows.contexts,
                                     Vows.Context,
-                                    vow_success_event,
-                                    vow_error_event)
+                                    on_vow_success,
+                                    on_vow_error)
         return runner.run()

@@ -38,14 +38,14 @@ class VowsTestReporter(VowsReporter):
     #   Class Methods
     #-------------------------------------------------------------------------
     @classmethod
-    def handle_success(cls, vow):
+    def on_vow_success(cls, vow):
         #   FIXME: Add Docstring / Comment description
         #
         #       *   Why is `vow` unused?
         sys.stdout.write(VowsReporter.HONORED)
 
     @classmethod
-    def handle_error(cls, vow):
+    def on_vow_error(cls, vow):
         #   FIXME: Add Docstring / Comment description
         #
         #       *   Why is `vow` unused?
