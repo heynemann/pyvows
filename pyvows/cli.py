@@ -120,9 +120,9 @@ def run(path, pattern, verbosity, show_progress):
 
     Vows.collect(path, pattern)
 
-    handle_success = show_progress and VowsDefaultReporter.handle_success or None
-    handle_error = show_progress and VowsDefaultReporter.handle_error or None
-    result = Vows.run(handle_success, handle_error)
+    on_success = show_progress and VowsDefaultReporter.on_vow_success or None
+    on_error = show_progress and VowsDefaultReporter.on_vow_error or None
+    result = Vows.run(on_success, on_error)
 
     return result
 
@@ -134,9 +134,8 @@ def main():
     from pyvows.reporting import VowsDefaultReporter
 
     arguments = __get_arguments()
-    path = arguments.path
-    pattern = arguments.pattern
 
+    path, pattern = arguments.path, arguments.pattern
     if path and isfile(path):
         path, pattern = split(path)
     if not path:
@@ -153,19 +152,31 @@ def main():
         cov.erase()
         cov.start()
 
-
-
     verbosity = len(arguments.verbosity) if arguments.verbosity else 2
     result = run(path, pattern, verbosity, arguments.progress)
     reporter = VowsDefaultReporter(result, verbosity)
 
+    # Print test results first
+    reporter.pretty_print()
+
+    # Print profile if necessary
+    if arguments.profile:
+        reporter.print_profile(arguments.profile_threshold)
+
+    # Print coverage if necessary
     if result.successful and arguments.cover:
-        if COVERAGE_AVAILABLE:
+        # if coverage was requested, but unavailable, warn the user
+        if not COVERAGE_AVAILABLE:
+            print
+            print yellow('WARNING: Cover disabled because coverage could not be found.')
+            print yellow('Make sure it is installed and accessible.')
+            print
+
+        # otherwise, we're good
+        else:
             cov.stop()
-
-            print '\n' * 2
-
             xml = ''
+
             with tempfile.NamedTemporaryFile() as tmp:
                 cov.xml_report(outfile=tmp.name)
                 tmp.seek(0)
@@ -177,20 +188,12 @@ def main():
 
             arguments.cover_threshold /= 100.0
             reporter.print_coverage(xml, arguments.cover_threshold)
-        else:
-            print
-            print yellow('WARNING: Cover disabled because coverage could not be found.')
-            print yellow('Make sure it is installed and accessible.')
-            print
 
-    reporter.pretty_print()
 
+    # Write XUnit if necessary
     if arguments.xunit_output:
         xunit = XUnitReporter(result)
         xunit.write_report(arguments.xunit_file)
-
-    if arguments.profile:
-        reporter.print_profile(arguments.profile_threshold)
 
     sys.exit(result.errored_tests)
 
