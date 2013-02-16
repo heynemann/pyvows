@@ -8,8 +8,9 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-from __future__ import division # Python 2 division is deprecated
+from __future__ import division  # Python 2 division is deprecated
 from pyvows import Vows, expect
+
 
 @Vows.batch
 class DivisionTests(Vows.Context):
@@ -24,4 +25,3 @@ class DivisionTests(Vows.Context):
 
         def WeGet42(self, topic):
             expect(topic).to_equal(42)
-
