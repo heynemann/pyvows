@@ -28,7 +28,7 @@ class AssertionRegexp(Vows.Context):
 
             def we_get_an_understandable_message(self, topic):
                 expect(topic).to_have_an_error_message_of(
-                        "Expected topic('some string') to match the regular expression '^other.+$'.")
+                    "Expected topic('some string') to match the regular expression '^other.+$'.")
 
     class WhenItDoesntMatches(Vows.Context):
 
@@ -42,6 +42,4 @@ class AssertionRegexp(Vows.Context):
 
             def we_get_an_understandable_message(self, topic):
                 expect(topic).to_have_an_error_message_of(
-                        "Expected topic('some string') not to match the regular expression '^some.+$'.")
-
-
+                    "Expected topic('some string') not to match the regular expression '^some.+$'.")
