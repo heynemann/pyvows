@@ -46,4 +46,3 @@ class ContextClass(Vows.Context):
             def should_be_working_fine_too(self, topic):
                 self.parent.entered = True
                 expect(topic).to_equal(3)
-
