@@ -95,4 +95,3 @@ class CoverageXMLParser(Vows.Context):
 
             def should_contain_lines_uncovered(self, klass):
                 expect(klass['uncovered_lines']).to_equal(['2', '3'])
-
