@@ -32,4 +32,3 @@ class Assertion(Vows.Context):
     class WhenNotHaveTopic(Vows.Context):
         def we_can_see_topic_as_none(self, topic):
             expect(topic).to_be_null()
-
