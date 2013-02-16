@@ -26,12 +26,12 @@ from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 class VowsParallelRunner(object):
     #   FIXME: Add Docstring
 
-    def __init__(self, vows, context_class, vow_successful_event, vow_error_event):
+    def __init__(self, vows, context_class, on_vow_success, on_vow_error):
         self.vows = vows
         self.context_class = context_class
         self.pool = Pool(1000)
-        self.vow_successful_event = vow_successful_event
-        self.vow_error_event = vow_error_event
+        self.on_vow_success = on_vow_success
+        self.on_vow_error = on_vow_error
 
     def _file_info_for(self, member):
         #   FIXME: Add Docstring
@@ -118,9 +118,9 @@ class VowsParallelRunner(object):
 
     def run_context(self, context_col, name, context_instance):
         #   FIXME: Add Docstring
-        self.pool.spawn(self.async_run_context, context_col, name, context_instance)
+        self.pool.spawn(self.run_context_async, context_col, name, context_instance)
 
-    def async_run_context(self, context_col, name, context_instance, index=-1):
+    def run_context_async(self, context_col, name, context_instance, index=-1):
         #   FIXME: Add Docstring
 
         context_obj = {
@@ -210,7 +210,7 @@ class VowsParallelRunner(object):
                         child_context_instance.pool = self.pool
                         child_context_instance.teardown = teardown.wrap(child_context_instance.teardown)
                         self.pool.spawn(
-                            self.async_run_context,
+                            self.run_context_async,
                             context_obj['contexts'], member_name, child_context_instance, index
                         )
 
@@ -242,9 +242,9 @@ class VowsParallelRunner(object):
 
     def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
         #   FIXME: Add Docstring
-        self.pool.spawn(self.async_run_vow, tests_col, topic, context_instance, member, member_name, enumerated)
+        self.pool.spawn(self.run_vow_async, tests_col, topic, context_instance, member, member_name, enumerated)
 
-    def async_run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated):
+    def run_vow_async(self, tests_col, topic, context_instance, member, member_name, enumerated):
         #   FIXME: Add Docstring
 
         start_time = time.time()
@@ -266,8 +266,8 @@ class VowsParallelRunner(object):
             result = member(context_instance, topic)
             result_obj['result'] = result
             result_obj['succeeded'] = True
-            if self.vow_successful_event:
-                self.vow_successful_event(result_obj)
+            if self.on_vow_success:
+                self.on_vow_success(result_obj)
 
         except Exception:
             #   FIXME:
@@ -282,8 +282,8 @@ class VowsParallelRunner(object):
                 'value': exc_value,
                 'traceback': exc_traceback
             }
-            if self.vow_error_event:
-                self.vow_error_event(result_obj)
+            if self.on_vow_error:
+                self.on_vow_error(result_obj)
 
         result_obj['elapsed'] = time.time() - start_time
         tests_col.append(result_obj)
