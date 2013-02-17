@@ -111,18 +111,35 @@ class VowsTestReporter(VowsReporter):
             ctx = test['context_instance']
 
             def _print_traceback():
-
                 self.indent += 2
 
-                if hasattr(test, 'topic') \
-                        and hasattr(test['topic'], 'error')  \
-                        and test['topic']['error'] is not None:
-                    print '\n' + self.indent_msg(blue('Topic Error:'))
-                    exc_type, exc_value, exc_traceback = test['topic'].error
-                    self.print_traceback(exc_type, exc_value, exc_traceback)
-                else:
-                    err = test['error']
-                    self.print_traceback(err['type'], err['value'], err['traceback'])
+
+                try:
+                    traceback_args = None
+
+                    if hasattr(test, 'topic') \
+                            and hasattr(test['topic'], 'error')  \
+                            and test['topic']['error'] is not None:
+                        print '\n' + self.indent_msg(blue('Topic Error:'))
+                        traceback_args = tuple(*test['topic'].error)
+                        self.print_traceback(exc_type, exc_value, exc_traceback)
+                    else:
+                        traceback_args = (test['error']['type'],
+                                          test['error']['value'],
+                                          test['error']['traceback'])
+                    self.print_traceback(*traceback_args)
+                except Exception as e:
+                    # should never occur!
+                    err_msg = '''Unexpected error in PyVows!
+                                 PyVows error occurred in: ({0!s})
+                                 Context was: {1!r}
+
+                              '''
+                    from os.path import abspath
+                    raise VowsInternalError(err_msg,
+                                            'pyvows.reporting.test',
+                                            ctx)
+
 
                 # print file and line number
                 if 'file' in test:
