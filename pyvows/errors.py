@@ -49,8 +49,6 @@ class VowsAssertionError(AssertionError):
 class VowsInternalError(Exception):
     '''Raised whenever PyVows internal code does something unexpected.'''
 
-
-
     def __init__(self, *args):
         if not isinstance(args[0], str):
             raise TypeError('VowsInternalError must be instantiated with a string as the first argument')
@@ -61,7 +59,16 @@ class VowsInternalError(Exception):
         return "VowsInternalError('{0!s}',)".format(self)
 
     def __str__(self):
-        return self.raw_msg.format(*self.args)
+        msg = self.raw_msg.format(*self.args)
+        msg += '''
+
+        Help PyVows fix this issue!  Tell us what happened:
+
+        https://github.com/heynemann/pyvows/issues/new
+
+        '''
+        return msg
+
 
     def __unicode__(self):
         return self.__str__()
