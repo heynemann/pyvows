@@ -13,6 +13,7 @@ from __future__ import division
 import sys
 
 from pyvows.color import yellow, red, blue
+from pyvows.errors import VowsInternalError
 from pyvows.reporting.common import (
     ensure_encoded,
     V_EXTRA_VERBOSE,
