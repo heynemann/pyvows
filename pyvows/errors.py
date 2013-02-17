@@ -27,7 +27,7 @@ class VowsAssertionError(AssertionError):
         if not isinstance(args[0], str):
             raise TypeError('VowsAssertionError instances must be created with a string as their first argument')
         if not len(args) >= 2:
-            raise IndexError('VowsAssertionError must have at least 2 arguments')
+            raise IndexError('VowsAssertionError must receive at least 2 arguments')
 
         self.raw_msg = args[0]
 
@@ -36,11 +36,34 @@ class VowsAssertionError(AssertionError):
 
         self.args = tuple([repr(i) for i in args[1:]])
 
+    def __repr__(self):
+        return "VowsAssertionError('{0!s}',)".format(self)
+
     def __str__(self):
         return self.raw_msg.format(*self.args)
 
     def __unicode__(self):
         return self.__str__()
 
+
+class VowsInternalError(Exception):
+    '''Raised whenever PyVows internal code does something unexpected.'''
+
+
+
+    def __init__(self, *args):
+        if not isinstance(args[0], str):
+            raise TypeError('VowsInternalError must be instantiated with a string as the first argument')
+        if not len(args) >= 2:
+            raise IndexError('VowsInternalError must receive at least 2 arguments')
+
     def __repr__(self):
-        return "VowsAssertionError('{0!s}',)".format(self)
+        return "VowsInternalError('{0!s}',)".format(self)
+
+    def __str__(self):
+        return self.raw_msg.format(*self.args)
+
+    def __unicode__(self):
+        return self.__str__()
+
+
