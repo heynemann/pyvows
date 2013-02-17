@@ -144,6 +144,7 @@ class VowsParallelRunner(object):
             topic.error = error
             context_instance.topic_error = error
         else:
+            # FIXME: <Under what circumstances does this code run?>
             topic = None
             if hasattr(context_instance, 'topic'):
                 start_time = time.time()
