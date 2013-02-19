@@ -31,7 +31,7 @@ from pyvows.reporting.xunit import XUnitReporter
 from pyvows import version
 
 
-class Messages(object):
+class Messages(object):  # pragma: no cover
     '''A simple container for command-line interface strings.'''
 
     summary = 'Run PyVows tests.'
@@ -54,62 +54,61 @@ class Messages(object):
     progress = 'Show progress ticks during testing. (default: %(default)s)'
 
 
-def __get_arguments():
-    '''Parses arguments from the command-line.'''
+class Parser(argparse.ArgumentParser):
+    def __init__(self, description=Messages.summary, **kwargs):
+        super(Parser, self).__init__(
+            description = description,
+            **kwargs)
 
-    current_dir = os.curdir
+        #Easy underlining, if we ever need it in the future
+        #uline   = lambda text: '\033[4m{0}\033[24m'.format(text)
+        metavar = lambda metavar: '{0}{metavar}{0}'.format(Style.RESET_ALL, metavar=metavar.upper())
 
-    #Easy underlining, if we ever need it in the future
-    #uline   = lambda text: '\033[4m{0}\033[24m'.format(text)
+        self.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern, metavar=metavar('pattern'))
 
-    parser = argparse.ArgumentParser(description=Messages.summary)
-    metavar = lambda metavar: '{0}{metavar}{0}'.format(Style.RESET_ALL, metavar=metavar.upper())
+        ### Coverage
+        cover_group = self.add_argument_group('Test Coverage')
+        cover_group.add_argument('-c', '--cover', action='store_true', default=False, help=Messages.cover)
+        cover_group.add_argument(
+            '-l', '--cover-package', action='append', default=[],
+            help=Messages.cover_package, metavar=metavar('package')
+        )
+        cover_group.add_argument(
+            '-o', '--cover-omit', action='append', default=[],
+            help=Messages.cover_omit, metavar=metavar('file')
+        )
+        cover_group.add_argument(
+            '-t', '--cover-threshold', type=float, default=80.0,
+            help=Messages.cover_threshold, metavar=metavar('number')
+        )
+        cover_group.add_argument(
+            '-r', '--cover-report', action='store', default=None,
+            help=Messages.cover_report, metavar=metavar('file')
+        )
 
-    parser.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern, metavar=metavar('pattern'))
+        ### XUnit
+        xunit_group = self.add_argument_group('XUnit')
+        xunit_group.add_argument('-x', '--xunit-output', action='store_true', default=False, help=Messages.xunit_output)
+        xunit_group.add_argument(
+            '-f', '--xunit-file', action='store', default='pyvows.xml',
+            help=Messages.xunit_file, metavar=metavar('file')
+        )
 
-    cover_group = parser.add_argument_group('Test Coverage')
-    cover_group.add_argument('-c', '--cover', action='store_true', default=False, help=Messages.cover)
-    cover_group.add_argument(
-        '-l', '--cover-package', action='append', default=[],
-        help=Messages.cover_package, metavar=metavar('package')
-    )
-    cover_group.add_argument(
-        '-o', '--cover-omit', action='append', default=[],
-        help=Messages.cover_omit, metavar=metavar('file')
-    )
-    cover_group.add_argument(
-        '-t', '--cover-threshold', type=float, default=80.0,
-        help=Messages.cover_threshold, metavar=metavar('number')
-    )
-    cover_group.add_argument(
-        '-r', '--cover-report', action='store', default=None,
-        help=Messages.cover_report, metavar=metavar('file')
-    )
+        ### Profiling
+        profile_group = self.add_argument_group('Profiling')
+        profile_group.add_argument('--profile', action='store_true', dest='profile', default=False, help=Messages.profile)
+        profile_group.add_argument(
+            '--profile-threshold', type=float, default=0.1,
+            help=Messages.profile_threshold, metavar=metavar('num')
+        )
 
-    xunit_group = parser.add_argument_group('XUnit')
-    xunit_group.add_argument('-x', '--xunit-output', action='store_true', default=False, help=Messages.xunit_output)
-    xunit_group.add_argument(
-        '-f', '--xunit-file', action='store', default='pyvows.xml',
-        help=Messages.xunit_file, metavar=metavar('file')
-    )
+        ### Misc
+        self.add_argument('--no-color', action='store_true', default=False, help=Messages.no_color)
+        self.add_argument('--progress', action='store_true', dest='progress', default=False, help=Messages.progress)
+        self.add_argument('--version', action='version', version='%(prog)s {0}'.format(version.to_str()))
+        self.add_argument('-v', action='append_const', dest='verbosity', const=1, help=Messages.verbosity)
 
-    profile_group = parser.add_argument_group('Profiling')
-    profile_group.add_argument('--profile', action='store_true', dest='profile', default=False, help=Messages.profile)
-    profile_group.add_argument(
-        '--profile-threshold', type=float, default=0.1,
-        help=Messages.profile_threshold, metavar=metavar('num')
-    )
-
-    parser.add_argument('--no-color', action='store_true', default=False, help=Messages.no_color)
-    parser.add_argument('--progress', action='store_true', dest='progress', default=False, help=Messages.progress)
-
-    parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(version.to_str()))
-    parser.add_argument('-v', action='append_const', dest='verbosity', const=1, help=Messages.verbosity)
-
-    parser.add_argument('path', nargs='?', default=current_dir, help=Messages.path)
-
-    arguments = parser.parse_args()
-    return arguments
+        self.add_argument('path', nargs='?', default=os.curdir, help=Messages.path)
 
 
 def run(path, pattern, verbosity, show_progress):
@@ -133,7 +132,7 @@ def main():
     # needs to be imported here, else the no-color option won't work
     from pyvows.reporting import VowsDefaultReporter
 
-    arguments = __get_arguments()
+    arguments = Parser().parse_args()
 
     path, pattern = arguments.path, arguments.pattern
     if path and isfile(path):
