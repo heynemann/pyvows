@@ -12,14 +12,17 @@
 import fnmatch
 import glob
 import os
+import time
 
 from pyvows.errors  import _AssertionNotFoundError, VowsAssertionError
 
 
+elapsed = lambda start_time: float(round(time.time() - start_time, 6))
+
 def locate(pattern, root=os.curdir, recursive=True):
     '''Recursively locates test files when `pyvows` is run from the
     command line.
-    
+
     '''
     root_path = os.path.abspath(root)
 
@@ -38,7 +41,7 @@ class VowsAssertion(object):
 
     AssertionNotFoundError = _AssertionNotFoundError
     '''Raised when a `VowsAssertion` cannot be found.'''
-    
+
     def __getattr__(self, name):
         if not hasattr(self, name):
             raise VowsAssertion.AssertionNotFoundError(name)
