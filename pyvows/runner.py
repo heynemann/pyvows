@@ -19,10 +19,11 @@ import time
 
 from gevent.pool import Pool
 
+from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import FunctionWrapper
 from pyvows.result import VowsResult
-from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.utils import elapsed
+
 
 class VowsParallelRunner(object):
     #   FIXME: Add Docstring
