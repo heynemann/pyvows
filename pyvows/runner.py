@@ -117,11 +117,11 @@ class VowsParallelRunner(object):
 
         return result
 
-    def run_context(self, context_col, name, context_instance):
+    def run_context(self, ctx_collection, name, context_instance):
         #   FIXME: Add Docstring
-        self.pool.spawn(self.run_context_async, context_col, name, context_instance)
+        self.pool.spawn(self.run_context_async, ctx_collection, name, context_instance)
 
-    def run_context_async(self, context_col, name, context_instance, index=-1):
+    def run_context_async(self, ctx_collection, name, context_instance, index=-1):
         #   FIXME: Add Docstring
 
         context_obj = {
@@ -131,7 +131,7 @@ class VowsParallelRunner(object):
             'tests': [],
             'filename': inspect.getsourcefile(context_instance.__class__)
         }
-        context_col.append(context_obj)
+        ctx_collection.append(context_obj)
 
         context_instance.index = index
         context_instance.pool = self.pool
@@ -144,6 +144,7 @@ class VowsParallelRunner(object):
             topic.error = error
             context_instance.topic_error = error
         else:
+            # FIXME: <Under what circumstances does this code run?>
             topic = None
             if hasattr(context_instance, 'topic'):
                 start_time = time.time()
