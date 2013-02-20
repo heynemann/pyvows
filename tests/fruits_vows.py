@@ -10,21 +10,26 @@
 
 from pyvows import Vows, expect
 
+
 class Strawberry(object):
     def __init__(self):
-        self.color = '#ff0000';
+        self.color = '#ff0000'
 
     def isTasty(self):
         return True
 
-class PeeledBanana(object): pass
+
+class PeeledBanana(object):
+    pass
+
 
 class Banana(object):
     def __init__(self):
-        self.color = '#fff333';
+        self.color = '#fff333'
 
     def peel(self):
         return PeeledBanana()
+
 
 @Vows.batch
 class TheGoodThings(Vows.Context):
@@ -48,4 +53,3 @@ class TheGoodThings(Vows.Context):
 
             def returns_a_peeled_banana(self, topic):
                 expect(topic).to_be_instance_of(PeeledBanana)
-

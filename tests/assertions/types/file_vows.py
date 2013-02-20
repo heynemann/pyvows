@@ -7,18 +7,16 @@
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
-from os.path import isfile
 
 from pyvows import Vows, expect, VowsAssertionError
 
 
 #   TEST DATA
 STRINGS = {
-
-    'that_are_files':       (
+    'that_are_files': (
         __file__,
         unicode(__file__),
-        ),
+    ),
 
     'that_are_not_files':   (
         __doc__,
@@ -27,8 +25,8 @@ STRINGS = {
 
 
 #   HELPERS
-isafile     = lambda topic: expect(topic).to_be_a_file()
-isnotafile  = lambda topic: expect(topic).not_to_be_a_file()
+isafile = lambda topic: expect(topic).to_be_a_file()
+isnotafile = lambda topic: expect(topic).not_to_be_a_file()
 
 
 #   NOW, MAKE YOUR VOWS.
@@ -50,14 +48,12 @@ class WhenMakingFileAssertions(Vows.Context):
             for item in STRINGS['that_are_not_files']:
                 yield item
 
-
         class AssertingThatTheyDo(Vows.Context):
             def topic(self, parent_topic):
                 return isafile(parent_topic)
 
             def should_raise_an_error(self, topic):
                 expect(topic).to_be_an_error_like(VowsAssertionError)
-
 
         class AssertingThatTheyDoNot(Vows.Context):
             def topic(self, parent_topic):
@@ -66,13 +62,11 @@ class WhenMakingFileAssertions(Vows.Context):
             def should_raise_no_errors(self, topic):
                 expect(topic).Not.to_be_an_error()
 
-
     class OnFilesThatDoExist(Vows.Context):
         def topic(self):
             for item in STRINGS['that_are_files']:
                 yield item
-        
-        
+
         class AssertingTheyAreFiles(Vows.Context):
             def topic(self, parent_topic):
                 return isafile(parent_topic)
@@ -80,14 +74,12 @@ class WhenMakingFileAssertions(Vows.Context):
             def should_not_raise_errors(self, topic):
                 expect(topic).not_to_be_an_error()
 
-
         class AssertingTheyAreNotFiles(Vows.Context):
             def topic(self, parent_topic):
                 return isnotafile(parent_topic)
 
             def should_raise_an_error(self, topic):
                 expect(topic).to_be_an_error()
-
 
         class WhenWeInstantiateThemAsFileObjects(Vows.Context):
             def topic(self, parent_topic):
@@ -101,14 +93,9 @@ class WhenMakingFileAssertions(Vows.Context):
                 def should_not_raise_errors(self, topic):
                     expect(topic).not_to_be_an_error()
 
-
             class AssertingTheyAreNotFiles(Vows.Context):
                 def topic(self, parent_topic):
                     return isnotafile(parent_topic)
 
                 def should_raise_an_error(self, topic):
                     expect(topic).to_be_an_error()
-
-
-
-

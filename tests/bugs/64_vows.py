@@ -28,13 +28,13 @@ class VowsTestReporterExceptions(Vows.Context):
             test = {'name':             'Mock Test Result',
                     'succeeded':        False,
                     'context_instance': Vows.Context(),
-                    'error': {  'type':     '', 
-                                'value':    '', 
-                                'traceback':''}
+                    'error': {'type': '',
+                              'value': '',
+                              'traceback': ''}
                     }
-            context =  {'tests': [test],
-                        'contexts': []  
-                        }
+            context = {'tests': [test],
+                       'contexts': []
+                       }
             topic.print_context('Derp', context)
         except VowsAssertionError as e:
             expect(e).to_be_an_error_like(VowsAssertionError)

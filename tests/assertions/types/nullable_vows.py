@@ -41,4 +41,3 @@ class AssertionIsNull(Vows.Context):
 
             def we_get_an_understandable_message(self, topic):
                 expect(topic).to_have_an_error_message_of("Expected topic(None) not to be None.")
-

@@ -10,9 +10,11 @@
 
 from pyvows import Vows, expect
 
+
 def get_test_data():
     for i in [1] * 10:
         yield i
+
 
 @Vows.batch
 class GeneratorTests(Vows.Context):
@@ -44,11 +46,13 @@ class GeneratorTests(Vows.Context):
         def should_return_topic_times_two(self, topic):
             expect(topic).to_equal(2)
 
+
 def add(a, b):
     return a + b
 
 a_samples = range(10)
 b_samples = range(10)
+
 
 @Vows.batch
 class Add(Vows.Context):
@@ -73,4 +77,3 @@ class Add(Vows.Context):
                 def should_equal_to_expected(self, topic):
                     value, expected = topic
                     expect(value).to_equal(expected)
-

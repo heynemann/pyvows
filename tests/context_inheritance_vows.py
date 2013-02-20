@@ -11,6 +11,7 @@
 
 from pyvows import Vows, expect
 
+
 class NotAContextThingy(object):
     alicorns = (u'Celestia', u'Luna', u'Nyx', u'Pluto', u'Lauren Faust')
 

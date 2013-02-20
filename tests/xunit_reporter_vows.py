@@ -9,8 +9,8 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 from pyvows import Vows, expect
-from pyvows.reporting import VowsDefaultReporter
 from pyvows.reporting.xunit import XUnitReporter
+
 
 class ResultMock():
     pass
@@ -32,8 +32,9 @@ class XUnitReporterVows(Vows.Context):
         def should_create_xml_header(self, topic):
             expect(topic.to_xml().find('<?xml version="1.0" encoding="utf-8"?>')).to_equal(0)
 
-        def should_create_xml_header(self, topic):
-            expect(topic.to_xml()).to_match(r'.*<testsuite errors="0" failures="0" hostname=".+?" name="pyvows" tests="0" time="0\.000" timestamp=".+?"/>')
+        def should_have_a_testsuite_node(self, topic):
+            expect(topic.to_xml()).to_match(r'.*<testsuite errors="0" failures="0" hostname=".+?" ' +
+                                            'name="pyvows" tests="0" time="0\.000" timestamp=".+?"/>')
 
         class WithDocument(Vows.Context):
             def topic(self, topic):
