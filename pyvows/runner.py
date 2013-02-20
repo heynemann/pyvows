@@ -22,7 +22,7 @@ from gevent.pool import Pool
 from pyvows.decorators import FunctionWrapper
 from pyvows.result import VowsResult
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
-
+from pyvows.utils import elapsed
 
 class VowsParallelRunner(object):
     #   FIXME: Add Docstring
@@ -116,7 +116,7 @@ class VowsParallelRunner(object):
         self.pool.join()
 
         end_time = time.time()
-        result.elapsed_time = float(end_time - start_time)
+        result.elapsed_time = elapsed(start_time)
 
         # helpful for debugging
         #from pprint import pprint
@@ -149,8 +149,6 @@ class VowsParallelRunner(object):
 
         def _init_topic():
             topic = None
-
-            elapsed = lambda start_time: float(round(time.time() - start_time, 6))
 
             if hasattr(ctx_instance, 'topic'):
                 start_time = time.time()
@@ -318,7 +316,7 @@ class VowsParallelRunner(object):
             if self.on_vow_error:
                 self.on_vow_error(result_obj)
 
-        result_obj['elapsed'] = time.time() - start_time
+        result_obj['elapsed'] = elapsed(start_time)
         tests_collection.append(result_obj)
 
         return result_obj
