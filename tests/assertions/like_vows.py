@@ -24,7 +24,6 @@ class AssertionIsLike(Vows.Context):
         def we_assert_it_is_not_like_other_string(self, topic):
             expect(topic).Not.to_be_like('some other string')
 
-
     class WhenItIsAMultilineString(Vows.Context):
         def topic(self):
             return " some StRinG \nwith RanDoM \nCaSe And  \nWeird   \nSpACING   "
@@ -34,7 +33,6 @@ class AssertionIsLike(Vows.Context):
 
         def we_assert_it_is_not_like_other_string(self, topic):
             expect(topic).Not.to_be_like('some other string')
-
 
     class WhenItIsANumber(Vows.Context):
         def topic(self):
@@ -122,16 +120,16 @@ class AssertionIsLike(Vows.Context):
     class WhenItIsADict(Vows.Context):
 
         def topic(self):
-            return { 'some': 'key', 'other': 'value' }
+            return {'some': 'key', 'other': 'value'}
 
         def we_can_compare_to_other_dict(self, topic):
-            expect(topic).to_be_like({ 'some': 'key', 'other': 'value' })
+            expect(topic).to_be_like({'some': 'key', 'other': 'value'})
 
         def we_can_compare_to_a_dict_in_other_order(self, topic):
-            expect(topic).to_be_like({ 'other': 'value', 'some': 'key' })
+            expect(topic).to_be_like({'other': 'value', 'some': 'key'})
 
         def we_can_compare_to_a_dict_with_a_key_that_has_value_none(self, topic):
-            expect(topic).not_to_be_like({ 'other': 'value', 'some': None })
+            expect(topic).not_to_be_like({'other': 'value', 'some': None})
 
         class OfDicts(Vows.Context):
 
@@ -164,4 +162,3 @@ class AssertionIsLike(Vows.Context):
 
         def we_get_an_understandable_message(self, topic):
             expect(topic).to_have_an_error_message_of("Expected topic('a') not to be like 'a'.")
-

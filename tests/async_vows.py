@@ -12,6 +12,7 @@ import time
 
 from pyvows import Vows, expect
 
+
 def asyncFunc(pool, callback):
     def async():
         time.sleep(0.1)
@@ -20,6 +21,7 @@ def asyncFunc(pool, callback):
     def get_value(value):
         callback(value, 20, kwarg=30, kw2=40)
     pool.apply_async(async, callback=get_value)
+
 
 @Vows.batch
 class AsyncTopic(Vows.Context):
@@ -66,5 +68,3 @@ class AsyncTopic(Vows.Context):
 
                 def should_be_1(self, topic):
                     expect(topic).to_equal(1)
-
-

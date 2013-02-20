@@ -10,6 +10,7 @@
 
 from pyvows import Vows, expect
 
+
 @Vows.batch
 class SetupTeardownSpecs(Vows.Context):
     exec_order = []
@@ -26,7 +27,7 @@ class SetupTeardownSpecs(Vows.Context):
             return 20
 
         def teardown(self):
-            self.parent.exec_order.append(-1) #last
+            self.parent.exec_order.append(-1)  # last
             expect(self.parent.exec_order).to_equal([1, 2, 3, -2, -1])
 
         def check_order(self, topic):
@@ -37,10 +38,8 @@ class SetupTeardownSpecs(Vows.Context):
                 self.parent.parent.exec_order.append(3)
 
             def teardown(self):
-                self.parent.parent.exec_order.append(-2) #right before the parent's teardown
+                self.parent.parent.exec_order.append(-2)  # right before the parent's teardown
                 expect(self.parent.parent.exec_order).to_equal([1, 2, 3, -2])
 
             def check_order(self, topic):
                 expect(self.parent.parent.exec_order).to_equal([1, 2, 3])
-
-

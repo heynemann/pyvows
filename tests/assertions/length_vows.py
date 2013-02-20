@@ -37,7 +37,7 @@ class AssertionLength(Vows.Context):
 
         class WithDict(Vows.Context):
             def topic(self):
-                return { "some": "item", "other": "item" }
+                return {"some": "item", "other": "item"}
 
             def we_can_see_it_has_2_items(self, topic):
                 expect(topic).to_length(2)
@@ -57,5 +57,3 @@ class AssertionLength(Vows.Context):
 
             def we_get_an_understandable_message(self, topic):
                 expect(topic).to_have_an_error_message_of("Expected topic('a') not to have 1 of length.")
-
-
