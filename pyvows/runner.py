@@ -162,12 +162,9 @@ class VowsParallelRunner(object):
                     topic_func = getattr(ctx_instance, 'topic')
                     topic_list = _get_topics_for(topic_func, ctx_instance)
                     topic = topic_func(*topic_list)
-                except:
-                    exc_type, exc_value, exc_traceback = sys.exc_info()
-                    topic = exc_value
-                    error = (exc_type, exc_value, exc_traceback)
-                    topic.error = error
-                    ctx_instance.topic_error = error
+                except Exception as e:
+                    topic = e
+                    topic.error = ctx_instance.topic_error = sys.exc_info()
                 context_obj['topic_elapsed'] = elapsed(start_time)
             else:  # ctx_instance has no topic
                 topic = ctx_instance._get_first_available_topic(index)
@@ -177,12 +174,9 @@ class VowsParallelRunner(object):
         def _run_teardown():
             try:
                 teardown()
-            except:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                topic = exc_value
-                error = ('teardown', exc_type, exc_value, exc_traceback)
-                topic.error = error
-                ctx_instance.topic_error = error
+            except Exception as e:
+                topic = e
+                topic.error = ctx_instance.topic_error = ('teardown', sys.exc_info())
 
         def _run_with_topic(topic):
             ctx_instance.topic_value = topic
@@ -193,12 +187,9 @@ class VowsParallelRunner(object):
                 try:
                     ctx_instance.topic_value = list(topic)
                     ctx_instance.generated_topic = True
-                except:
-                    exc_type, exc_value, exc_traceback = sys.exc_info()
-                    topic = exc_value
-                    error = (exc_type, exc_value, exc_traceback)
-                    topic.error = error
-                    ctx_instance.topic_error = error
+                except Exception as e:
+                    topic = e
+                    topic.error = ctx_instance.topic_error = sys.exc_info()
                     ctx_instance.topic_value = topic
 
             topic = ctx_instance.topic_value
@@ -254,12 +245,10 @@ class VowsParallelRunner(object):
         # execute ctx_instance.setup()
         try:
             ctx_instance.setup()
-        except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            topic = exc_value
-            error = ("setup", exc_type, exc_value, exc_traceback)
-            topic.error = error
-            ctx_instance.topic_error = error
+        except Exception as e:
+            topic = e
+            error = ('setup', sys.exc_info())
+            topic.error = ctx_instance.topic_error = error
         else:  # when no errors are raised
             topic = _init_topic()
 
@@ -307,18 +296,18 @@ class VowsParallelRunner(object):
             if self.on_vow_success:
                 self.on_vow_success(result_obj)
 
-        except Exception:
+        except:
             #   FIXME:
             #
             #   Either...
             #       *   Describe why we're catching every exception, or
             #       *   Fix to catch specific kinds of exceptions
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_type, err_value, err_traceback = sys.exc_info()
 
             result_obj['error'] = {
-                'type': exc_type,
-                'value': exc_value,
-                'traceback': exc_traceback
+                'type': err_type,
+                'value': err_value,
+                'traceback': err_traceback
             }
             if self.on_vow_error:
                 self.on_vow_error(result_obj)
