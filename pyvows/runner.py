@@ -26,6 +26,10 @@ from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 
 class VowsParallelRunner(object):
     #   FIXME: Add Docstring
+
+    # Class is called from `pyvows.core:Vows.run()`,
+    # which is called from `pyvows.cli.run()`
+
     pool = Pool(1000)
 
     def __init__(self, vows, context_class, on_vow_success, on_vow_error):
@@ -99,6 +103,9 @@ class VowsParallelRunner(object):
 
     def run(self):
         #   FIXME: Add Docstring
+
+        # called from `pyvows.core:Vows.run()`,
+        # which is called from `pyvows.cli.run()`
 
         start_time = time.time()
         result = VowsResult()
