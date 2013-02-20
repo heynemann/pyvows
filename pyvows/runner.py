@@ -52,9 +52,9 @@ class VowsParallelRunner(object):
             code = obj.__func__.__code__
         return code
 
-    def _get_topics_for(self, topic_function, context_instance):
+    def _get_topics_for(self, topic_function, ctx_instance):
         #   FIXME: Add Docstring
-        if not context_instance.parent:
+        if not ctx_instance.parent:
             return []
 
         # check for async topic
@@ -77,8 +77,8 @@ class VowsParallelRunner(object):
 
         # prepare to create `topics` list
         topics = []
-        child = context_instance
-        context = context_instance.parent
+        child = ctx_instance
+        context = ctx_instance.parent
 
         # populate `topics` list
         for i in range(expected_args):
@@ -117,11 +117,11 @@ class VowsParallelRunner(object):
 
         return result
 
-    def run_context(self, ctx_collection, name, context_instance):
+    def run_context(self, ctx_collection, name, ctx_instance):
         #   FIXME: Add Docstring
-        self.pool.spawn(self.run_context_async, ctx_collection, name, context_instance)
+        self.pool.spawn(self.run_context_async, ctx_collection, name, ctx_instance)
 
-    def run_context_async(self, ctx_collection, name, context_instance, index=-1):
+    def run_context_async(self, ctx_collection, name, ctx_instance, index=-1):
         #   FIXME: Add Docstring
 
         context_obj = {
@@ -129,67 +129,68 @@ class VowsParallelRunner(object):
             'topic_elapsed': 0,
             'contexts': [],
             'tests': [],
-            'filename': inspect.getsourcefile(context_instance.__class__)
+            'filename': inspect.getsourcefile(ctx_instance.__class__)
         }
         ctx_collection.append(context_obj)
 
-        context_instance.index = index
-        context_instance.pool = self.pool
+        ctx_instance.index = index
+        ctx_instance.pool = self.pool
+
         try:
-            context_instance.setup()
+            ctx_instance.setup()
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             topic = exc_value
             error = ("setup", exc_type, exc_value, exc_traceback)
             topic.error = error
-            context_instance.topic_error = error
+            ctx_instance.topic_error = error
         else:
             # FIXME: <Under what circumstances does this code run?>
             topic = None
-            if hasattr(context_instance, 'topic'):
+            if hasattr(ctx_instance, 'topic'):
                 start_time = time.time()
                 try:
-                    topic_func = getattr(context_instance, 'topic')
-                    topic_list = self._get_topics_for(topic_func, context_instance)
+                    topic_func = getattr(ctx_instance, 'topic')
+                    topic_list = self._get_topics_for(topic_func, ctx_instance)
                     topic = topic_func(*topic_list)
                 except:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
                     topic = exc_value
                     error = (exc_type, exc_value, exc_traceback)
                     topic.error = error
-                    context_instance.topic_error = error
+                    ctx_instance.topic_error = error
 
                 context_obj['topic_elapsed'] = float(round(time.time() - start_time, 6))
             else:
-                topic = context_instance._get_first_available_topic(index)
+                topic = ctx_instance._get_first_available_topic(index)
 
-        teardown = FunctionWrapper(context_instance.teardown)
+        teardown = FunctionWrapper(ctx_instance.teardown)
 
         def run_with_topic(topic):
-            context_instance.topic_value = topic
+            ctx_instance.topic_value = topic
 
             is_generator = inspect.isgenerator(topic)
             if is_generator:
                 try:
-                    context_instance.topic_value = list(topic)
-                    context_instance.generated_topic = True
+                    ctx_instance.topic_value = list(topic)
+                    ctx_instance.generated_topic = True
                 except:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
                     topic = exc_value
                     error = (exc_type, exc_value, exc_traceback)
                     topic.error = error
-                    context_instance.topic_error = error
-                    context_instance.topic_value = topic
+                    ctx_instance.topic_error = error
+                    ctx_instance.topic_value = topic
 
-            topic = context_instance.topic_value
+            topic = ctx_instance.topic_value
 
             special_names = set(('setup', 'teardown', 'topic'))
-            if hasattr(context_instance, 'ignored_members'):
-                special_names.update(context_instance.ignored_members)
+            if hasattr(ctx_instance, 'ignored_members'):
+                special_names.update(ctx_instance.ignored_members)
 
             context_members = filter(
                 lambda member: not (member[0] in special_names or member[0].startswith('_')),
-                inspect.getmembers(type(context_instance))
+                inspect.getmembers(type(ctx_instance))
             )
 
             def iterate_members(topic, index=-1, enumerated=False):
@@ -198,7 +199,7 @@ class VowsParallelRunner(object):
                         self.run_vow(
                             context_obj['tests'],
                             topic,
-                            context_instance,
+                            ctx_instance,
                             teardown.wrap(member),
                             member_name,
                             enumerated=enumerated)
@@ -208,12 +209,12 @@ class VowsParallelRunner(object):
                         if not issubclass(member, self.context_class):
                             member = type(name, (member, self.context_class), {})
 
-                        child_context_instance = member(context_instance)
-                        child_context_instance.pool = self.pool
-                        child_context_instance.teardown = teardown.wrap(child_context_instance.teardown)
+                        child_ctx_instance = member(ctx_instance)
+                        child_ctx_instance.pool = self.pool
+                        child_ctx_instance.teardown = teardown.wrap(child_ctx_instance.teardown)
                         self.pool.spawn(
                             self.run_context_async,
-                            context_obj['contexts'], member_name, child_context_instance, index
+                            context_obj['contexts'], member_name, child_ctx_instance, index
                         )
 
             if is_generator:
@@ -223,7 +224,7 @@ class VowsParallelRunner(object):
                 iterate_members(topic)
 
             if hasattr(topic, 'error'):
-                context_instance.topic_error = topic.error
+                ctx_instance.topic_error = topic.error
 
         if isinstance(topic, VowsAsyncTopic):
             def handle_callback(*args, **kw):
@@ -240,19 +241,19 @@ class VowsParallelRunner(object):
             topic = exc_value
             error = ("teardown", exc_type, exc_value, exc_traceback)
             topic.error = error
-            context_instance.topic_error = error
+            ctx_instance.topic_error = error
 
-    def run_vow(self, tests_col, topic, context_instance, member, member_name, enumerated=False):
+    def run_vow(self, tests_collection, topic, ctx_instance, member, member_name, enumerated=False):
         #   FIXME: Add Docstring
-        self.pool.spawn(self.run_vow_async, tests_col, topic, context_instance, member, member_name, enumerated)
+        self.pool.spawn(self.run_vow_async, tests_collection, topic, ctx_instance, member, member_name, enumerated)
 
-    def run_vow_async(self, tests_col, topic, context_instance, member, member_name, enumerated):
+    def run_vow_async(self, tests_collection, topic, ctx_instance, member, member_name, enumerated):
         #   FIXME: Add Docstring
 
         start_time = time.time()
         filename, lineno = self._file_info_for(member._original)
         result_obj = {
-            'context_instance': context_instance,
+            'ctx_instance': ctx_instance,
             'name': member_name,
             'enumerated': enumerated,
             'result': None,
@@ -265,7 +266,7 @@ class VowsParallelRunner(object):
         }
 
         try:
-            result = member(context_instance, topic)
+            result = member(ctx_instance, topic)
             result_obj['result'] = result
             result_obj['succeeded'] = True
             if self.on_vow_success:
@@ -288,6 +289,6 @@ class VowsParallelRunner(object):
                 self.on_vow_error(result_obj)
 
         result_obj['elapsed'] = time.time() - start_time
-        tests_col.append(result_obj)
+        tests_collection.append(result_obj)
 
         return result_obj
