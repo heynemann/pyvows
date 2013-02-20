@@ -124,6 +124,9 @@ class VowsParallelRunner(object):
     def run_context_async(self, ctx_collection, name, ctx_instance, index=-1):
         #   FIXME: Add Docstring
 
+        #-----------------------------------------------------------------------
+        # Local variables and defs
+        #-----------------------------------------------------------------------
         context_obj = {
             'name': name,
             'topic_elapsed': 0,
@@ -131,23 +134,17 @@ class VowsParallelRunner(object):
             'tests': [],
             'filename': inspect.getsourcefile(ctx_instance.__class__)
         }
+
         ctx_collection.append(context_obj)
 
         ctx_instance.index = index
         ctx_instance.pool = self.pool
 
-        # execute ctx_instance.setup()
-        try:
-            ctx_instance.setup()
-        except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            topic = exc_value
-            error = ("setup", exc_type, exc_value, exc_traceback)
-            topic.error = error
-            ctx_instance.topic_error = error
-        else:
-            # FIXME: <Under what circumstances does this code run?>
+        def _init_topic():
             topic = None
+
+            elapsed = lambda start_time: float(round(time.time() - start_time, 6))
+
             if hasattr(ctx_instance, 'topic'):
                 start_time = time.time()
                 try:
@@ -160,14 +157,23 @@ class VowsParallelRunner(object):
                     error = (exc_type, exc_value, exc_traceback)
                     topic.error = error
                     ctx_instance.topic_error = error
-
-                context_obj['topic_elapsed'] = float(round(time.time() - start_time, 6))
-            else:
+                context_obj['topic_elapsed'] = elapsed(start_time)
+            else:  # ctx_instance has no topic
                 topic = ctx_instance._get_first_available_topic(index)
 
-        teardown = FunctionWrapper(ctx_instance.teardown)
+            return topic
 
-        def run_with_topic(topic):
+        def _run_teardown():
+            try:
+                teardown()
+            except:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                topic = exc_value
+                error = ('teardown', exc_type, exc_value, exc_traceback)
+                topic.error = error
+                ctx_instance.topic_error = error
+
+        def _run_with_topic(topic):
             ctx_instance.topic_value = topic
 
             # setup generated topics if needed
@@ -196,7 +202,7 @@ class VowsParallelRunner(object):
                 inspect.getmembers(type(ctx_instance))
             )
 
-            def iterate_members(topic, index=-1, enumerated=False):
+            def _iterate_members(topic, index=-1, enumerated=False):
                 for member_name, member in context_members:
                     if inspect.ismethod(member):
                         self.run_vow(
@@ -222,31 +228,43 @@ class VowsParallelRunner(object):
 
             if is_generator:
                 for index, topic_value in enumerate(topic):
-                    iterate_members(topic_value, index, enumerated=True)
+                    _iterate_members(topic_value, index, enumerated=True)
             else:
-                iterate_members(topic)
+                _iterate_members(topic)
 
             if hasattr(topic, 'error'):
                 ctx_instance.topic_error = topic.error
 
-        # run the topic/async topic
-        if isinstance(topic, VowsAsyncTopic):
-            def handle_callback(*args, **kw):
-                run_with_topic(VowsAsyncTopicValue(args, kw))
 
-            topic(handle_callback)
-        else:
-            run_with_topic(topic)
+        #-----------------------------------------------------------------------
+        # Begin
+        #-----------------------------------------------------------------------
 
-        # execute teardown()
+        # execute ctx_instance.setup()
         try:
-            teardown()
+            ctx_instance.setup()
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             topic = exc_value
-            error = ("teardown", exc_type, exc_value, exc_traceback)
+            error = ("setup", exc_type, exc_value, exc_traceback)
             topic.error = error
             ctx_instance.topic_error = error
+        else:  # when no errors are raised
+            topic = _init_topic()
+
+        # Wrap teardown so it gets called at the appropriate time
+        teardown = FunctionWrapper(ctx_instance.teardown)
+
+        # run the topic/async topic
+        if isinstance(topic, VowsAsyncTopic):
+            def handle_callback(*args, **kw):
+                _run_with_topic(VowsAsyncTopicValue(args, kw))
+            topic(handle_callback)
+        else:
+            _run_with_topic(topic)
+
+        # execute teardown()
+        _run_teardown()
 
     def run_vow(self, tests_collection, topic, ctx_instance, member, member_name, enumerated=False):
         #   FIXME: Add Docstring
