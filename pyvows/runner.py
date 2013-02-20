@@ -122,7 +122,6 @@ class VowsParallelRunner(object):
 
         self.pool.join()
 
-        end_time = time.time()
         result.elapsed_time = elapsed(start_time)
 
         # helpful for debugging
