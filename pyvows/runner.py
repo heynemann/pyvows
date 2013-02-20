@@ -34,7 +34,7 @@ class VowsParallelRunner(object):
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
 
-    def _file_info_for(self, member):
+    def _get_file_info_for(self, member):
         #   FIXME: Add Docstring
         code = self._get_code_for(member)
 
@@ -274,7 +274,7 @@ class VowsParallelRunner(object):
         #   FIXME: Add Docstring
 
         start_time = time.time()
-        filename, lineno = self._file_info_for(member._original)
+        filename, lineno = self._get_file_info_for(member._original)
         result_obj = {
             'ctx_instance': ctx_instance,
             'name': member_name,
