@@ -34,15 +34,6 @@ class VowsParallelRunner(object):
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
 
-    def _get_file_info_for(self, member):
-        #   FIXME: Add Docstring
-        code = self._get_code_for(member)
-
-        filename = code.co_filename
-        lineno = code.co_firstlineno
-
-        return filename, lineno
-
     def _get_code_for(self, obj):
         #   FIXME: Add Comment description
         code = None
@@ -51,6 +42,15 @@ class VowsParallelRunner(object):
         elif hasattr(obj, '__func__'):
             code = obj.__func__.__code__
         return code
+
+    def _get_file_info_for(self, member):
+        #   FIXME: Add Docstring
+        code = self._get_code_for(member)
+
+        filename = code.co_filename
+        lineno = code.co_firstlineno
+
+        return filename, lineno
 
     def _get_topics_for(self, topic_function, ctx_instance):
         #   FIXME: Add Docstring
