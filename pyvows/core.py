@@ -84,8 +84,8 @@ class Vows(object):
     AsyncTopic      = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
     Assert          = VowsAssertion()
-  
-  
+
+
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
         write `from pyvows import Vows, expect` in your test module, then extend
@@ -101,7 +101,7 @@ class Vows(object):
         The `setup` and `teardown` methods aren't typically needed.  But
         they are available if your test suite has extra pre- and
         post-testing work to be done in any given `Context`.
-        
+
         '''
 
         def __init__(self, parent=None):
@@ -132,7 +132,7 @@ class Vows(object):
         def ignore(self, *args):
             '''Appends `*args` to `ignored_members`.  (Methods listed in
             `ignored_members` are considered "not a test method" by PyVows.)
-            
+
             '''
             for arg in args:
                 self.ignored_members.append(arg)
@@ -145,7 +145,7 @@ class Vows(object):
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
-                
+
             '''
             pass
 
@@ -157,7 +157,7 @@ class Vows(object):
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
-                
+
             '''
             pass
 
@@ -182,6 +182,33 @@ class Vows(object):
             expect(topic).not_to_be_empty()
 
 
+    @classmethod
+    def collect(cls, path, pattern):
+        #   FIXME: Add Docstring
+        #
+        #   *   Only used in `cli.py`
+        path  = os.path.abspath(path)
+        files = locate(pattern, path)
+        sys.path.insert(0, path)
+
+        for module_path in files:
+            module_name = os.path.splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
+            __import__(module_name)
+
+    @classmethod
+    def run(cls, on_vow_success, on_vow_error):
+        #   FIXME: Add Docstring
+        #
+        #       *   Used by `run()` in `cli.py`
+        #       *   Please add a useful description if you wrote this! :)
+        runner = VowsParallelRunner(Vows.contexts,
+                                    Vows.Context,
+                                    on_vow_success,
+                                    on_vow_error)
+        return runner.run()
+
+
+    ### Decorators
     @staticmethod
     def async_topic(topic):
         return async_topic(topic)
@@ -189,8 +216,8 @@ class Vows(object):
     @staticmethod
     def asyncTopic(topic):
         #   FIXME: Add Comment
-        warnings.warn( 'The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.', 
-                        DeprecationWarning, 
+        warnings.warn( 'The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.',
+                        DeprecationWarning,
                         stacklevel=2)
         return async_topic(topic)
 
@@ -201,7 +228,7 @@ class Vows(object):
         Test batches in PyVows are the largest unit of tests. The convention
         is to have one test batch per file, and have the batch’s class match
         the file name.
-        
+
         '''
         Vows.contexts[method.__name__] = method
         _batch(method)
@@ -263,28 +290,3 @@ class Vows(object):
         '''
         #   http://pyvows.org/#-assertions
         return _create_assertions(method, Vows.Assert)
-
-    @classmethod
-    def collect(cls, path, pattern):
-        #   FIXME: Add Docstring
-        #
-        #   *   Only used in `cli.py`
-        path  = os.path.abspath(path)
-        files = locate(pattern, path)
-        sys.path.insert(0, path)
-        
-        for module_path in files:
-            module_name = os.path.splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
-            __import__(module_name)
-
-    @classmethod
-    def run(cls, on_vow_success, on_vow_error):
-        #   FIXME: Add Docstring
-        #
-        #       *   Used by `run()` in `cli.py`
-        #       *   Please add a useful description if you wrote this! :)
-        runner = VowsParallelRunner(Vows.contexts,
-                                    Vows.Context,
-                                    on_vow_success,
-                                    on_vow_error)
-        return runner.run()
