@@ -136,6 +136,7 @@ class VowsParallelRunner(object):
         ctx_instance.index = index
         ctx_instance.pool = self.pool
 
+        # execute ctx_instance.setup()
         try:
             ctx_instance.setup()
         except:
@@ -169,6 +170,7 @@ class VowsParallelRunner(object):
         def run_with_topic(topic):
             ctx_instance.topic_value = topic
 
+            # setup generated topics if needed
             is_generator = inspect.isgenerator(topic)
             if is_generator:
                 try:
@@ -183,11 +185,12 @@ class VowsParallelRunner(object):
                     ctx_instance.topic_value = topic
 
             topic = ctx_instance.topic_value
-
             special_names = set(('setup', 'teardown', 'topic'))
+
             if hasattr(ctx_instance, 'ignored_members'):
                 special_names.update(ctx_instance.ignored_members)
 
+            # remove any special methods from context_members
             context_members = filter(
                 lambda member: not (member[0] in special_names or member[0].startswith('_')),
                 inspect.getmembers(type(ctx_instance))
@@ -226,6 +229,7 @@ class VowsParallelRunner(object):
             if hasattr(topic, 'error'):
                 ctx_instance.topic_error = topic.error
 
+        # run the topic/async topic
         if isinstance(topic, VowsAsyncTopic):
             def handle_callback(*args, **kw):
                 run_with_topic(VowsAsyncTopicValue(args, kw))
@@ -234,6 +238,7 @@ class VowsParallelRunner(object):
         else:
             run_with_topic(topic)
 
+        # execute teardown()
         try:
             teardown()
         except:
