@@ -26,11 +26,11 @@ from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 
 class VowsParallelRunner(object):
     #   FIXME: Add Docstring
+    pool = Pool(1000)
 
     def __init__(self, vows, context_class, on_vow_success, on_vow_error):
         self.vows = vows
         self.context_class = context_class
-        self.pool = Pool(1000)
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
 
