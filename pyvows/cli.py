@@ -52,6 +52,7 @@ class Messages(object):  # pragma: no cover
     profile_threshold = 'Tests taking longer than %(metavar)s seconds are considered slow. (default: %(default)s)'
     no_color = 'Turn off colorized output. (default: %(default)s)'
     progress = 'Show progress ticks during testing. (default: %(default)s)'
+    template = 'Print a PyVows test file template. (Disables testing)'
 
 
 class Parser(argparse.ArgumentParser):
@@ -102,6 +103,10 @@ class Parser(argparse.ArgumentParser):
             help=Messages.profile_threshold, metavar=metavar('num')
         )
 
+        ### Aux/Unconventional
+        aux_group = self.add_argument_group('Utility')
+        aux_group.add_argument('--template', action='store_true', dest='template', default=False, help=Messages.template)
+
         ### Misc
         self.add_argument('--no-color', action='store_true', default=False, help=Messages.no_color)
         self.add_argument('--progress', action='store_true', dest='progress', default=False, help=Messages.progress)
@@ -135,6 +140,12 @@ def main():
     from pyvows.reporting import VowsDefaultReporter
 
     arguments = Parser().parse_args()
+
+    if arguments.template:
+        from pyvows.utils import template
+        template()
+        sys.exit()  # Exit after printing template, since it's
+                    # supposed to be redirected from STDOUT by the user
 
     path, pattern = arguments.path, arguments.pattern
     if path and isfile(path):
