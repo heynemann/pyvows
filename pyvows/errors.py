@@ -69,8 +69,5 @@ class VowsInternalError(Exception):
         '''
         return msg
 
-
     def __unicode__(self):
         return self.__str__()
-
-
