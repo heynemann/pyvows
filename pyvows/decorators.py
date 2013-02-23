@@ -13,8 +13,7 @@ from functools import wraps
 import re
 
 from pyvows.async_topic import VowsAsyncTopic
-from pyvows.errors      import VowsAssertionError
-from pyvows.utils       import VowsAssertion
+from pyvows.errors import VowsAssertionError
 
 
 def _batch(method):
@@ -84,7 +83,7 @@ def async_topic(topic):
     def wrapper(*args, **kw):
         return VowsAsyncTopic(topic, args, kw)
     wrapper._original = topic
-    wrapper.__name__  = topic.__name__
+    wrapper.__name__ = topic.__name__
     return wrapper
 
 

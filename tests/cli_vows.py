@@ -8,10 +8,9 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 import argparse
-from pprint import pprint
 
 from pyvows import Vows, expect
-from pyvows.cli import Messages, Parser
+from pyvows.cli import Parser
 
 
 mock_args = (
@@ -35,10 +34,9 @@ class PyVowsCommandLineInterface(Vows.Context):
         def we_dont_get_an_error(self, topic):
             expect(topic).not_to_be_an_error()
 
-
         class ParsesCorrectly(Vows.Context):
             def topic(self, parser):
-                return parser.parse_args( mock_args  )
+                return parser.parse_args(mock_args)
 
             def should_contain_cover(self, topic):
                 expect(topic).to_include('cover')

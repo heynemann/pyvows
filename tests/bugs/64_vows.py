@@ -8,7 +8,7 @@
 # Copyright (c) 2013 nathan dotz
 
 from pyvows import Vows, expect
-from pyvows.core import VowsAssertionError
+from pyvows.errors import VowsAssertionError
 from pyvows.result import VowsResult
 from pyvows.reporting import VowsTestReporter  # , VowsDefaultReporter
 

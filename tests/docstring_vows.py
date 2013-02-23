@@ -2,7 +2,7 @@
 
 import types
 
-from pyvows         import Vows, expect
+from pyvows import Vows, expect
 
 
 from pyvows import (
@@ -15,30 +15,30 @@ from pyvows import (
     runner,
     version)
 from pyvows.assertions import (
-    __init__    as assertions_init,
-    emptiness   as assertions_emptiness,
-    equality    as assertions_equality,
-    inclusion   as assertions_inclusion,
-    length      as assertions_length,
-    like        as assertions_like)
+    __init__ as assertions_init,
+    emptiness as assertions_emptiness,
+    equality as assertions_equality,
+    inclusion as assertions_inclusion,
+    length as assertions_length,
+    like as assertions_like)
 from pyvows.assertions.types import (
-    __init__    as assertions_types_init,
-    boolean     as assertions_types_boolean,
-    classes     as assertions_types_classes,
-    errors      as assertions_types_errors,
-    function    as assertions_types_function,
-    nullable    as assertions_types_nullable,
-    numeric     as assertions_types_numeric,
-    regexp      as assertions_types_regexp)
-from pyvows.errors  import (
+    __init__ as assertions_types_init,
+    boolean as assertions_types_boolean,
+    classes as assertions_types_classes,
+    errors as assertions_types_errors,
+    function as assertions_types_function,
+    nullable as assertions_types_nullable,
+    numeric as assertions_types_numeric,
+    regexp as assertions_types_regexp)
+from pyvows.errors import (
     VowsAssertionError,)
 from pyvows.reporting import (
-    __init__    as reporting_init,
-    common      as reporting_common,
-    coverage    as reporting_coverage,
-    profile     as reporting_profile,
-    test        as reporting_test,
-    xunit       as reporting_xunit)
+    __init__ as reporting_init,
+    common as reporting_common,
+    coverage as reporting_coverage,
+    profile as reporting_profile,
+    test as reporting_test,
+    xunit as reporting_xunit)
 
 PYVOWS_MODULES = (
     # general modules
@@ -50,7 +50,7 @@ PYVOWS_MODULES = (
     core,
     runner,
     version,
-    # assertion modules (general) 
+    # assertion modules (general)
     assertions_init,
     assertions_emptiness,
     assertions_equality,
@@ -76,15 +76,16 @@ PYVOWS_MODULES = (
     reporting_test,
     reporting_xunit,)
 
+
 @Vows.assertion
 def to_have_a_docstring(topic):
-    '''Custom assertion.  Raises a VowsAssertionError if `topic` has no 
+    '''Custom assertion.  Raises a VowsAssertionError if `topic` has no
     docstring.
-    
+
     '''
     if not hasattr(topic, '__doc__'):
         raise VowsAssertionError('Expected topic({0}) to have a docstring', topic)
-    
+
 
 @Vows.batch
 class EachPyvowsModule(Vows.Context):
@@ -92,6 +93,6 @@ class EachPyvowsModule(Vows.Context):
         for mod in PYVOWS_MODULES:
             if isinstance(mod, types.ModuleType):
                 yield mod
-        
+
     def should_have_a_docstring(self, topic):
         expect(topic).to_have_a_docstring()

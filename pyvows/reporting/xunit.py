@@ -30,7 +30,7 @@ class XUnitReporter(object):
     def to_xml(self, encoding='utf-8'):
         #   FIXME: Add Docstring
         document = self.create_report_document()
-        return document.toxml(encoding = encoding)
+        return document.toxml(encoding=encoding)
 
     def summarize_results(self, result):
         #   FIXME: Add Docstring
@@ -78,7 +78,7 @@ class XUnitReporter(object):
             testcase_node = document.createElement('testcase')
             testcase_node.setAttribute('classname', str(test_stats['context']))
             testcase_node.setAttribute('name', str(test_stats['name']))
-            testcase_node.setAttribute('time', '{time:.3f}'.format(time = test_stats['taken']))
+            testcase_node.setAttribute('time', '{time:.3f}'.format(time=test_stats['taken']))
             parent_node.appendChild(testcase_node)
 
             if not test['succeeded']:
