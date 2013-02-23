@@ -68,6 +68,9 @@ class Parser(argparse.ArgumentParser):
 
         self.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern, metavar=metavar('pattern'))
 
+        ### Filtering
+        self.add_argument('-e', '--exclude', action='append', default=[], help=Messages.exclude, metavar=metavar('exclude'))
+
         ### Coverage
         cover_group = self.add_argument_group('Test Coverage')
         cover_group.add_argument('-c', '--cover', action='store_true', default=False, help=Messages.cover)

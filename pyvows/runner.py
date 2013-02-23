@@ -105,6 +105,8 @@ class VowsParallelRunner(object):
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
 
+        self.exclusion_patterns = exclusion_patterns
+
     def run(self):
         #   FIXME: Add Docstring
 
@@ -265,13 +267,6 @@ class VowsParallelRunner(object):
 
     def run_vow(self, tests_collection, topic, ctx_instance, member, member_name, enumerated=False):
         #   FIXME: Add Docstring
-
-        for e in self.exclusion_patterns:
-            if re.search(e, member_name):
-                return
-
-        self.pool.spawn(self.async_run_vow, tests_collection, topic, ctx_instance, member, member_name, enumerated)
-
         for e in self.exclusion_patterns:
             if re.search(e, member_name):
                 return
