@@ -4,3 +4,16 @@ build
 dist
 pyVows.egg-info
 .tox
+
+# jetbrains
+.idea/
+pyvows.iml
+
+# rope
+.ropeproject/
+
+# virtualenv
+.Python
+bin/
+include/
+lib/

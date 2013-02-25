@@ -12,10 +12,10 @@ Contains the classes `VowsParallelRunner` and `FunctionWrapper`.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-from functools import wraps
 import inspect
 import sys
 import time
+import re
 
 from gevent.pool import Pool
 
@@ -23,7 +23,6 @@ from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import FunctionWrapper
 from pyvows.result import VowsResult
 from pyvows.utils import elapsed
-
 
 
 def _get_code_for(obj):
@@ -92,8 +91,6 @@ def _get_topics_for(topic_function, ctx_instance):
     return topics
 
 
-
-
 class VowsParallelRunner(object):
     #   FIXME: Add Docstring
 
@@ -102,11 +99,13 @@ class VowsParallelRunner(object):
 
     pool = Pool(1000)
 
-    def __init__(self, vows, context_class, on_vow_success, on_vow_error):
+    def __init__(self, vows, context_class, on_vow_success, on_vow_error, exclusion_patterns):
         self.vows = vows
         self.context_class = context_class
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
+
+        self.exclusion_patterns = exclusion_patterns
 
     def run(self):
         #   FIXME: Add Docstring
@@ -124,9 +123,7 @@ class VowsParallelRunner(object):
 
         result.elapsed_time = elapsed(start_time)
 
-        # helpful for debugging
-        #from pprint import pprint
-        #pprint(result.__dict__)
+        self.exclusion_patterns = [re.compile(x) for x in self.exclusion_patterns]
 
         return result
 
@@ -147,6 +144,10 @@ class VowsParallelRunner(object):
             'tests': [],
             'filename': inspect.getsourcefile(ctx_instance.__class__)
         }
+
+        for e in self.exclusion_patterns:
+            if re.search(e, name):
+                return
 
         ctx_collection.append(context_obj)
 
@@ -237,11 +238,9 @@ class VowsParallelRunner(object):
             if hasattr(topic, 'error'):
                 ctx_instance.topic_error = topic.error
 
-
         #-----------------------------------------------------------------------
         # Begin
         #-----------------------------------------------------------------------
-
         # execute ctx_instance.setup()
         try:
             ctx_instance.setup()
@@ -268,6 +267,10 @@ class VowsParallelRunner(object):
 
     def run_vow(self, tests_collection, topic, ctx_instance, member, member_name, enumerated=False):
         #   FIXME: Add Docstring
+        for e in self.exclusion_patterns:
+            if re.search(e, member_name):
+                return
+
         self.pool.spawn(self.run_vow_async, tests_collection, topic, ctx_instance, member, member_name, enumerated)
 
     def run_vow_async(self, tests_collection, topic, ctx_instance, member, member_name, enumerated):
