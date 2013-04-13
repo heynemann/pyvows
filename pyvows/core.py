@@ -78,7 +78,7 @@ class Vows(object):
     aren't necessary for writing tests.
 
     '''
-    contexts = {}
+    batches = contexts = {}
     AsyncTopic = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
     Assert = VowsAssertion()
@@ -277,7 +277,7 @@ class Vows(object):
         #
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
-        runner = VowsParallelRunner(Vows.contexts,
+        runner = VowsParallelRunner(Vows.batches,
                                     Vows.Context,
                                     on_vow_success,
                                     on_vow_error,
