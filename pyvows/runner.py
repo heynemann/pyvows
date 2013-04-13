@@ -104,8 +104,9 @@ class VowsParallelRunner(object):
         self.context_class = context_class
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
-
         self.exclusion_patterns = exclusion_patterns
+        if self.exclusion_patterns:
+            self.exclusion_patterns = set([re.compile(x) for x in self.exclusion_patterns])
 
     def run(self):
         #   FIXME: Add Docstring
@@ -115,16 +116,10 @@ class VowsParallelRunner(object):
 
         start_time = time.time()
         result = VowsResult()
-
         for name, context in self.vows.iteritems():
             self.run_context(result.contexts, name, context(None))
-
         self.pool.join()
-
         result.elapsed_time = elapsed(start_time)
-
-        self.exclusion_patterns = [re.compile(x) for x in self.exclusion_patterns]
-
         return result
 
     def run_context(self, ctx_collection, name, ctx_instance):
@@ -145,8 +140,8 @@ class VowsParallelRunner(object):
             'filename': inspect.getsourcefile(ctx_instance.__class__)
         }
 
-        for e in self.exclusion_patterns:
-            if re.search(e, name):
+        for pattern in self.exclusion_patterns:
+            if pattern.search(name):
                 return
 
         ctx_collection.append(context_obj)
@@ -267,8 +262,8 @@ class VowsParallelRunner(object):
 
     def run_vow(self, tests_collection, topic, ctx_instance, member, member_name, enumerated=False):
         #   FIXME: Add Docstring
-        for e in self.exclusion_patterns:
-            if re.search(e, member_name):
+        for pattern in self.exclusion_patterns:
+            if pattern.search(member_name):
                 return
 
         self.pool.spawn(self.run_vow_async, tests_collection, topic, ctx_instance, member, member_name, enumerated)
