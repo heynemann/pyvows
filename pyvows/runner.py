@@ -99,8 +99,8 @@ class VowsParallelRunner(object):
 
     pool = Pool(1000)
 
-    def __init__(self, vows, context_class, on_vow_success, on_vow_error, exclusion_patterns):
-        self.vows = vows
+    def __init__(self, batches, context_class, on_vow_success, on_vow_error, exclusion_patterns):
+        self.batches = batches # a batch is just a "top-level context"
         self.context_class = context_class
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
@@ -116,7 +116,7 @@ class VowsParallelRunner(object):
 
         start_time = time.time()
         result = VowsResult()
-        for ctx_name, context in self.vows.iteritems():
+        for ctx_name, context in self.batches.iteritems():
             self.run_context(result.contexts, ctx_name, context(None))
         self.pool.join()
         result.elapsed_time = elapsed(start_time)
@@ -203,14 +203,13 @@ class VowsParallelRunner(object):
             def _iterate_members(topic, index=-1, enumerated=False):
                 
                 # methods
-                for member_name, member in context_members:
-                    if inspect.ismethod(member):
-                        vow_name = member_name 
+                for vow_name, vow in context_members:
+                    if inspect.ismethod(vow):
                         self.run_vow(
                             context_obj['tests'],
                             topic,
                             ctx_instance,
-                            teardown.wrap(member),
+                            teardown.wrap(vow),
                             vow_name,
                             enumerated=enumerated)
                 
