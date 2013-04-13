@@ -128,6 +128,10 @@ class VowsParallelRunner(object):
 
     def run_context_async(self, ctx_collection, ctx_name, ctx_instance, index=-1):
         #   FIXME: Add Docstring
+        
+        for pattern in self.exclusion_patterns:
+            if pattern.search(ctx_name):
+                return
 
         #-----------------------------------------------------------------------
         # Local variables and defs
@@ -140,12 +144,7 @@ class VowsParallelRunner(object):
             'filename': inspect.getsourcefile(ctx_instance.__class__)
         }
 
-        for pattern in self.exclusion_patterns:
-            if pattern.search(ctx_name):
-                return
-
         ctx_collection.append(context_obj)
-
         ctx_instance.index = index
         ctx_instance.pool = self.pool
 
@@ -272,7 +271,6 @@ class VowsParallelRunner(object):
         for pattern in self.exclusion_patterns:
             if pattern.search(vow_name):
                 return
-
         self.pool.spawn(self.run_vow_async, tests_collection, topic, ctx_instance, vow, vow_name, enumerated)
 
     def run_vow_async(self, tests_collection, topic, ctx_instance, vow, vow_name, enumerated):
