@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''This module contains the magic that makes PyVows run its tests *fast*.
 
-Contains the classes `VowsParallelRunner` and `FunctionWrapper`.
+Contains `VowsParallelRunner` class.
 '''
 
 
