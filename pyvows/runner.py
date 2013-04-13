@@ -11,7 +11,7 @@ Contains the classes `VowsParallelRunner` and `FunctionWrapper`.
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
-
+ 
 import inspect
 import sys
 import time
@@ -104,8 +104,9 @@ class VowsParallelRunner(object):
         self.context_class = context_class
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
-
         self.exclusion_patterns = exclusion_patterns
+        if self.exclusion_patterns:
+            self.exclusion_patterns = set([re.compile(x) for x in self.exclusion_patterns])
 
     def run(self):
         #   FIXME: Add Docstring
@@ -115,38 +116,32 @@ class VowsParallelRunner(object):
 
         start_time = time.time()
         result = VowsResult()
-
-        for name, context in self.vows.iteritems():
-            self.run_context(result.contexts, name, context(None))
-
+        for ctx_name, context in self.vows.iteritems():
+            self.run_context(result.contexts, ctx_name, context(None))
         self.pool.join()
-
         result.elapsed_time = elapsed(start_time)
-
-        self.exclusion_patterns = [re.compile(x) for x in self.exclusion_patterns]
-
         return result
 
-    def run_context(self, ctx_collection, name, ctx_instance):
+    def run_context(self, ctx_collection, ctx_name, ctx_instance):
         #   FIXME: Add Docstring
-        self.pool.spawn(self.run_context_async, ctx_collection, name, ctx_instance)
+        self.pool.spawn(self.run_context_async, ctx_collection, ctx_name, ctx_instance)
 
-    def run_context_async(self, ctx_collection, name, ctx_instance, index=-1):
+    def run_context_async(self, ctx_collection, ctx_name, ctx_instance, index=-1):
         #   FIXME: Add Docstring
 
         #-----------------------------------------------------------------------
         # Local variables and defs
         #-----------------------------------------------------------------------
         context_obj = {
-            'name': name,
+            'name': ctx_name,
             'topic_elapsed': 0,
             'contexts': [],
             'tests': [],
             'filename': inspect.getsourcefile(ctx_instance.__class__)
         }
 
-        for e in self.exclusion_patterns:
-            if re.search(e, name):
+        for pattern in self.exclusion_patterns:
+            if pattern.search(ctx_name):
                 return
 
         ctx_collection.append(context_obj)
@@ -206,27 +201,35 @@ class VowsParallelRunner(object):
             )
 
             def _iterate_members(topic, index=-1, enumerated=False):
+                
+                # methods
                 for member_name, member in context_members:
                     if inspect.ismethod(member):
+                        vow_name = member_name 
                         self.run_vow(
                             context_obj['tests'],
                             topic,
                             ctx_instance,
                             teardown.wrap(member),
-                            member_name,
+                            vow_name,
                             enumerated=enumerated)
-
-                for member_name, member in context_members:
-                    if inspect.isclass(member):
-                        if not issubclass(member, self.context_class):
-                            member = type(name, (member, self.context_class), {})
-
-                        child_ctx_instance = member(ctx_instance)
-                        child_ctx_instance.pool = self.pool
-                        child_ctx_instance.teardown = teardown.wrap(child_ctx_instance.teardown)
+                
+                # classes
+                for subctx_name, subctx in context_members:
+                    if inspect.isclass(subctx):
+                        # resolve user-defined Context classes
+                        if not issubclass(subctx, self.context_class):
+                            subctx = type(ctx_name, (subctx, self.context_class), {})
+                                                
+                        subctx_instance = subctx(ctx_instance)
+                        subctx_instance.pool = self.pool
+                        subctx_instance.teardown = teardown.wrap(subctx_instance.teardown)
                         self.pool.spawn(
                             self.run_context_async,
-                            context_obj['contexts'], member_name, child_ctx_instance, index
+                            context_obj['contexts'], 
+                            subctx_name, 
+                            subctx_instance, 
+                            index
                         )
 
             if is_generator:
@@ -265,23 +268,23 @@ class VowsParallelRunner(object):
         # execute teardown()
         _run_teardown()
 
-    def run_vow(self, tests_collection, topic, ctx_instance, member, member_name, enumerated=False):
+    def run_vow(self, tests_collection, topic, ctx_instance, vow, vow_name, enumerated=False):
         #   FIXME: Add Docstring
-        for e in self.exclusion_patterns:
-            if re.search(e, member_name):
+        for pattern in self.exclusion_patterns:
+            if pattern.search(vow_name):
                 return
 
-        self.pool.spawn(self.run_vow_async, tests_collection, topic, ctx_instance, member, member_name, enumerated)
+        self.pool.spawn(self.run_vow_async, tests_collection, topic, ctx_instance, vow, vow_name, enumerated)
 
-    def run_vow_async(self, tests_collection, topic, ctx_instance, member, member_name, enumerated):
+    def run_vow_async(self, tests_collection, topic, ctx_instance, vow, vow_name, enumerated):
         #   FIXME: Add Docstring
 
         start_time = time.time()
-        filename, lineno = _get_file_info_for(member._original)
+        filename, lineno = _get_file_info_for(vow._original)
 
         result_obj = {
             'context_instance': ctx_instance,
-            'name': member_name,
+            'name': vow_name,
             'enumerated': enumerated,
             'result': None,
             'topic': topic,
@@ -293,7 +296,7 @@ class VowsParallelRunner(object):
         }
 
         try:
-            result = member(ctx_instance, topic)
+            result = vow(ctx_instance, topic)
             result_obj['result'] = result
             result_obj['succeeded'] = True
             if self.on_vow_success:
