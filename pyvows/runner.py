@@ -203,14 +203,13 @@ class VowsParallelRunner(object):
             def _iterate_members(topic, index=-1, enumerated=False):
                 
                 # methods
-                for member_name, member in context_members:
-                    if inspect.ismethod(member):
-                        vow_name = member_name 
+                for vow_name, vow in context_members:
+                    if inspect.ismethod(vow):
                         self.run_vow(
                             context_obj['tests'],
                             topic,
                             ctx_instance,
-                            teardown.wrap(member),
+                            teardown.wrap(vow),
                             vow_name,
                             enumerated=enumerated)
                 
