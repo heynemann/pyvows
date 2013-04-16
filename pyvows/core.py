@@ -83,7 +83,7 @@ class Vows(object):
     AsyncTopicValue = VowsAsyncTopicValue
     Assert = VowsAssertion()
 
-    exclusion_patterns = []
+    exclusion_patterns = set()
 
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
@@ -107,8 +107,8 @@ class Vows(object):
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
-            self.ignored_members = ['topic', 'setup', 'teardown', 'ignore']
-
+            self.ignored_members = set(('topic', 'setup', 'teardown', 'ignore'))
+        
         def _get_first_available_topic(self, index=-1):
             if self.topic_value:
                 if index > -1 and isinstance(self.topic_value, (list, set, tuple)):
@@ -132,7 +132,7 @@ class Vows(object):
             `ignored_members` are considered "not a test method" by PyVows.)
             '''
             for arg in args:
-                self.ignored_members.append(arg)
+                self.ignored_members.add(arg)
 
         def setup(self):
             '''For use in your PyVows tests.  Define `setup` in your

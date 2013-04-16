@@ -200,8 +200,8 @@ class VowsParallelRunner(object):
             )
 
             def _iterate_members(topic, index=-1, enumerated=False):
-                vows        = {(vow_name,vow)       for vow_name, vow       in context_members if inspect.ismethod(vow)}
-                subcontexts = {(subctx_name,subctx) for subctx_name, subctx in context_members if inspect.isclass(subctx)}
+                vows        = set((vow_name,vow)       for vow_name, vow       in context_members if inspect.ismethod(vow))
+                subcontexts = set((subctx_name,subctx) for subctx_name, subctx in context_members if inspect.isclass(subctx))
                 
                 # methods
                 for vow_name, vow in vows:
