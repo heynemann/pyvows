@@ -200,35 +200,36 @@ class VowsParallelRunner(object):
             )
 
             def _iterate_members(topic, index=-1, enumerated=False):
+                vows        = {(vow_name,vow)       for vow_name, vow       in context_members if inspect.ismethod(vow)}
+                subcontexts = {(subctx_name,subctx) for subctx_name, subctx in context_members if inspect.isclass(subctx)}
                 
                 # methods
-                for vow_name, vow in context_members:
-                    if inspect.ismethod(vow):
-                        self.run_vow(
-                            context_obj['tests'],
-                            topic,
-                            ctx_instance,
-                            teardown.wrap(vow),
-                            vow_name,
-                            enumerated=enumerated)
+                for vow_name, vow in vows:
+                    self.run_vow(
+                        context_obj['tests'],
+                        topic,
+                        ctx_instance,
+                        teardown.wrap(vow),
+                        vow_name,
+                        enumerated=enumerated)
                 
                 # classes
-                for subctx_name, subctx in context_members:
-                    if inspect.isclass(subctx):
-                        # resolve user-defined Context classes
-                        if not issubclass(subctx, self.context_class):
-                            subctx = type(ctx_name, (subctx, self.context_class), {})
-                                                
-                        subctx_instance = subctx(ctx_instance)
-                        subctx_instance.pool = self.pool
-                        subctx_instance.teardown = teardown.wrap(subctx_instance.teardown)
-                        self.pool.spawn(
-                            self.run_context_async,
-                            context_obj['contexts'], 
-                            subctx_name, 
-                            subctx_instance, 
-                            index
-                        )
+                for subctx_name, subctx in subcontexts:
+                    # resolve user-defined Context classes
+                    if not issubclass(subctx, self.context_class):
+                        subctx = type(ctx_name, (subctx, self.context_class), {})
+
+                    subctx_instance = subctx(ctx_instance)
+                    subctx_instance.pool = self.pool
+                    subctx_instance.teardown = teardown.wrap(subctx_instance.teardown)
+                    
+                    self.pool.spawn(
+                        self.run_context_async,
+                        context_obj['contexts'], 
+                        subctx_name, 
+                        subctx_instance, 
+                        index
+                    )
 
             if is_generator:
                 for index, topic_value in enumerate(topic):
