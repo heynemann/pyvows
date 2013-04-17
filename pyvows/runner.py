@@ -183,6 +183,7 @@ class VowsParallelRunner(object):
                     ctx_instance.topic_value = list(topic)
                     ctx_instance.generated_topic = True
                 except Exception as e:
+                    is_generator = False
                     topic = e
                     topic.error = ctx_instance.topic_error = sys.exc_info()
                     ctx_instance.topic_value = topic
