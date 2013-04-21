@@ -8,7 +8,7 @@
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
-
+import contextlib
 import fnmatch
 import glob
 import os
@@ -18,7 +18,13 @@ from pyvows.errors import _AssertionNotFoundError
 
 elapsed = lambda start_time: float(round(time.time() - start_time, 6))
 
-
+@contextlib.contextmanager
+def timer(timer_var):
+    '''A context-manager approach to timing the execution of blocks.'''
+    start = time.time()
+    yield
+    timer_var = elapsed(start)
+    
 def locate(pattern, root=os.curdir, recursive=True):
     '''Recursively locates test files when `pyvows` is run from the
     command line.
