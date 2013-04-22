@@ -11,7 +11,7 @@
 from pyvows import Vows, expect
 from pyvows import cli
 
-from pyvows.runner import VowsParallelRunner
+from pyvows.runner import VowsRunner
 
 
 @Vows.batch
@@ -45,10 +45,10 @@ class FilterOutVowsFromCommandLine(Vows.Context):
         def should_have_exclude_method(self, topic):
             expect(topic.exclude).to_be_a_function()
 
-    class VowsParallelRunner(Vows.Context):
+    class VowsRunner(Vows.Context):
 
         def topic(self):
-            return VowsParallelRunner
+            return VowsRunner
 
         def can_be_initialized_with_6_arguments(self, topic):
             try:
@@ -63,7 +63,7 @@ class FilterOutVowsFromCommandLine(Vows.Context):
             expect(len(col)).to_equal(0)
 
         def leaves_unmatched_contexts(self, topic):
-            VowsParallelRunner.teardown = None
+            VowsRunner.teardown = None
             r = topic(None, None, None, None, None, ['foo', 'bar'])
             col = []
             r.run_context_async(col, 'baz', r)
