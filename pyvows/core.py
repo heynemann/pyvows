@@ -183,7 +183,7 @@ class Vows(object):
         return async_topic(topic)
 
     @staticmethod
-    def batch(method):
+    def batch(ctx_class):
         '''Class decorator.  Use on subclasses of `Vows.Context`.
 
         Test batches in PyVows are the largest unit of tests. The convention
@@ -191,8 +191,8 @@ class Vows(object):
         the file name.
 
         '''
-        Vows.batches[method.__name__] = method
-        _batch(method)
+        Vows.batches[ctx_class.__name__] = ctx_class
+        _batch(ctx_class)
 
     @classmethod
     def assertion(cls, method):
@@ -259,8 +259,9 @@ class Vows(object):
         #   *   Only used in `cli.py`
         path = os.path.abspath(path)
         files = utils.locate(pattern, path)
+        Vows.suites = set([f for f in files])
         sys.path.insert(0, path)
-
+            
         for module_path in files:
             module_name = os.path.splitext(
                 module_path.replace(path, '').replace('/', '.').lstrip('.')
@@ -273,7 +274,8 @@ class Vows(object):
         #
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
-        runner = VowsParallelRunner(Vows.batches,
+        runner = VowsParallelRunner(Vows.suites,
+                                    Vows.batches,
                                     Vows.Context,
                                     on_vow_success,
                                     on_vow_error,
