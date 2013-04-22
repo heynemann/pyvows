@@ -20,74 +20,9 @@ from gevent.pool import Pool
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import FunctionWrapper
+from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
 from pyvows.result import VowsResult
 from pyvows.utils import elapsed
-
-
-def _get_code_for(obj):
-    #   FIXME: Add Comment description
-    code = None
-    if hasattr(obj, '__code__'):
-        code = obj.__code__
-    elif hasattr(obj, '__func__'):
-        code = obj.__func__.__code__
-    return code
-
-
-def _get_file_info_for(member):
-    #   FIXME: Add Docstring
-    code = _get_code_for(member)
-
-    filename = code.co_filename
-    lineno = code.co_firstlineno
-
-    return filename, lineno
-
-
-def _get_topics_for(topic_function, ctx_instance):
-    #   FIXME: Add Docstring
-    if not ctx_instance.parent:
-        return []
-
-    # check for async topic
-    if hasattr(topic_function, '_original'):
-        topic_function = topic_function._original
-        async = True
-    else:
-        async = False
-
-    code = _get_code_for(topic_function)
-
-    if not code:
-        raise RuntimeError('Function %s does not have a code property')
-
-    expected_args = code.co_argcount - 1
-
-    # taking the callback argument into consideration
-    if async:
-        expected_args -= 1
-
-    # prepare to create `topics` list
-    topics = []
-    child = ctx_instance
-    context = ctx_instance.parent
-
-    # populate `topics` list
-    for i in range(expected_args):
-        topic = context.topic_value
-
-        if context.generated_topic:
-            topic = topic[child.index]
-
-        topics.append(topic)
-
-        if not context.parent:
-            break
-
-        context = context.parent
-        child = child.parent
-
-    return topics
 
 
 class VowsParallelRunner(object):
@@ -155,7 +90,7 @@ class VowsParallelRunner(object):
                 start_time = time.time()
                 try:
                     topic_func = getattr(ctx_instance, 'topic')
-                    topic_list = _get_topics_for(topic_func, ctx_instance)
+                    topic_list = get_topics_for(topic_func, ctx_instance)
                     topic = topic_func(*topic_list)
                 except Exception as e:
                     topic = e
@@ -279,7 +214,7 @@ class VowsParallelRunner(object):
         #   FIXME: Add Docstring
 
         start_time = time.time()
-        filename, lineno = _get_file_info_for(vow._original)
+        filename, lineno = get_file_info_for(vow._original)
 
         result_obj = {
             'context_instance': ctx_instance,
