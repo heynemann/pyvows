@@ -13,10 +13,11 @@ import os
 import sys
 import warnings
 
+from pyvows import utils
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import _assertion, _batch, _create_assertions, async_topic
 from pyvows.runner import VowsParallelRunner
-from pyvows.utils import locate, VowsAssertion
+
 
 
 class expect(object):
@@ -78,12 +79,13 @@ class Vows(object):
     aren't necessary for writing tests.
 
     '''
-    batches = contexts = {}
+    batches = dict()
+    exclusion_patterns = set()
+    Assert = utils.VowsAssertion()
     AsyncTopic = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
-    Assert = VowsAssertion()
+    
 
-    exclusion_patterns = set()
 
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
@@ -107,7 +109,7 @@ class Vows(object):
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
-            self.ignored_members = set(('topic', 'setup', 'teardown', 'ignore'))
+            self.ignored_members = set(['topic', 'setup', 'teardown', 'ignore'])
         
         def _get_first_available_topic(self, index=-1):
             if self.topic_value:
@@ -134,27 +136,19 @@ class Vows(object):
             for arg in args:
                 self.ignored_members.add(arg)
 
-        def setup(self):
-            '''For use in your PyVows tests.  Define `setup` in your
-            `Vows.Context` subclass to define what should happen before
-            that Context's testing begins.
+        def setup(self): pass
+        def teardown(self): pass
+        
+        setup.__doc__    = \
+        teardown.__doc__ = \
+        '''For use in your PyVows tests.  Define in your `Vows.Context` 
+            subclass to define what should happen before that Context's testing begins.
 
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
-            '''
-            pass
-
-        def teardown(self):
-            '''For use in your PyVows tests.  Define `setup` in your
-            `Vows.Context` subclass to define what should happen after
-            that Context's testing ends.
-
-            Remember:
-                * sibling Contexts are executed in parallel
-                * nested Contexts are executed sequentially
-            '''
-            pass
+                
+        '''
 
     class NotErrorContext(Context):
         #   FIXME: Add Docstring
@@ -197,7 +191,7 @@ class Vows(object):
         the file name.
 
         '''
-        Vows.contexts[method.__name__] = method
+        Vows.batches[method.__name__] = method
         _batch(method)
 
     @classmethod
@@ -264,11 +258,13 @@ class Vows(object):
         #
         #   *   Only used in `cli.py`
         path = os.path.abspath(path)
-        files = locate(pattern, path)
+        files = utils.locate(pattern, path)
         sys.path.insert(0, path)
 
         for module_path in files:
-            module_name = os.path.splitext(module_path.replace(path, '').replace('/', '.').lstrip('.'))[0]
+            module_name = os.path.splitext(
+                module_path.replace(path, '').replace('/', '.').lstrip('.')
+            )[0]
             __import__(module_name)
 
     @classmethod
