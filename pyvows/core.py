@@ -16,8 +16,7 @@ import warnings
 from pyvows import utils
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import _assertion, _batch, _create_assertions, async_topic
-from pyvows.runner import VowsParallelRunner
-
+from pyvows.runner import VowsRunner
 
 
 class expect(object):
@@ -84,7 +83,7 @@ class Vows(object):
     Assert = utils.VowsAssertion()
     AsyncTopic = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
-    
+
 
 
     class Context(object):
@@ -110,7 +109,7 @@ class Vows(object):
             self.index = -1
             self.generated_topic = False
             self.ignored_members = set(['topic', 'setup', 'teardown', 'ignore'])
-        
+
         def _get_first_available_topic(self, index=-1):
             if self.topic_value:
                 if index > -1 and isinstance(self.topic_value, (list, set, tuple)):
@@ -138,16 +137,16 @@ class Vows(object):
 
         def setup(self): pass
         def teardown(self): pass
-        
+
         setup.__doc__    = \
         teardown.__doc__ = \
-        '''For use in your PyVows tests.  Define in your `Vows.Context` 
+        '''For use in your PyVows tests.  Define in your `Vows.Context`
             subclass to define what should happen before that Context's testing begins.
 
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
-                
+
         '''
 
     class NotErrorContext(Context):
@@ -261,7 +260,7 @@ class Vows(object):
         files = utils.locate(pattern, path)
         Vows.suites = set([f for f in files])
         sys.path.insert(0, path)
-            
+
         for module_path in files:
             module_name = os.path.splitext(
                 module_path.replace(path, '').replace('/', '.').lstrip('.')
@@ -274,12 +273,12 @@ class Vows(object):
         #
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
-        runner = VowsParallelRunner(Vows.suites,
-                                    Vows.batches,
-                                    Vows.Context,
-                                    on_vow_success,
-                                    on_vow_error,
-                                    cls.exclusion_patterns)
+        runner = VowsRunner(Vows.suites,
+                            Vows.batches,
+                            Vows.Context,
+                            on_vow_success,
+                            on_vow_error,
+                            cls.exclusion_patterns)
         return runner.run()
 
     @classmethod

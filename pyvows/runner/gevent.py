@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-'''This module contains the magic that makes PyVows run its tests *fast*.
-
-Contains `VowsParallelRunner` class.
-'''
+'''The GEvent implementation of PyVows runner.'''
 
 
 # pyvows testing engine
@@ -11,7 +8,9 @@ Contains `VowsParallelRunner` class.
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
- 
+
+from __future__ import absolute_import
+
 import inspect
 import sys
 import time
