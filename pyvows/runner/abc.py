@@ -34,7 +34,7 @@ class VowsRunnerABC(object):
         NotImplemented
     
     def run_context(self, ctx_name, *args, **kwargs):
-        pass
+        NotImplemented
     
     def run_vow(self):
         NotImplemented
