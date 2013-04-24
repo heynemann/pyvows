@@ -60,7 +60,7 @@ class VowsParallelRunner(VowsRunnerABC):
         #-----------------------------------------------------------------------
         # Local variables and defs
         #-----------------------------------------------------------------------
-        context_obj = {
+        ctx_result = {
             'name': ctx_name,
             'topic_elapsed': 0,
             'contexts': [],
@@ -68,7 +68,7 @@ class VowsParallelRunner(VowsRunnerABC):
             'filename': inspect.getsourcefile(ctx_instance.__class__)
         }
 
-        ctx_collection.append(context_obj)
+        ctx_collection.append(ctx_result)
         ctx_instance.index = index
         ctx_instance.pool = self.pool
         
@@ -92,7 +92,7 @@ class VowsParallelRunner(VowsRunnerABC):
                     except Exception as e:
                         topic = e
                         topic.error = ctx_instance.topic_error = sys.exc_info()
-                    context_obj['topic_elapsed'] = elapsed(start_time)
+                    ctx_result['topic_elapsed'] = elapsed(start_time)
                 else:  # ctx_instance has no topic
                     topic = ctx_instance._get_first_available_topic(index)
             finally:
@@ -138,7 +138,7 @@ class VowsParallelRunner(VowsRunnerABC):
                 # methods
                 for vow_name, vow in vows:
                     self._run_vow(
-                        context_obj['tests'],
+                        ctx_result['tests'],
                         topic,
                         ctx_instance,
                         teardown.wrap(vow),
@@ -157,7 +157,7 @@ class VowsParallelRunner(VowsRunnerABC):
                     
                     self.pool.spawn(
                         self.run_context,
-                        context_obj['contexts'], 
+                        ctx_result['contexts'], 
                         subctx_name, 
                         subctx_instance, 
                         index
@@ -203,7 +203,7 @@ class VowsParallelRunner(VowsRunnerABC):
         start_time = time.time()
         filename, lineno = get_file_info_for(vow._original)
 
-        result_obj = {
+        vow_result = {
             'context_instance': ctx_instance,
             'name': vow_name,
             'enumerated': enumerated,
@@ -218,10 +218,10 @@ class VowsParallelRunner(VowsRunnerABC):
 
         try:
             result = vow(ctx_instance, topic)
-            result_obj['result'] = result
-            result_obj['succeeded'] = True
+            vow_result['result'] = result
+            vow_result['succeeded'] = True
             if self.on_vow_success:
-                self.on_vow_success(result_obj)
+                self.on_vow_success(vow_result)
 
         except:
             #   FIXME:
@@ -231,15 +231,15 @@ class VowsParallelRunner(VowsRunnerABC):
             #       *   Fix to catch specific kinds of exceptions
             err_type, err_value, err_traceback = sys.exc_info()
 
-            result_obj['error'] = {
+            vow_result['error'] = {
                 'type': err_type,
                 'value': err_value,
                 'traceback': err_traceback
             }
             if self.on_vow_error:
-                self.on_vow_error(result_obj)
+                self.on_vow_error(vow_result)
 
-        result_obj['elapsed'] = elapsed(start_time)
-        tests_collection.append(result_obj)
+        vow_result['elapsed'] = elapsed(start_time)
+        tests_collection.append(vow_result)
 
-        return result_obj
+        return vow_result
