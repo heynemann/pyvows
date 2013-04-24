@@ -216,7 +216,7 @@ class Vows(object):
 
         '''
         #   http://pyvows.org/#-assertions
-        return _assertion(method, Vows.Assert)
+        return _assertion(method, cls.Assert)
 
     @classmethod
     def create_assertions(cls, method):
@@ -249,7 +249,7 @@ class Vows(object):
 
         '''
         #   http://pyvows.org/#-assertions
-        return _create_assertions(method, Vows.Assert)
+        return _create_assertions(method, cls.Assert)
 
     @classmethod
     def collect(cls, path, pattern):
@@ -257,11 +257,10 @@ class Vows(object):
         #
         #   *   Only used in `cli.py`
         path = os.path.abspath(path)
-        files = utils.locate(pattern, path)
-        Vows.suites = set([f for f in files])
+        cls.suites = utils.locate(pattern, path)
         sys.path.insert(0, path)
 
-        for module_path in files:
+        for module_path in cls.suites:
             module_name = os.path.splitext(
                 module_path.replace(path, '').replace('/', '.').lstrip('.')
             )[0]
@@ -273,9 +272,9 @@ class Vows(object):
         #
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
-        runner = VowsRunner(Vows.suites,
-                            Vows.batches,
-                            Vows.Context,
+        runner = VowsRunner(cls.suites,
+                            cls.batches,
+                            cls.Context,
                             on_vow_success,
                             on_vow_error,
                             cls.exclusion_patterns)
