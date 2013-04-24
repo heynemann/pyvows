@@ -59,14 +59,14 @@ class FilterOutVowsFromCommandLine(Vows.Context):
         def removes_appropriate_contexts(self, topic):
             r = topic(None, None, None, None, None, ['foo', 'bar'])
             col = []
-            r.run_context_async(col, 'footer', r)
+            r.run_context(col, 'footer', r)
             expect(len(col)).to_equal(0)
 
         def leaves_unmatched_contexts(self, topic):
             VowsRunner.teardown = None
             r = topic(None, None, None, None, None, ['foo', 'bar'])
             col = []
-            r.run_context_async(col, 'baz', r)
+            r.run_context(col, 'baz', r)
             expect(len(col)).to_equal(1)
-            r.run_context_async(col, 'bip', r)
+            r.run_context(col, 'bip', r)
             expect(len(col)).to_equal(2)

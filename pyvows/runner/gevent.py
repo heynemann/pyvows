@@ -23,9 +23,9 @@ from pyvows.decorators import FunctionWrapper
 from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
 from pyvows.result import VowsResult
 from pyvows.utils import elapsed
+from pyvows.runner.abc import VowsRunnerABC
 
-
-class VowsParallelRunner(object):
+class VowsParallelRunner(VowsRunnerABC):
     #   FIXME: Add Docstring
 
     # Class is called from `pyvows.core:Vows.run()`,
@@ -33,16 +33,6 @@ class VowsParallelRunner(object):
 
     pool = Pool(1000)
 
-    def __init__(self, suites, batches, context_class, on_vow_success, on_vow_error, exclusion_patterns):
-        self.batches = batches  # a batch is just a "top-level context"
-        self.context_class = context_class
-        self.on_vow_success = on_vow_success
-        self.on_vow_error = on_vow_error
-        self.exclusion_patterns = exclusion_patterns
-        if self.exclusion_patterns:
-            self.exclusion_patterns = set([re.compile(x) for x in self.exclusion_patterns])
-        self.suites = suites  # a suite is a file with pyvows tests
-        
     def run(self):
         #   FIXME: Add Docstring
 
@@ -52,21 +42,20 @@ class VowsParallelRunner(object):
         start_time = time.time()
         result = VowsResult()
         for ctx_name, context in self.batches.iteritems():
-            self.run_context(result.contexts, ctx_name, context(None))
+            self._run_context(result.contexts, ctx_name, context(None))
         self.pool.join()
         result.elapsed_time = elapsed(start_time)
         return result
 
-    def run_context(self, ctx_collection, ctx_name, ctx_instance):
+    def _run_context(self, ctx_collection, ctx_name, ctx_instance):
         #   FIXME: Add Docstring
-        self.pool.spawn(self.run_context_async, ctx_collection, ctx_name, ctx_instance)
+        self.pool.spawn(self.run_context, ctx_collection, ctx_name, ctx_instance)
 
-    def run_context_async(self, ctx_collection, ctx_name, ctx_instance, index=-1):
+    def run_context(self, ctx_collection, ctx_name, ctx_instance, index=-1):
         #   FIXME: Add Docstring
         
-        for pattern in self.exclusion_patterns:
-            if pattern.search(ctx_name):
-                return
+        if self.is_excluded(ctx_name):
+            return
 
         #-----------------------------------------------------------------------
         # Local variables and defs
@@ -141,7 +130,7 @@ class VowsParallelRunner(object):
                 
                 # methods
                 for vow_name, vow in vows:
-                    self.run_vow(
+                    self._run_vow(
                         context_obj['tests'],
                         topic,
                         ctx_instance,
@@ -160,7 +149,7 @@ class VowsParallelRunner(object):
                     subctx_instance.teardown = teardown.wrap(subctx_instance.teardown)
                     
                     self.pool.spawn(
-                        self.run_context_async,
+                        self.run_context,
                         context_obj['contexts'], 
                         subctx_name, 
                         subctx_instance, 
@@ -203,14 +192,13 @@ class VowsParallelRunner(object):
         # execute teardown()
         _run_teardown()
 
-    def run_vow(self, tests_collection, topic, ctx_instance, vow, vow_name, enumerated=False):
+    def _run_vow(self, tests_collection, topic, ctx_instance, vow, vow_name, enumerated=False):
         #   FIXME: Add Docstring
-        for pattern in self.exclusion_patterns:
-            if pattern.search(vow_name):
-                return
-        self.pool.spawn(self.run_vow_async, tests_collection, topic, ctx_instance, vow, vow_name, enumerated)
+        if self.is_excluded(vow_name):    
+            return
+        self.pool.spawn(self.run_vow, tests_collection, topic, ctx_instance, vow, vow_name, enumerated)
 
-    def run_vow_async(self, tests_collection, topic, ctx_instance, vow, vow_name, enumerated):
+    def run_vow(self, tests_collection, topic, ctx_instance, vow, vow_name, enumerated):
         #   FIXME: Add Docstring
 
         start_time = time.time()
