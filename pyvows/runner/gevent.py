@@ -81,7 +81,6 @@ class VowsParallelRunner(VowsRunnerABC):
                 topic.error = ctx_instance.topic_error = error
             else:  # when no errors are raised
                 topic = None
-
                 if hasattr(ctx_instance, 'topic'):
                     start_time = time.time()
                     try:
@@ -98,19 +97,12 @@ class VowsParallelRunner(VowsRunnerABC):
                 return topic
         def _run_tests():
             # run the topic/async topic
-            if isinstance(topic, VowsAsyncTopic):
+            if not isinstance(topic, VowsAsyncTopic):
+                _run_with_topic(topic)
+            else:
                 def handle_callback(*args, **kw):
                     _run_with_topic(VowsAsyncTopicValue(args, kw))
                 topic(handle_callback)
-            else:
-                _run_with_topic(topic)
-        def _run_teardown():
-            try:
-                teardown()
-            except Exception as e:
-                topic = e
-                topic.error = ctx_instance.topic_error = ('teardown', sys.exc_info())
-
         def _run_with_topic(topic):
             ctx_instance.topic_value = topic
 
@@ -128,20 +120,18 @@ class VowsParallelRunner(VowsRunnerABC):
 
             topic = ctx_instance.topic_value
             special_names = set(('setup', 'teardown', 'topic'))
-
             if hasattr(ctx_instance, 'ignored_members'):
                 special_names.update(ctx_instance.ignored_members)
 
-            # remove any special methods from context_members
-            context_members = filter(
+            # remove any special methods from ctx_members
+            ctx_members = filter(
                 lambda member: not (member[0] in special_names or member[0].startswith('_')),
                 inspect.getmembers(type(ctx_instance))
             )
-
+            vows        = set((vow_name,vow)       for vow_name, vow       in ctx_members if inspect.ismethod(vow))
+            subcontexts = set((subctx_name,subctx) for subctx_name, subctx in ctx_members if inspect.isclass(subctx))
+            
             def _iterate_members(topic, index=-1, enumerated=False):
-                vows        = set((vow_name,vow)       for vow_name, vow       in context_members if inspect.ismethod(vow))
-                subcontexts = set((subctx_name,subctx) for subctx_name, subctx in context_members if inspect.isclass(subctx))
-                
                 # methods
                 for vow_name, vow in vows:
                     self._run_vow(
@@ -179,14 +169,19 @@ class VowsParallelRunner(VowsRunnerABC):
             if hasattr(topic, 'error'):
                 ctx_instance.topic_error = topic.error
 
+        def _run_teardown():
+            try:
+                teardown()
+            except Exception as e:
+                topic = e
+                topic.error = ctx_instance.topic_error = ('teardown', sys.exc_info())
+
         #-----------------------------------------------------------------------
         # Begin
         #-----------------------------------------------------------------------
-        topic = _run_setup()
-        # Wrap teardown so it gets called at the appropriate time
-        teardown = FunctionWrapper(ctx_instance.teardown)
+        topic = _run_setup()        
+        teardown = FunctionWrapper(ctx_instance.teardown)  # Wrapped teardown so it's called at the appropriate time
         _run_tests()
-        # execute teardown()
         _run_teardown()
 
     def _run_vow(self, tests_collection, topic, ctx_instance, vow, vow_name, enumerated=False):
