@@ -71,25 +71,32 @@ class VowsParallelRunner(VowsRunnerABC):
         ctx_collection.append(context_obj)
         ctx_instance.index = index
         ctx_instance.pool = self.pool
+        
+        def _run_setup():
+            # execute ctx_instance.setup()
+            try:
+                ctx_instance.setup()
+            except Exception as e:
+                topic = e
+                error = ('setup', sys.exc_info())
+                topic.error = ctx_instance.topic_error = error
+            else:  # when no errors are raised
+                topic = None
 
-        def _init_topic():
-            topic = None
-
-            if hasattr(ctx_instance, 'topic'):
-                start_time = time.time()
-                try:
-                    topic_func = getattr(ctx_instance, 'topic')
-                    topic_list = get_topics_for(topic_func, ctx_instance)
-                    topic = topic_func(*topic_list)
-                except Exception as e:
-                    topic = e
-                    topic.error = ctx_instance.topic_error = sys.exc_info()
-                context_obj['topic_elapsed'] = elapsed(start_time)
-            else:  # ctx_instance has no topic
-                topic = ctx_instance._get_first_available_topic(index)
-
-            return topic
-
+                if hasattr(ctx_instance, 'topic'):
+                    start_time = time.time()
+                    try:
+                        topic_func = getattr(ctx_instance, 'topic')
+                        topic_list = get_topics_for(topic_func, ctx_instance)
+                        topic = topic_func(*topic_list)
+                    except Exception as e:
+                        topic = e
+                        topic.error = ctx_instance.topic_error = sys.exc_info()
+                    context_obj['topic_elapsed'] = elapsed(start_time)
+                else:  # ctx_instance has no topic
+                    topic = ctx_instance._get_first_available_topic(index)
+            finally:
+                return topic
         def _run_teardown():
             try:
                 teardown()
@@ -168,15 +175,7 @@ class VowsParallelRunner(VowsRunnerABC):
         #-----------------------------------------------------------------------
         # Begin
         #-----------------------------------------------------------------------
-        # execute ctx_instance.setup()
-        try:
-            ctx_instance.setup()
-        except Exception as e:
-            topic = e
-            error = ('setup', sys.exc_info())
-            topic.error = ctx_instance.topic_error = error
-        else:  # when no errors are raised
-            topic = _init_topic()
+        topic = _run_setup()
 
         # Wrap teardown so it gets called at the appropriate time
         teardown = FunctionWrapper(ctx_instance.teardown)
