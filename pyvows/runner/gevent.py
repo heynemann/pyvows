@@ -96,7 +96,6 @@ class VowsParallelRunner(VowsRunnerABC):
             finally:
                 return topic
         def _run_tests():
-            # run the topic/async topic
             if not isinstance(topic, VowsAsyncTopic):
                 _run_with_topic(topic)
             else:
