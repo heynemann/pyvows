@@ -25,15 +25,15 @@ def locate(pattern, root=os.curdir, recursive=True):
 
     '''
     root_path = os.path.abspath(root)
-
-    if recursive:
-        return_files = []
+    if not recursive:
+        return glob(os.path.join(root_path, pattern))
+    else:
+        return_files = set()
         for path, dirs, files in os.walk(root_path):
             for filename in fnmatch.filter(files, pattern):
-                return_files.append(os.path.join(path, filename))
-        return return_files
-    else:
-        return glob(os.path.join(root_path, pattern))
+                return_files.add(os.path.join(path, filename))
+        return frozenset(return_files)
+        
 
 def template():
     '''Provides a template containing boilerplate code for new PyVows test
