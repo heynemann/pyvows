@@ -40,7 +40,7 @@ more(http://pyvows.org).
                    'Programming Language :: Python :: 2.7',
                    'Topic :: Software Development :: Testing'
     ],
-    packages = ['pyvows', 'pyvows.assertions', 'pyvows.assertions.types','pyvows.reporting'],
+    packages = ['pyvows', 'pyvows.assertions', 'pyvows.assertions.types','pyvows.reporting', 'pyvows.runner'],
     package_dir = {'pyvows': 'pyvows'},
 
     install_requires=[
