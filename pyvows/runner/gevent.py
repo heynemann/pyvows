@@ -73,7 +73,6 @@ class VowsParallelRunner(VowsRunnerABC):
         ctx_instance.pool = self.pool
         
         def _run_setup():
-            # execute ctx_instance.setup()
             try:
                 ctx_instance.setup()
             except Exception as e:
