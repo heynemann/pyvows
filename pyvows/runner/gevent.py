@@ -97,6 +97,14 @@ class VowsParallelRunner(VowsRunnerABC):
                     topic = ctx_instance._get_first_available_topic(index)
             finally:
                 return topic
+        def _run_tests():
+            # run the topic/async topic
+            if isinstance(topic, VowsAsyncTopic):
+                def handle_callback(*args, **kw):
+                    _run_with_topic(VowsAsyncTopicValue(args, kw))
+                topic(handle_callback)
+            else:
+                _run_with_topic(topic)
         def _run_teardown():
             try:
                 teardown()
@@ -176,18 +184,9 @@ class VowsParallelRunner(VowsRunnerABC):
         # Begin
         #-----------------------------------------------------------------------
         topic = _run_setup()
-
         # Wrap teardown so it gets called at the appropriate time
         teardown = FunctionWrapper(ctx_instance.teardown)
-
-        # run the topic/async topic
-        if isinstance(topic, VowsAsyncTopic):
-            def handle_callback(*args, **kw):
-                _run_with_topic(VowsAsyncTopicValue(args, kw))
-            topic(handle_callback)
-        else:
-            _run_with_topic(topic)
-
+        _run_tests()
         # execute teardown()
         _run_teardown()
 
