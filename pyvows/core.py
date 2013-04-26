@@ -80,6 +80,7 @@ class Vows(object):
     '''
     batches = dict()
     exclusion_patterns = set()
+    suites = dict()
     Assert = utils.VowsAssertion()
     AsyncTopic = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
@@ -190,7 +191,10 @@ class Vows(object):
         the file name.
 
         '''
-        Vows.batches[ctx_class.__name__] = ctx_class
+        module_str = ctx_class.__module__ 
+        if module_str not in Vows.suites:
+            Vows.suites[ module_str ] = set()
+        Vows.suites[ module_str ].add(ctx_class)
         _batch(ctx_class)
 
     @classmethod
@@ -257,12 +261,11 @@ class Vows(object):
         #
         #   *   Only used in `cli.py`
         path = os.path.abspath(path)
-        cls.suites = utils.locate(pattern, path)
         sys.path.insert(0, path)
-
-        for module_path in cls.suites:
+        files = utils.locate(pattern, path)
+        for module_path in files:
             module_name = os.path.splitext(
-                module_path.replace(path, '').replace('/', '.').lstrip('.')
+                module_path.replace(path, '').replace(os.sep, '.').lstrip('.')
             )[0]
             __import__(module_name)
 
@@ -273,7 +276,6 @@ class Vows(object):
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
         runner = VowsRunner(cls.suites,
-                            cls.batches,
                             cls.Context,
                             on_vow_success,
                             on_vow_error,

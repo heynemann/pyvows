@@ -50,21 +50,21 @@ class FilterOutVowsFromCommandLine(Vows.Context):
         def topic(self):
             return VowsRunner
 
-        def can_be_initialized_with_6_arguments(self, topic):
+        def can_be_initialized_with_5_arguments(self, topic):
             try:
-                topic(None, None, None, None, None, None)
+                topic(None, None, None, None, None)
             except Exception as e:
                 expect(e).Not.to_be_instance_of(TypeError)
 
         def removes_appropriate_contexts(self, topic):
-            r = topic(None, None, None, None, None, ['foo', 'bar'])
+            r = topic(None, None, None, None, ['foo', 'bar'])
             col = []
             r.run_context(col, 'footer', r)
             expect(len(col)).to_equal(0)
 
         def leaves_unmatched_contexts(self, topic):
             VowsRunner.teardown = None
-            r = topic(None, None, None, None, None, ['foo', 'bar'])
+            r = topic(None, None, None, None, ['foo', 'bar'])
             col = []
             r.run_context(col, 'baz', r)
             expect(len(col)).to_equal(1)
