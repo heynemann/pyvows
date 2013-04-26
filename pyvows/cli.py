@@ -156,10 +156,11 @@ def main():
                     # supposed to be redirected from STDOUT by the user
 
     path, pattern = arguments.path, arguments.pattern
-    if path and isfile(path):
-        path, pattern = split(path)
     if not path:
         path = os.curdir
+    elif isfile(path):
+        path, pattern = split(path)
+        
 
     if arguments.no_color:
         for color_name, value in inspect.getmembers(Fore):
