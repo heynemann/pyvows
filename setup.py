@@ -14,11 +14,11 @@ from pyvows import version
 setup(
     name = 'pyVows',
     version = version.to_str(),
-    description = 'pyVows is a BDD test engine based on Vows.js(http://vowsjs.org).',
+    description = 'pyVows is a BDD test engine based on Vows.js (http://vowsjs.org).',
     long_description = '''
 pyVows is a test engine based on Vows.js. It features topic-based testing, 
 (*fast*) parallel running of tests, code coverage reports, test profiling, and 
-more(http://pyvows.org).
+more (http://pyvows.org).
 ''',
     keywords = 'test testing vows tdd bdd development coverage profile profiling',
     author = 'Bernardo Heynemann',
@@ -26,7 +26,7 @@ more(http://pyvows.org).
     #Contributors
     #contributor = 'Rafael Carício',
     #contributor_email = 'rafael@caricio.com',
-    url = 'http://heynemann.github.com/pyvows/',
+    url = 'http://pyvows.org',
     license = 'MIT',
     classifiers = ['Development Status :: 4 - Beta',
                    'Intended Audience :: Developers',
@@ -44,9 +44,12 @@ more(http://pyvows.org).
     package_dir = {'pyvows': 'pyvows'},
 
     install_requires=[
-        'gevent>=0.13.6',
         'argparse'
     ],
+    
+    extras_require = {
+        'GEvent (lightning-fast testing)' : 'gevent>=0.13.6',
+    },
 
     entry_points = {
         'console_scripts': [
