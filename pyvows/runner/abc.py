@@ -24,6 +24,7 @@ class VowsRunnerABC(object):
             self.exclusion_patterns = set([re.compile(x) for x in self.exclusion_patterns])
 
     def is_excluded(self, name):
+        '''Return whether `name` is in `self.exclusion_patterns`.'''
         for pattern in self.exclusion_patterns:
             if pattern.search(name):
                 return True
