@@ -28,8 +28,7 @@ class FilterOutVowsFromCommandLine(Vows.Context):
                 expect(e).Not.to_be_instance_of(TypeError)
 
         def should_hand_off_exclusions_to_Vows_class(self, topic):
-
-            patterns = ['foo', 'bar', 'baz']
+            patterns = set(['foo', 'bar', 'baz'])
             try:
                 topic.run(None, '*_vows.py', 2, False, patterns)
             except Exception:
@@ -57,14 +56,14 @@ class FilterOutVowsFromCommandLine(Vows.Context):
                 expect(e).Not.to_be_instance_of(TypeError)
 
         def removes_appropriate_contexts(self, topic):
-            r = topic(None, None, None, None, ['foo', 'bar'])
+            r = topic(None, None, None, None, set(['foo', 'bar']))
             col = []
             r.run_context(col, 'footer', r)
             expect(len(col)).to_equal(0)
 
         def leaves_unmatched_contexts(self, topic):
             VowsRunner.teardown = None
-            r = topic(None, None, None, None, ['foo', 'bar'])
+            r = topic(None, None, None, None, set(['foo', 'bar']))
             col = []
             r.run_context(col, 'baz', r)
             expect(len(col)).to_equal(1)

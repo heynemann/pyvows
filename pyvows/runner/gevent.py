@@ -32,7 +32,7 @@ class VowsParallelRunner(VowsRunnerABC):
     # which is called from `pyvows.cli.run()`
 
     pool = Pool(1000)
-
+    
     def run(self):
         #   FIXME: Add Docstring
 
@@ -41,16 +41,23 @@ class VowsParallelRunner(VowsRunnerABC):
 
         start_time = time.time()
         result = VowsResult()
-        
         for suite, batches in self.suites.items():
-            for ctx_class in batches:
-                ctx_name = ctx_class.__name__
-                self.pool.spawn(self.run_context, result.contexts, ctx_name, ctx_class(None))
+            for batch in batches:
+                self.pool.spawn(
+                    self.run_context, 
+                    result.contexts, 
+                    ctx_name = batch.__name__, 
+                    ctx_obj  = batch(None), 
+                    index    = -1, 
+                    suite    = suite 
+                )
+            
         self.pool.join()
         result.elapsed_time = elapsed(start_time)
         return result
-
-    def run_context(self, ctx_collection, ctx_name, ctx_obj, index=-1):
+    
+    
+    def run_context(self, ctx_collection, ctx_name=None, ctx_obj=None, index=-1, suite=None):
         #   FIXME: Add Docstring
         
         if self.is_excluded(ctx_name):
@@ -60,27 +67,29 @@ class VowsParallelRunner(VowsRunnerABC):
         # Local variables and defs
         #-----------------------------------------------------------------------
         ctx_result = {
+            'filename': suite or inspect.getsourcefile(ctx_obj.__class__),
             'name': ctx_name,
-            'topic_elapsed': 0,
-            'contexts': [],
             'tests': [],
-            'filename': inspect.getsourcefile(ctx_obj.__class__)
+            'contexts': [],
+            'topic_elapsed': 0,
         }
-
+        
         ctx_collection.append(ctx_result)
         ctx_obj.index = index
         ctx_obj.pool = self.pool
+        teardown = FunctionWrapper(ctx_obj.teardown)  # Wrapped teardown so it's called at the appropriate time
         
-        def _run_setup():
+        def _run_setup_and_topic(ctx_obj):
             try:
                 ctx_obj.setup()
             except Exception as e:
                 topic = e
-                error = ('setup', sys.exc_info())
-                topic.error = ctx_obj.topic_error = error
-            else:  # no errors were raised
+                topic.error = ctx_obj.topic_error = ('setup', sys.exc_info())
+            else:  # setup() had no errors
                 topic = None
-                if hasattr(ctx_obj, 'topic'):
+                if not hasattr(ctx_obj, 'topic'): # ctx_obj has no topic
+                    topic = ctx_obj._get_first_available_topic(index) 
+                else: 
                     start_time = time.time()
                     try:
                         topic_func = getattr(ctx_obj, 'topic')
@@ -90,147 +99,100 @@ class VowsParallelRunner(VowsRunnerABC):
                         topic = e
                         topic.error = ctx_obj.topic_error = sys.exc_info()
                     ctx_result['topic_elapsed'] = elapsed(start_time)
-                else:  # ctx_obj has no topic
-                    topic = ctx_obj._get_first_available_topic(index)
             finally:
                 return topic
-        def _run_tests():
+        def _run_tests(topic):
+            def _run_with_topic(topic):
+                def _run_vows_and_subcontexts(topic, index=-1, enumerated=False):
+                    # methods
+                    for vow_name, vow in vows:
+                        self._run_vow(
+                            ctx_result['tests'],
+                            topic,
+                            ctx_obj,
+                            teardown.wrap(vow),
+                            vow_name,
+                            enumerated=enumerated)
+                
+                    # classes
+                    for subctx_name, subctx in subcontexts:
+                        # resolve user-defined Context classes
+                        if not issubclass(subctx, self.context_class):
+                            subctx = type(ctx_name, (subctx, self.context_class), {})
+
+                        subctx_obj = subctx(ctx_obj)
+                        subctx_obj.pool = self.pool
+                        subctx_obj.teardown = teardown.wrap(subctx_obj.teardown)
+                    
+                        self.pool.spawn(
+                            self.run_context,
+                            ctx_result['contexts'],
+                            ctx_name=subctx_name, 
+                            ctx_obj=subctx_obj, 
+                            index=index,
+                            suite=suite or ctx_result['filename']
+                        )
+
+                
+                ctx_obj.topic_value = topic
+                is_generator = inspect.isgenerator(topic)
+                
+                # setup generated topics if needed
+                if is_generator:
+                    try:
+                        ctx_obj.generated_topic = True
+                        ctx_obj.topic_value = list(topic)
+                    except Exception as e:
+                        is_generator = False
+                        topic = ctx_obj.topic_value = e
+                        topic.error = ctx_obj.topic_error = sys.exc_info()
+                
+                topic = ctx_obj.topic_value
+                
+                if is_generator:
+                    for index, topic_value in enumerate(topic):
+                        _run_vows_and_subcontexts(topic_value, index=index, enumerated=True)
+                else:
+                    _run_vows_and_subcontexts(topic)
+
+                if hasattr(topic, 'error'):
+                    ctx_obj.topic_error = topic.error
+
+            special_names = set(['setup', 'teardown', 'topic'])
+            if hasattr(ctx_obj, 'ignored_members'):
+                special_names.update(ctx_obj.ignored_members)
+
+            # remove any special methods from ctx_members
+            ctx_members = tuple(filter(
+                lambda member: not (member[0] in special_names or member[0].startswith('_')),
+                inspect.getmembers(type(ctx_obj))
+            ))
+            vows        = set((vow_name,vow)       for vow_name, vow       in ctx_members if inspect.ismethod(vow))
+            subcontexts = set((subctx_name,subctx) for subctx_name, subctx in ctx_members if inspect.isclass(subctx))
+            
             if not isinstance(topic, VowsAsyncTopic):
                 _run_with_topic(topic)
             else:
                 def handle_callback(*args, **kw):
                     _run_with_topic(VowsAsyncTopicValue(args, kw))
                 topic(handle_callback)
-        def _run_with_topic(topic):
-            ctx_obj.topic_value = topic
-
-            # setup generated topics if needed
-            is_generator = inspect.isgenerator(topic)
-            if is_generator:
-                try:
-                    ctx_obj.topic_value = list(topic)
-                    ctx_obj.generated_topic = True
-                except Exception as e:
-                    is_generator = False
-                    topic = e
-                    topic.error = ctx_obj.topic_error = sys.exc_info()
-                    ctx_obj.topic_value = topic
-
-            topic = ctx_obj.topic_value
-            special_names = set(('setup', 'teardown', 'topic'))
-            if hasattr(ctx_obj, 'ignored_members'):
-                special_names.update(ctx_obj.ignored_members)
-
-            # remove any special methods from ctx_members
-            ctx_members = filter(
-                lambda member: not (member[0] in special_names or member[0].startswith('_')),
-                inspect.getmembers(type(ctx_obj))
-            )
-            vows        = set((vow_name,vow)       for vow_name, vow       in ctx_members if inspect.ismethod(vow))
-            subcontexts = set((subctx_name,subctx) for subctx_name, subctx in ctx_members if inspect.isclass(subctx))
-            
-            def _iterate_members(topic, index=-1, enumerated=False):
-                # methods
-                for vow_name, vow in vows:
-                    self._run_vow(
-                        ctx_result['tests'],
-                        topic,
-                        ctx_obj,
-                        teardown.wrap(vow),
-                        vow_name,
-                        enumerated=enumerated)
-                
-                # classes
-                for subctx_name, subctx in subcontexts:
-                    # resolve user-defined Context classes
-                    if not issubclass(subctx, self.context_class):
-                        subctx = type(ctx_name, (subctx, self.context_class), {})
-
-                    subctx_obj = subctx(ctx_obj)
-                    subctx_obj.pool = self.pool
-                    subctx_obj.teardown = teardown.wrap(subctx_obj.teardown)
-                    
-                    self.pool.spawn(
-                        self.run_context,
-                        ctx_result['contexts'], 
-                        subctx_name, 
-                        subctx_obj, 
-                        index
-                    )
-
-            if is_generator:
-                for index, topic_value in enumerate(topic):
-                    _iterate_members(topic_value, index, enumerated=True)
-            else:
-                _iterate_members(topic)
-
-            if hasattr(topic, 'error'):
-                ctx_obj.topic_error = topic.error
-
-        def _run_teardown():
+        def _run_teardown(topic):
             try:
                 teardown()
             except Exception as e:
                 topic = e
                 topic.error = ctx_obj.topic_error = ('teardown', sys.exc_info())
+                
 
         #-----------------------------------------------------------------------
         # Begin
         #-----------------------------------------------------------------------
-        topic = _run_setup()        
-        teardown = FunctionWrapper(ctx_obj.teardown)  # Wrapped teardown so it's called at the appropriate time
-        _run_tests()
-        _run_teardown()
+        topic = _run_setup_and_topic(ctx_obj)
+        _run_tests(topic)
+        _run_teardown(topic)
 
     def _run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated=False):
         #   FIXME: Add Docstring
         if self.is_excluded(vow_name):    
             return
         self.pool.spawn(self.run_vow, tests_collection, topic, ctx_obj, vow, vow_name, enumerated)
-
-    def run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated):
-        #   FIXME: Add Docstring
-
-        start_time = time.time()
-        filename, lineno = get_file_info_for(vow._original)
-
-        vow_result = {
-            'context_instance': ctx_obj,
-            'name': vow_name,
-            'enumerated': enumerated,
-            'result': None,
-            'topic': topic,
-            'error': None,
-            'succeeded': False,
-            'file': filename,
-            'lineno': lineno,
-            'elapsed': 0
-        }
-
-        try:
-            result = vow(ctx_obj, topic)
-            vow_result['result'] = result
-            vow_result['succeeded'] = True
-            if self.on_vow_success:
-                self.on_vow_success(vow_result)
-
-        except:
-            #   FIXME:
-            #
-            #   Either...
-            #       *   Describe why we're catching every exception, or
-            #       *   Fix to catch specific kinds of exceptions
-            err_type, err_value, err_traceback = sys.exc_info()
-
-            vow_result['error'] = {
-                'type': err_type,
-                'value': err_value,
-                'traceback': err_traceback
-            }
-            if self.on_vow_error:
-                self.on_vow_error(vow_result)
-
-        vow_result['elapsed'] = elapsed(start_time)
-        tests_collection.append(vow_result)
-
-        return vow_result

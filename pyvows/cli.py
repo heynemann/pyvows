@@ -130,7 +130,7 @@ def run(path, pattern, verbosity, show_progress, exclusion_patterns=None):
     from pyvows.core import Vows
 
     if exclusion_patterns:
-        Vows.exclude(exclusion_patterns)
+        Vows.exclude(set(exclusion_patterns))
 
     Vows.collect(path, pattern)
 

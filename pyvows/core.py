@@ -78,13 +78,13 @@ class Vows(object):
     aren't necessary for writing tests.
 
     '''
+    
     batches = dict()
     exclusion_patterns = set()
     suites = dict()
     Assert = utils.VowsAssertion()
     AsyncTopic = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
-
 
 
     class Context(object):
@@ -102,8 +102,9 @@ class Vows(object):
         The `setup` and `teardown` methods aren't typically needed.  But
         they are available if your test suite has extra pre- and
         post-testing work to be done in any given `Context`.
+        
         '''
-
+        
         def __init__(self, parent=None):
             self.parent = parent
             self.topic_value = None
@@ -128,13 +129,12 @@ class Vows(object):
                 return None
 
             return self.parent._get_first_available_topic(index)
-
+            
         def ignore(self, *args):
             '''Appends `*args` to `ignored_members`.  (Methods listed in
             `ignored_members` are considered "not a test method" by PyVows.)
             '''
-            for arg in args:
-                self.ignored_members.add(arg)
+            self.ignored_members.update(set(args))
 
         def setup(self): pass
         def teardown(self): pass
@@ -191,10 +191,12 @@ class Vows(object):
         the file name.
 
         '''
-        module_str = ctx_class.__module__ 
-        if module_str not in Vows.suites:
-            Vows.suites[ module_str ] = set()
-        Vows.suites[ module_str ].add(ctx_class)
+        suite = ctx_class.__module__.replace('.', os.path.sep)
+        suite = os.path.abspath(suite) 
+        suite += '.py'
+        if suite not in Vows.suites:
+            Vows.suites[suite] = set()
+        Vows.suites[suite].add(ctx_class)
         _batch(ctx_class)
 
     @classmethod

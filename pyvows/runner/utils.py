@@ -2,6 +2,7 @@
 '''Utility functions for all implementations of pyvows.runner.
 
 '''
+import os.path as path
 
 def get_code_for(obj):
     #   FIXME: Add Comment description
@@ -23,9 +24,9 @@ def get_file_info_for(member):
     return filename, lineno
 
 
-def get_topics_for(topic_function, ctx_instance):
+def get_topics_for(topic_function, ctx_obj):
     #   FIXME: Add Docstring
-    if not ctx_instance.parent:
+    if not ctx_obj.parent:
         return []
 
     # check for async topic
@@ -48,8 +49,8 @@ def get_topics_for(topic_function, ctx_instance):
 
     # prepare to create `topics` list
     topics = []
-    child = ctx_instance
-    context = ctx_instance.parent
+    child = ctx_obj
+    context = ctx_obj.parent
 
     # populate `topics` list
     for i in range(expected_args):
