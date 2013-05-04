@@ -36,6 +36,5 @@ To learn more, check out:   http://pyvows.org
 try:
     from pyvows.core import Vows, expect
     from pyvows.errors import VowsAssertionError
-    from pyvows.assertions import *
 except ImportError:
     pass
