@@ -54,9 +54,8 @@ class VowsInternalError(Exception):
             raise TypeError('VowsInternalError must be instantiated with a string as the first argument')
         if not len(args) >= 2:
             raise IndexError('VowsInternalError must receive at least 2 arguments')
-
-    def __repr__(self):
-        return "VowsInternalError('{0!s}',)".format(self)
+        self.raw_msg = args[0]
+        self.args = args[1:]
 
     def __str__(self):
         msg = self.raw_msg.format(*self.args)
@@ -68,6 +67,3 @@ class VowsInternalError(Exception):
 
         '''
         return msg
-
-    def __unicode__(self):
-        return self.__str__()
