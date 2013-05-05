@@ -83,11 +83,11 @@ class AssertionInclude(Vows.Context):
             expect('a').to_include('b')
 
         def we_get_an_understandable_message(self, topic):
-            expect(topic).to_have_an_error_message_of("Expected topic('a') to include 'b'.")
+            expect(topic).to_have_an_error_message_of("Expected topic('a') to include 'b'")
 
     class WhenWeGetAnErrorOnNot(Vows.Context):
         def topic(self, last):
             expect('a').not_to_include('a')
 
         def we_get_an_understandable_message(self, topic):
-            expect(topic).to_have_an_error_message_of("Expected topic('a') not to include 'a'.")
+            expect(topic).to_have_an_error_message_of("Expected topic('a') not to include 'a'")

@@ -154,11 +154,11 @@ class AssertionIsLike(Vows.Context):
             expect('a').to_be_like('b')
 
         def we_get_an_understandable_message(self, topic):
-            expect(topic).to_have_an_error_message_of("Expected topic('a') to be like 'b'.")
+            expect(topic).to_have_an_error_message_of("Expected topic('a') to be like 'b'")
 
     class WhenWeGetAnErrorOnNot(Vows.Context):
         def topic(self, last):
             expect('a').not_to_be_like('a')
 
         def we_get_an_understandable_message(self, topic):
-            expect(topic).to_have_an_error_message_of("Expected topic('a') not to be like 'a'.")
+            expect(topic).to_have_an_error_message_of("Expected topic('a') not to be like 'a'")
