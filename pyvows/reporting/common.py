@@ -95,7 +95,7 @@ class VowsReporter(object):
         #   ...Is this a decorator?  If so, please add a comment or docstring
         #   to make it explicit.
         def _indent(msg):
-            if msg.startswith('  File'):
+            if msg.strip().startswith('File'):
                 return self.indent_msg(msg)
             return msg
 
