@@ -37,6 +37,5 @@ from preggy import expect
 
 try:
     from pyvows.core import Vows, expect
-    from pyvows.errors import VowsAssertionError
 except ImportError:
     pass
