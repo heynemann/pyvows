@@ -10,6 +10,20 @@
 
 from pyvows import Vows, expect
 
+#-----------------------------------------------------------------------------
+
+class NotEmptyContext(Vows.Context):
+    def should_not_be_empty(self, topic):
+        expect(topic).not_to_be_empty()
+
+class NotErrorContext(Vows.Context):
+    def should_not_be_an_error(self, topic):
+        expect(topic).not_to_be_an_error()
+
+Vows.NotEmptyContext = NotEmptyContext
+Vows.NotErrorContext = NotErrorContext
+
+#-----------------------------------------------------------------------------
 
 @Vows.batch
 class Assertion(Vows.Context):

@@ -105,28 +105,7 @@ class Vows(object):
                 
         '''
 
-    class NotErrorContext(Context):
-        #   FIXME: Add Docstring
-        #
-        #   *   Why does this class exist?
-        #   *   Does this simply delegate the call to `expect`?
-        #   *   If this can be used for some clever form of generative
-        #       testing, show an example
-        def should_not_be_an_error(self, topic):
-            expect(topic).not_to_be_an_error()
-
-    class NotEmptyContext(Context):
-        #   FIXME: Add Docstring
-        #
-        #   *   Why does this class exist?
-        #   *   Does this simply delegate the call to `expect`?
-        #   *   If this can be used for some clever form of generative
-        #       testing, show an example
-        def should_not_be_empty(self, topic):
-            expect(topic).not_to_be_empty()
-    
-    
-    
+        
     @staticmethod
     def assertion(func):
         return preggy.assertion(func)
