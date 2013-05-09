@@ -42,7 +42,7 @@ class Vows(object):
     AsyncTopic = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
 
-
+    
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
         write `from pyvows import Vows, expect` in your test module, then extend
@@ -125,10 +125,15 @@ class Vows(object):
         #       testing, show an example
         def should_not_be_empty(self, topic):
             expect(topic).not_to_be_empty()
-
     
-    assertion = preggy.assertion
-    create_assertions = preggy.create_assertions
+    
+    @staticmethod
+    def assertion(func):
+        return preggy.assertion(func)
+    
+    @staticmethod
+    def create_assertions(func): 
+        return preggy.create_assertions(func)
     
     @staticmethod
     def async_topic(topic):
@@ -168,6 +173,10 @@ class Vows(object):
                 module_path.replace(path, '').replace(os.path.sep, '.').lstrip('.')
             )[0]
             __import__(module_name)
+            
+    @classmethod
+    def exclude(cls, test_name_pattern):
+        cls.exclusion_patterns = test_name_pattern
 
     @classmethod
     def run(cls, on_vow_success, on_vow_error):
@@ -182,7 +191,3 @@ class Vows(object):
                                     on_vow_error,
                                     cls.exclusion_patterns)
         return runner.run()
-
-    @classmethod
-    def exclude(cls, test_name_pattern):
-        cls.exclusion_patterns = test_name_pattern
