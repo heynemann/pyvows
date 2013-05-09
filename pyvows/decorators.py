@@ -16,12 +16,12 @@ from pyvows.async_topic import VowsAsyncTopic
 from pyvows.errors import VowsAssertionError
 
 
-def _batch(method):
+def _batch(klass):
     # This is underscored-prefixed because the only intended use (via
     # `@Vows.batch`) expands on this core functionality
-    def method_name(*args, **kw):
-        method(*args, **kw)
-    return method_name
+    def klass_name(*args, **kw):
+        klass(*args, **kw)
+    return klass_name
 
 
 def async_topic(topic):
