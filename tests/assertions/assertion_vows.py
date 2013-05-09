@@ -27,7 +27,12 @@ Vows.NotErrorContext = NotErrorContext
 
 @Vows.batch
 class Assertion(Vows.Context):
-
+    
+    class WhenNotHaveTopic(Vows.Context):
+        
+        def we_can_see_topic_as_none(self, topic):
+            expect(topic).to_be_null()
+    
     class WhenUTF8Topic(Vows.Context):
         def topic(self):
             return u"some á é í ó ç"
@@ -42,7 +47,3 @@ class Assertion(Vows.Context):
     class NotEmptyContext(Vows.NotEmptyContext):
         def topic(self):
             return "harmless"
-
-    class WhenNotHaveTopic(Vows.Context):
-        def we_can_see_topic_as_none(self, topic):
-            expect(topic).to_be_null()
