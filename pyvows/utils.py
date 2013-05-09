@@ -14,7 +14,6 @@ import glob
 import os
 import time
 
-from pyvows.errors import _AssertionNotFoundError
 
 elapsed = lambda start_time: float(round(time.time() - start_time, 6))
 
