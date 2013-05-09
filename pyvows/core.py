@@ -38,7 +38,6 @@ class Vows(object):
     batches = dict()
     exclusion_patterns = set()
     
-    Assert = utils.VowsAssertion()
     AsyncTopic = VowsAsyncTopic
     AsyncTopicValue = VowsAsyncTopicValue
 
@@ -127,6 +126,7 @@ class Vows(object):
             expect(topic).not_to_be_empty()
     
     
+    
     @staticmethod
     def assertion(func):
         return preggy.assertion(func)
@@ -142,7 +142,8 @@ class Vows(object):
     @staticmethod
     def asyncTopic(topic):
         #   FIXME: Add Comment
-        warnings.warn('The asyncTopic decorator is deprecated. Please use Vows.async_topic instead.',
+        warnings.warn('The asyncTopic decorator is deprecated.  ' 
+                      'Please use Vows.async_topic instead.',
                       DeprecationWarning,
                       stacklevel=2)
         return async_topic(topic)
@@ -166,7 +167,7 @@ class Vows(object):
         #   *   Only used in `cli.py`
         path = os.path.abspath(path)
         files = utils.locate(pattern, path)
-        Vows.suites = set([f for f in files])
+        cls.suites = set([f for f in files])
         sys.path.insert(0, path)
         for module_path in files:
             module_name = os.path.splitext(
