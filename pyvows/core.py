@@ -261,10 +261,9 @@ class Vows(object):
         files = utils.locate(pattern, path)
         Vows.suites = set([f for f in files])
         sys.path.insert(0, path)
-            
         for module_path in files:
             module_name = os.path.splitext(
-                module_path.replace(path, '').replace('/', '.').lstrip('.')
+                module_path.replace(path, '').replace(os.path.sep, '.').lstrip('.')
             )[0]
             __import__(module_name)
 
