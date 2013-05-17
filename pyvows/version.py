@@ -10,7 +10,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-__version__ = (1, 1, 16)
+__version__ = (2, 0, 0)
 
 
 def to_str():
