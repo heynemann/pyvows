@@ -48,7 +48,7 @@ class AssertionLength(Vows.Context):
                 expect('a').to_length(2)
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic('a') to have 2 of length, but it has 1.")
+                expect(topic).to_have_an_error_message_of("Expected topic('a') to have 2 of length, but it has 1")
 
     class NotToLength(Vows.Context):
         class WhenWeGetAnError(Vows.Context):
@@ -56,4 +56,4 @@ class AssertionLength(Vows.Context):
                 expect('a').not_to_length(1)
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic('a') not to have 1 of length.")
+                expect(topic).to_have_an_error_message_of("Expected topic('a') not to have 1 of length")

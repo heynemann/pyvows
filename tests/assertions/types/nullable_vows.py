@@ -26,7 +26,7 @@ class AssertionIsNull(Vows.Context):
                 expect(1).to_be_null()
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(1) to be None.")
+                expect(topic).to_have_an_error_message_of("Expected topic(1) to be None")
 
     class WhenItIsNotNull(Vows.Context):
         def topic(self):
@@ -40,4 +40,4 @@ class AssertionIsNull(Vows.Context):
                 expect(None).not_to_be_null()
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(None) not to be None.")
+                expect(topic).to_have_an_error_message_of("Expected topic(None) not to be None")

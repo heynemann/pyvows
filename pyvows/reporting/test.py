@@ -112,31 +112,33 @@ class VowsTestReporter(VowsReporter):
 
             def _print_traceback():
                 self.indent += 2
-
-                try:
-                    traceback_args = None
-
-                    if hasattr(test, 'topic') \
-                            and hasattr(test['topic'], 'error')  \
-                            and test['topic']['error'] is not None:
-                        print '\n' + self.indent_msg(blue('Topic Error:'))
-                        traceback_args = tuple(*test['topic'].error)
-                    else:
-                        traceback_args = (test['error']['type'],
-                                          test['error']['value'],
-                                          test['error']['traceback'])
-                    self.print_traceback(*traceback_args)
-                except Exception:
-                    # should never occur!
-                    err_msg = '''Unexpected error in PyVows!
-                                 PyVows error occurred in: ({0!s})
-                                 Context was: {1!r}
-
-                              '''
-                    # from os.path import abspath
-                    raise VowsInternalError(err_msg,
-                                            'pyvows.reporting.test',
-                                            ctx)
+                
+                ### NOTE:
+                ###     Commented out try/except; potential debugging hinderance
+                
+                #try:
+                
+                traceback_args = None
+                if (hasattr(test, 'topic') 
+                        and hasattr(test['topic'], 'error')  
+                        and test['topic']['error'] is not None):
+                    print '\n' + self.indent_msg(blue('Topic Error:'))
+                    traceback_args = tuple(*test['topic'].error)
+                else:
+                    traceback_args = (test['error']['type'],
+                                      test['error']['value'],
+                                      test['error']['traceback'])
+                self.print_traceback(*traceback_args)
+                
+                # except Exception:
+                #     # should never occur!
+                #     err_msg = '''Unexpected error in PyVows!
+                #                  PyVows error occurred in: ({0!s})
+                #                  Context was: {1!r}
+                # 
+                #               '''
+                #     # from os.path import abspath
+                #     raise VowsInternalError(err_msg, 'pyvows.reporting.test', ctx)
 
                 # print file and line number
                 if 'file' in test:

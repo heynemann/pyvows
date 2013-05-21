@@ -55,7 +55,7 @@ class AssertionIsTrue(Vows.Context):
             expect(False).to_be_true()
 
         def we_get_an_understandable_message(self, topic):
-            expect(topic).to_have_an_error_message_of("Expected topic(False) to be truthy.")
+            expect(topic).to_have_an_error_message_of("Expected topic(False) to be truthy")
 
 
 @Vows.batch
@@ -109,4 +109,4 @@ class AssertionIsFalse(Vows.Context):
             expect(True).to_be_false()
 
         def we_get_an_understandable_message(self, topic):
-            expect(topic).to_have_an_error_message_of("Expected topic(True) to be falsy.")
+            expect(topic).to_have_an_error_message_of("Expected topic(True) to be falsy")

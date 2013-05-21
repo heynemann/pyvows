@@ -27,7 +27,7 @@ class AssertionIsNumeric(Vows.Context):
                 expect('s').to_be_numeric()
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic('s') to be numeric.")
+                expect(topic).to_have_an_error_message_of("Expected topic('s') to be numeric")
 
     class WhenItIsNotANumber(Vows.Context):
         def topic(self):
@@ -42,4 +42,4 @@ class AssertionIsNumeric(Vows.Context):
                 expect(2).not_to_be_numeric()
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of("Expected topic(2) not to be numeric.")
+                expect(topic).to_have_an_error_message_of("Expected topic(2) not to be numeric")
