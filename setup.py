@@ -26,7 +26,7 @@ more: http://pyvows.org
     #Contributors
     #contributor = 'Rafael Carício',
     #contributor_email = 'rafael@caricio.com',
-    url = 'http://heynemann.github.com/pyvows/',
+    url = 'http://github.com/heynemann/pyvows/',
     license = 'MIT',
     classifiers = ['Development Status :: 4 - Beta',
                    'Intended Audience :: Developers',
@@ -46,7 +46,7 @@ more: http://pyvows.org
     install_requires=[
         'argparse',
         'gevent>=0.13.6',
-        'preggy',
+        'preggy>=0.5.8',
     ],
 
     entry_points = {
