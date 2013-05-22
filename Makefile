@@ -1,10 +1,8 @@
-TEST_PREFIX = @env PYTHONPATH=. python pyvows/ --cover --cover-package=pyvows --cover-threshold=80.0
-
 vows test:
-	$(TEST_PREFIX) --profile tests/
+	@env PYTHONPATH=. python pyvows/cli.py --cover --cover-package=pyvows --cover-threshold=80.0 --profile tests/
 
 ci_test:
-	$(TEST_PREFIX) -r pyvows.coverage.xml -x tests/
+	@env PYTHONPATH=. python pyvows/cli.py --cover --cover-package=pyvows --cover-threshold=80.0 -r pyvows.coverage.xml -x tests/
 
 setup:
 	@pip install --requirement=REQUIREMENTS

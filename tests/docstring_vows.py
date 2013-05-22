@@ -14,24 +14,6 @@ from pyvows import (
     core,
     runner,
     version)
-from pyvows.assertions import (
-    __init__ as assertions_init,
-    emptiness as assertions_emptiness,
-    equality as assertions_equality,
-    inclusion as assertions_inclusion,
-    length as assertions_length,
-    like as assertions_like)
-from pyvows.assertions.types import (
-    __init__ as assertions_types_init,
-    boolean as assertions_types_boolean,
-    classes as assertions_types_classes,
-    errors as assertions_types_errors,
-    function as assertions_types_function,
-    nullable as assertions_types_nullable,
-    numeric as assertions_types_numeric,
-    regexp as assertions_types_regexp)
-from pyvows.errors import (
-    VowsAssertionError,)
 from pyvows.reporting import (
     __init__ as reporting_init,
     common as reporting_common,
@@ -50,24 +32,6 @@ PYVOWS_MODULES = (
     core,
     runner,
     version,
-    # assertion modules (general)
-    assertions_init,
-    assertions_emptiness,
-    assertions_equality,
-    assertions_inclusion,
-    assertions_length,
-    assertions_like,
-    # assertion modules (types)
-    assertions_types_init,
-    assertions_types_boolean,
-    assertions_types_classes,
-    assertions_types_errors,
-    assertions_types_function,
-    assertions_types_nullable,
-    assertions_types_numeric,
-    assertions_types_regexp,
-    # errors
-    VowsAssertionError,
     # reporting
     reporting_init,
     reporting_common,

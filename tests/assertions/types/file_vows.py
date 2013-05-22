@@ -8,7 +8,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-from pyvows import Vows, expect, VowsAssertionError
+from pyvows import Vows, expect
 
 
 #   TEST DATA
@@ -53,7 +53,7 @@ class WhenMakingFileAssertions(Vows.Context):
                 return isafile(parent_topic)
 
             def should_raise_an_error(self, topic):
-                expect(topic).to_be_an_error_like(VowsAssertionError)
+                expect(topic).to_be_an_error_like(AssertionError)
 
         class AssertingThatTheyDoNot(Vows.Context):
             def topic(self, parent_topic):

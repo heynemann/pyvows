@@ -14,7 +14,6 @@ import glob
 import os
 import time
 
-from pyvows.errors import _AssertionNotFoundError
 
 elapsed = lambda start_time: float(round(time.time() - start_time, 6))
 
@@ -82,15 +81,3 @@ def template():
     )
 
     sys.stdout.write(dedent(TEST_FILE_TEMPLATE))
-
-
-class VowsAssertion(object):
-    '''Used by the `Vows` class for various assertion-related functionality.'''
-
-    AssertionNotFoundError = _AssertionNotFoundError
-    '''Raised when a `VowsAssertion` cannot be found.'''
-
-    def __getattr__(self, name):
-        if not hasattr(self, name):
-            raise VowsAssertion.AssertionNotFoundError(name)
-        return super(VowsAssertion, self).__getattr__(name)
