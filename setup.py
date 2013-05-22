@@ -23,8 +23,8 @@ _install_requires = [
 ]
 if sys.version_info < (2,7):
     _install_requires.append('argparse >= 1.1')
-      
-        
+
+
 setup(
     ### OVERVIEW
     name='pyVows',
@@ -32,7 +32,10 @@ setup(
     long_description=dedent(
         '''pyVows is a test engine based on Vows.js. It features topic-based testing, 
         (*fast*) parallel running of tests, code coverage reports, test profiling, and 
-        more: http://pyvows.org 
+        more: 
+        
+        http://pyvows.org
+        
         '''),
     
     
@@ -40,7 +43,7 @@ setup(
     url='http://pyvows.org',
     
     
-    ### technical_info
+    ### TECHNICAL INFO
     version=version.to_str(),
     install_requires=_install_requires,
     packages=['pyvows', 'pyvows.reporting'],
