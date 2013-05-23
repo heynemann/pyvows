@@ -31,7 +31,7 @@ script:
     - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages/
 
     # finally run tests
-    - make ci_test
+    - coverage run --source=pyvows make ci_test
 
 
 after_success:
