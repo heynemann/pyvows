@@ -12,6 +12,7 @@ install:
 
     # install python requirements
     - pip install -r test_requirements.txt --use-mirrors
+    - pip install coveralls
 
     # weird travis-ci python paths
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pymodules/python2.7/
