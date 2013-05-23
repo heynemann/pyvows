@@ -32,3 +32,6 @@ script:
     # finally run tests
     - make ci_test
 
+
+after_success:
+    - coveralls
