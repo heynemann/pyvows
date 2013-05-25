@@ -8,7 +8,6 @@
 # Copyright (c) 2013 nathan dotz
 
 from pyvows import Vows, expect
-from pyvows.errors import VowsAssertionError
 from pyvows.result import VowsResult
 from pyvows.reporting import VowsTestReporter  # , VowsDefaultReporter
 
@@ -36,6 +35,6 @@ class VowsTestReporterExceptions(Vows.Context):
                        'contexts': []
                        }
             topic.print_context('Derp', context)
-        except VowsAssertionError as e:
-            expect(e).to_be_an_error_like(VowsAssertionError)
+        except AssertionError as e:
+            expect(e).to_be_an_error_like(AssertionError)
             expect(e).Not.to_be_an_error_like(TypeError)

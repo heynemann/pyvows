@@ -13,7 +13,6 @@ from functools import wraps
 import re
 
 from pyvows.async_topic import VowsAsyncTopic
-from pyvows.errors import VowsAssertionError
 
 
 def _batch(klass):
