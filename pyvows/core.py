@@ -78,7 +78,7 @@ class Vows(object):
                     topic = self.topic_value[index]
                 else:
                     topic = self.topic_value
-                topic = check_topic_for_error(topic)
+                topic = _check_topic_for_error(topic)
                 return topic
 
             if not self.parent:
