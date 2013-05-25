@@ -157,30 +157,35 @@ def main():
         sys.exit()  # Exit after printing template, since it's
                     # supposed to be redirected from STDOUT by the user
 
+    # Determine path
     path, pattern = arguments.path, arguments.pattern
     if path and isfile(path):
         path, pattern = split(path)
     if not path:
         path = os.curdir
 
+    # De-colorize if needed
     if arguments.no_color:
         for color_name, value in inspect.getmembers(Fore):
             if not color_name.startswith('_'):
                 setattr(Fore, color_name, '')
 
+    # Prepare coverage if needed
     if arguments.cover and COVERAGE_AVAILABLE:
         cov = coverage(source=arguments.cover_package,
                        omit=arguments.cover_omit)
         cov.erase()
         cov.start()
-
+    
+    # Set up last two options before we run the tests
     prune = arguments.exclude
-
     verbosity = len(arguments.verbosity) if arguments.verbosity else 2
+    
+    # RUN ZE TESTS
     result = run(path, pattern, verbosity, arguments.progress, prune)
+    
+    # Report the results
     reporter = VowsDefaultReporter(result, verbosity)
-
-    # Print test results first
     reporter.pretty_print()
 
     # Print profile if necessary
