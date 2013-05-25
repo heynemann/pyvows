@@ -67,16 +67,18 @@ class Vows(object):
             self.ignored_members = set(['topic', 'setup', 'teardown', 'ignore'])
         
         def _get_first_available_topic(self, index=-1):
+            
+            def _check_topic_for_error(topic):
+                if hasattr(self, 'topic_error'):
+                    topic.error = self.topic_error
+                return topic
+                    
             if self.topic_value:
                 if index > -1 and isinstance(self.topic_value, (list, set, tuple)):
                     topic = self.topic_value[index]
-                    if hasattr(self, 'topic_error'):
-                        topic.error = self.topic_error
-                    return topic
-
-                topic = self.topic_value
-                if hasattr(self, 'topic_error'):
-                    topic.error = self.topic_error
+                else:
+                    topic = self.topic_value
+                topic = check_topic_for_error(topic)
                 return topic
 
             if not self.parent:
