@@ -164,9 +164,9 @@ class Vows(object):
         #
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
-        runner = VowsParallelRunner(Vows.suites,
-                                    Vows.batches,
-                                    Vows.Context,
+        runner = VowsParallelRunner(cls.suites,
+                                    cls.batches,
+                                    cls.Context,
                                     on_vow_success,
                                     on_vow_error,
                                     cls.exclusion_patterns)
