@@ -16,7 +16,7 @@ module.
 try:
     from colorama import init, Fore, Style
     init(autoreset=True)
-except ImportError:
+except ImportError:  # pragma: no cover
     class NoColor(object):
         '''When Python can't import `colorama`, this stand-in class prevents
         other parts of PyVows from throwing errors when attempting to print
