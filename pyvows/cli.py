@@ -23,7 +23,7 @@ import tempfile
 try:
     from coverage import coverage
     COVERAGE_AVAILABLE = True
-except ImportError:
+except ImportError:  # pragma: no cover
     COVERAGE_AVAILABLE = False
 
 from pyvows.color import yellow, Style, Fore
@@ -151,7 +151,8 @@ def main():
 
     arguments = Parser().parse_args()
 
-    if arguments.template:
+    # Print template if needed
+    if arguments.template:  # pragma: no cover
         from pyvows.utils import template
         template()
         sys.exit()  # Exit after printing template, since it's
