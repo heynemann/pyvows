@@ -35,7 +35,8 @@ def locate(pattern, root=os.curdir, recursive=True):
         return glob(os.path.join(root_path, pattern))
 
 
-def template():
+# Not covered because this is easy to test (just print to STDOUT)
+def template(): # pragma: no cover
     '''Provides a template containing boilerplate code for new PyVows test
     files. Output is sent to STDOUT, allowing you to redirect it on
     the command line as you wish.

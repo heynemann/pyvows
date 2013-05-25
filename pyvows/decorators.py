@@ -16,9 +16,11 @@ from pyvows.async_topic import VowsAsyncTopic
 
 #-------------------------------------------------------------------------------------------------
 
-def _batch(klass):
+# This doesn't need to be covered since PyVows needs 
+# it to work in order to run any tests at all.
+def _batch(klass):  # pragma: no cover
     # This is underscored-prefixed because the only intended use (via
-    # `@Vows.batch`) expands on this core functionality
+    # `@Vows.batch`) expands on this core functionality.
     def klass_name(*args, **kw):
         klass(*args, **kw)
     return klass_name
