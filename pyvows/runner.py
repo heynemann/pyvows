@@ -105,15 +105,14 @@ class VowsParallelRunner(object):
 
     pool = Pool(1000)
 
-    def __init__(self, suites, batches, context_class, on_vow_success, on_vow_error, exclusion_patterns):
-        self.batches = batches  # a batch is just a "top-level context"
+    def __init__(self, suites, context_class, on_vow_success, on_vow_error, exclusion_patterns):
+        self.suites = suites  # a suite is a file with pyvows tests
         self.context_class = context_class
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
         self.exclusion_patterns = exclusion_patterns
         if self.exclusion_patterns:
             self.exclusion_patterns = set([re.compile(x) for x in self.exclusion_patterns])
-        self.suites = suites  # a suite is a file with pyvows tests
         
     def run(self):
         #   FIXME: Add Docstring
@@ -123,8 +122,9 @@ class VowsParallelRunner(object):
 
         start_time = time.time()
         result = VowsResult()
-        for ctx_name, context in self.batches.iteritems():
-            self.run_context(result.contexts, ctx_name, context(None))
+        for suite, batches in self.suites.iteritems():
+            for batch in batches:
+                self.run_context(result.contexts, batch.__name__, batch(None))
         self.pool.join()
         result.elapsed_time = elapsed(start_time)
         return result

@@ -38,7 +38,7 @@ class Vows(object):
     aren't necessary for writing tests.
 
     '''
-    batches = dict()
+    suites = dict()
     exclusion_patterns = set()
 
     
@@ -136,7 +136,12 @@ class Vows(object):
         the file name.
 
         '''
-        Vows.batches[ctx_class.__name__] = ctx_class
+        suite = ctx_class.__module__.replace('.', os.path.sep)
+        suite = os.path.abspath(suite) 
+        suite += '.py'
+        if suite not in Vows.suites:
+            Vows.suites[suite] = set()
+        Vows.suites[suite].add(ctx_class)
         _batch(ctx_class)
 
     @classmethod
@@ -145,12 +150,11 @@ class Vows(object):
         #
         #   *   Only used in `cli.py`
         path = os.path.abspath(path)
-        files = utils.locate(pattern, path)
-        cls.suites = set([f for f in files])
         sys.path.insert(0, path)
+        files = utils.locate(pattern, path)
         for module_path in files:
             module_name = os.path.splitext(
-                module_path.replace(path, '').replace(os.path.sep, '.').lstrip('.')
+                module_path.replace(path, '').replace(os.sep, '.').lstrip('.')
             )[0]
             __import__(module_name)
             
@@ -164,9 +168,8 @@ class Vows(object):
         #
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
-        runner = VowsParallelRunner(Vows.suites,
-                                    Vows.batches,
-                                    Vows.Context,
+        runner = VowsParallelRunner(cls.suites,
+                                    cls.Context,
                                     on_vow_success,
                                     on_vow_error,
                                     cls.exclusion_patterns)
