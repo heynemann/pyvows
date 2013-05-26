@@ -125,7 +125,7 @@ class Parser(argparse.ArgumentParser):
 def run(path, pattern, verbosity, show_progress, exclusion_patterns=None):
     #   FIXME: Add Docstring
 
-    # This calls Vows.run(), which then calls VowsParallelRunner.run()
+    # This calls Vows.run(), which then calls VowsRunner.run()
 
     # needs to be imported here, else the no-color option won't work
     from pyvows.core import Vows

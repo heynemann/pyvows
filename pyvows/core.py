@@ -18,7 +18,7 @@ import preggy
 from pyvows import utils
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import _batch, async_topic
-from pyvows.runner import VowsParallelRunner
+from pyvows.runner import VowsRunner
 
 #-------------------------------------------------------------------------------------------------
 
@@ -168,7 +168,7 @@ class Vows(object):
         #
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
-        runner = VowsParallelRunner(cls.suites,
+        runner = VowsRunner(cls.suites,
                                     cls.Context,
                                     on_vow_success,
                                     on_vow_error,
