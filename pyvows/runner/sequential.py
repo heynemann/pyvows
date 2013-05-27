@@ -3,11 +3,12 @@
 it's a universal fallback.  
  
 '''
- 
+
 from pyvows.runner.abc import VowsRunnerABC
 from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
- 
- 
+
+#-------------------------------------------------------------------------------------------------
+
 class VowsSequentialRunner(object):
      
     def run(self):

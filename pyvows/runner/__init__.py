@@ -3,8 +3,8 @@
 select the fastest possible runner, using fallbacks if unavailable.
  
 '''
- 
- 
+
+
 try:
     ##  GEvent
     from pyvows.runner.gevent import VowsParallelRunner as VowsRunner

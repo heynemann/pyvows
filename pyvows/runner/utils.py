@@ -3,7 +3,9 @@
  
 '''
 import os.path as path
- 
+
+#-------------------------------------------------------------------------------------------------
+
 def get_code_for(obj):
     #   FIXME: Add Comment description
     code = None

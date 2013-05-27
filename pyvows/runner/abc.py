@@ -13,8 +13,9 @@ import re, sys, time
  
 from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
 from pyvows.utils import elapsed
- 
- 
+
+#-------------------------------------------------------------------------------------------------
+
 class VowsRunnerABC(object):
      
     def __init__(self, suites, context_class, on_vow_success, on_vow_error, exclusion_patterns):
