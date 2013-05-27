@@ -37,9 +37,6 @@ class Vows(object):
     '''
     batches = dict()
     exclusion_patterns = set()
-    
-    AsyncTopic = VowsAsyncTopic
-    AsyncTopicValue = VowsAsyncTopicValue
 
     
     class Context(object):
