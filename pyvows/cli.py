@@ -31,6 +31,7 @@ from pyvows.reporting import VowsDefaultReporter
 from pyvows.reporting.xunit import XUnitReporter
 from pyvows import version
 
+#-------------------------------------------------------------------------------------------------
 
 class Messages(object):  # pragma: no cover
     '''A simple container for command-line interface strings.'''

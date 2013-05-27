@@ -20,7 +20,10 @@ from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import _batch, async_topic
 from pyvows.runner import VowsParallelRunner
 
+#-------------------------------------------------------------------------------------------------
+
 expect = preggy.expect 
+
 
 class Vows(object):
     '''This class contains almost the entire interface for using PyVows.  (The

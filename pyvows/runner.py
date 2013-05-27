@@ -25,6 +25,9 @@ from pyvows.result import VowsResult
 from pyvows.utils import elapsed
 
 
+#-------------------------------------------------------------------------------------------------
+#   HELPERS
+#-------------------------------------------------------------------------------------------------
 def _get_code_for(obj):
     #   FIXME: Add Comment description
     code = None
@@ -91,6 +94,9 @@ def _get_topics_for(topic_function, ctx_instance):
     return topics
 
 
+#-------------------------------------------------------------------------------------------------
+#   CLASSES
+#-------------------------------------------------------------------------------------------------
 class VowsParallelRunner(object):
     #   FIXME: Add Docstring
 

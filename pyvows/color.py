@@ -29,6 +29,7 @@ except ImportError:
     Fore = NoColor()
     Style = NoColor()
 
+#-------------------------------------------------------------------------------------------------
 
 __all__ = [
     'Fore', 'Style',
@@ -37,9 +38,9 @@ __all__ = [
 ]
 
 
-#
-#   Color convenience vars
-#
+#-------------------------------------------------------------------------------------------------
+#   Color Constants
+#-------------------------------------------------------------------------------------------------
 BLACK = Fore.BLACK
 BLUE = Fore.BLUE
 CYAN = Fore.CYAN
@@ -54,11 +55,9 @@ DIM = Style.DIM
 RESET = Fore.RESET
 RESET_ALL = Style.RESET_ALL
 
-#
+#-------------------------------------------------------------------------------------------------
 #   Functions
-#
-
-
+#-------------------------------------------------------------------------------------------------
 def _colorize(msg, color, reset=True):
     reset = RESET if reset else ''
     return '{COLOR}{0!s}{RESET}'.format(msg, COLOR=color, RESET=reset)

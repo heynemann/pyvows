@@ -14,6 +14,7 @@ import glob
 import os
 import time
 
+#-------------------------------------------------------------------------------------------------
 
 elapsed = lambda start_time: float(round(time.time() - start_time, 6))
 
@@ -33,6 +34,7 @@ def locate(pattern, root=os.curdir, recursive=True):
         return return_files
     else:
         return glob(os.path.join(root_path, pattern))
+
 
 def template():
     '''Provides a template containing boilerplate code for new PyVows test

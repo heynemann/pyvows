@@ -11,6 +11,7 @@ each vow.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+#-------------------------------------------------------------------------------------------------
 
 class VowsResult(object):
     '''Collects success/failure/total statistics (as well as elapsed
