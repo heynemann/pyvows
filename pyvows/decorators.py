@@ -13,8 +13,8 @@ from functools import wraps
 import re
 
 from pyvows.async_topic import VowsAsyncTopic
-from pyvows.errors import VowsAssertionError
 
+#-------------------------------------------------------------------------------------------------
 
 def _batch(klass):
     # This is underscored-prefixed because the only intended use (via
@@ -38,6 +38,7 @@ def async_topic(topic):
     wrapper.__name__ = topic.__name__
     return wrapper
 
+#-------------------------------------------------------------------------------------------------
 
 class FunctionWrapper(object):
     '''Function decorator.  Simply calls the decorated function when all

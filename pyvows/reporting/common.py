@@ -15,7 +15,6 @@ import re
 import traceback
 
 from pyvows.color import yellow, green, red, bold
-from pyvows.errors import VowsAssertionError
 
 __all__ = [
     'PROGRESS_SIZE',
