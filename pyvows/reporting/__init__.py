@@ -14,13 +14,13 @@ from pyvows.reporting.profile import VowsProfileReporter
 from pyvows.reporting.test import VowsTestReporter
 
 
-__all__ = [
+__all__ = (
     'VowsDefaultReporter',
     'VowsTestReporter',
     'VowsProfileReporter',
     'VowsCoverageReporter',
     'VowsReporter',
-]
+)
 
 
 class VowsDefaultReporter(VowsTestReporter,

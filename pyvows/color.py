@@ -31,12 +31,11 @@ except ImportError:  # pragma: no cover
 
 #-------------------------------------------------------------------------------------------------
 
-__all__ = [
+__all__ = (
     'Fore', 'Style',
     'BLACK', 'BLUE', 'CYAN', 'GREEN', 'RED', 'YELLOW', 'WHITE', 'RESET', 'RESET_ALL',
     'black', 'blue', 'cyan', 'green', 'red', 'yellow', 'white', 'bold', 'dim'
-]
-
+)
 
 #-------------------------------------------------------------------------------------------------
 #   Color Constants

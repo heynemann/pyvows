@@ -16,7 +16,7 @@ import traceback
 
 from pyvows.color import yellow, green, red, bold
 
-__all__ = [
+__all__ = (
     'PROGRESS_SIZE',
     'V_EXTRA_VERBOSE',
     'V_VERBOSE',
@@ -24,7 +24,7 @@ __all__ = [
     'V_SILENT',
     'ensure_encoded',
     'VowsReporter',
-]
+)
 
 PROGRESS_SIZE = 50
 
