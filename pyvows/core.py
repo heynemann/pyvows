@@ -22,7 +22,7 @@ from pyvows.runner import VowsRunner
 
 #-------------------------------------------------------------------------------------------------
 
-expect = preggy.expect 
+expect = preggy.expect
 
 
 class Vows(object):
@@ -41,7 +41,7 @@ class Vows(object):
     suites = dict()
     exclusion_patterns = set()
 
-    
+
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
         write `from pyvows import Vows, expect` in your test module, then extend
@@ -65,14 +65,14 @@ class Vows(object):
             self.index = -1
             self.generated_topic = False
             self.ignored_members = set(['topic', 'setup', 'teardown', 'ignore'])
-        
+
         def _get_first_available_topic(self, index=-1):
-            
+
             def _check_topic_for_error(topic):
                 if hasattr(self, 'topic_error'):
                     topic.error = self.topic_error
                 return topic
-                    
+
             if self.topic_value:
                 if index > -1 and isinstance(self.topic_value, (list, set, tuple)):
                     topic = self.topic_value[index]
@@ -95,27 +95,27 @@ class Vows(object):
 
         def setup(self): pass
         def teardown(self): pass
-        
+
         setup.__doc__    = \
         teardown.__doc__ = \
-        '''For use in your PyVows tests.  Define in your `Vows.Context` 
+        '''For use in your PyVows tests.  Define in your `Vows.Context`
             subclass to define what should happen before that Context's testing begins.
 
             Remember:
                 * sibling Contexts are executed in parallel
                 * nested Contexts are executed sequentially
-                
+
         '''
 
-        
+
     @staticmethod
     def assertion(func):
         return preggy.assertion(func)
-    
+
     @staticmethod
-    def create_assertions(func): 
+    def create_assertions(func):
         return preggy.create_assertions(func)
-    
+
     @staticmethod
     def async_topic(topic):
         return async_topic(topic)
@@ -123,7 +123,7 @@ class Vows(object):
     @staticmethod
     def asyncTopic(topic):
         #   FIXME: Add Comment
-        warnings.warn('The asyncTopic decorator is deprecated.  ' 
+        warnings.warn('The asyncTopic decorator is deprecated.  '
                       'Please use Vows.async_topic instead.',
                       DeprecationWarning,
                       stacklevel=2)
@@ -139,7 +139,7 @@ class Vows(object):
 
         '''
         suite = ctx_class.__module__.replace('.', os.path.sep)
-        suite = os.path.abspath(suite) 
+        suite = os.path.abspath(suite)
         suite += '.py'
         if suite not in Vows.suites:
             Vows.suites[suite] = set()
@@ -159,7 +159,7 @@ class Vows(object):
                 module_path.replace(path, '').replace(os.sep, '.').lstrip('.')
             )[0]
             __import__(module_name)
-            
+
     @classmethod
     def exclude(cls, test_name_pattern):
         cls.exclusion_patterns = test_name_pattern
@@ -171,8 +171,8 @@ class Vows(object):
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
         runner = VowsRunner(cls.suites,
-                                    cls.Context,
-                                    on_vow_success,
-                                    on_vow_error,
-                                    cls.exclusion_patterns)
+                            cls.Context,
+                            on_vow_success,
+                            on_vow_error,
+                            cls.exclusion_patterns)
         return runner.run()

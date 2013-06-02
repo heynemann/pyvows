@@ -25,7 +25,7 @@ def locate(pattern, root=os.curdir, recursive=True):
 
     '''
     root_path = os.path.abspath(root)
-    
+
     if recursive:
         return_files = []
         for path, dirs, files in os.walk(root_path):
