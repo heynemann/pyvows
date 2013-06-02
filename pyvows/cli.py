@@ -162,10 +162,11 @@ def main():
 
     # Determine path
     path, pattern = arguments.path, arguments.pattern
-    if path and isfile(path):
-        path, pattern = split(path)
     if not path:
         path = os.curdir
+    elif isfile(path):
+        path, pattern = split(path)
+        
 
     # De-colorize if needed
     if arguments.no_color:
@@ -182,7 +183,7 @@ def main():
 
     # Set up last two options before we run the tests
     prune = arguments.exclude
-    verbosity = len(arguments.verbosity) if arguments.verbosity else 2
+    verbosity = 2 if not arguments.verbosity else len(arguments.verbosity)
 
     # RUN ZE TESTS
     result = run(path, pattern, verbosity, arguments.progress, prune)
