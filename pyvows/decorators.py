@@ -16,7 +16,7 @@ from pyvows.async_topic import VowsAsyncTopic
 
 #-------------------------------------------------------------------------------------------------
 
-# This doesn't need to be covered since PyVows needs 
+# This doesn't need to be covered since PyVows needs
 # it to work in order to run any tests at all.
 def _batch(klass):  # pragma: no cover
     # This is underscored-prefixed because the only intended use (via

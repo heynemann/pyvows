@@ -10,16 +10,16 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 
-# This is not covered because it should (theoretically) never occur.  
-# It should only be raised in very specific cases, and only for 
-# errors internal to PyVows (as the class name suggests).  
+# This is not covered because it should (theoretically) never occur.
+# It should only be raised in very specific cases, and only for
+# errors internal to PyVows (as the class name suggests).
 class VowsInternalError(Exception):  # pragma: no cover
     '''Raised whenever PyVows internal code does something unexpected.
-    
-    When instantiated, the first argument should be a error message str, 
+
+    When instantiated, the first argument should be a error message str,
     suitable for use with `str.format()`.  The message is then populated
     with the remaining arguments via `str.format()`.
-    
+
     '''
 
     def __init__(self, *args):
