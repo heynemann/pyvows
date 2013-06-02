@@ -121,15 +121,6 @@ class Vows(object):
         return async_topic(topic)
 
     @staticmethod
-    def asyncTopic(topic):
-        #   FIXME: Add Comment
-        warnings.warn('The asyncTopic decorator is deprecated.  '
-                      'Please use Vows.async_topic instead.',
-                      DeprecationWarning,
-                      stacklevel=2)
-        return async_topic(topic)
-
-    @staticmethod
     def batch(ctx_class):
         '''Class decorator.  Use on subclasses of `Vows.Context`.
 
