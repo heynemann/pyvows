@@ -3,7 +3,10 @@
 select the fastest possible runner, using fallbacks if unavailable.
 
 '''
+# pragma: no cover
 
+# Don't bother covering this file.  A failure in these statements will 
+# prevent PyVows from running.  The failure will be obvious.
 
 try:
     ##  GEvent
