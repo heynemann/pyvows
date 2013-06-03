@@ -165,7 +165,7 @@ class VowsReporter(object):
 
     def print_traceback(self, err_type, err_obj, err_traceback):
         '''Prints a color-formatted traceback with appropriate indentation.'''
-        if isinstance(err_obj, VowsAssertionError):
+        if isinstance(err_obj, AssertionError):
             error_msg = err_obj
         else:
             error_msg = unicode(err_obj)
