@@ -9,6 +9,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+import inspect
 import os
 import sys
 import warnings
@@ -58,14 +59,29 @@ class Vows(object):
         they are available if your test suite has extra pre- and
         post-testing work to be done in any given `Context`.
         '''
-
+        
+        ignored_members = set(['topic', 'setup', 'teardown', 'ignore', 'members', 'vows', 'subcontexts'])
+        
         def __init__(self, parent=None):
             self.parent = parent
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
-            self.ignored_members = set(['topic', 'setup', 'teardown', 'ignore'])
 
+        @property
+        def members(self):
+            predicate = lambda member: (member[0] not in self.ignored_members and 
+                                        member[0].startswith('_') is False)
+            return tuple(inspect.getmembers(type(self),  predicate))
+                   
+        @property
+        def vows(self):
+            return set((vow_name,vow)       for vow_name, vow       in self.members if inspect.ismethod(vow))
+        
+        @property
+        def subcontexts(self):
+            return set((subctx_name,subctx) for subctx_name, subctx in self.members if inspect.isclass(subctx))
+        
         def _get_first_available_topic(self, index=-1):
 
             def _check_topic_for_error(topic):
