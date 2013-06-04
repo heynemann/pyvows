@@ -68,29 +68,14 @@ class Vows(object):
             self.index = -1
             self.generated_topic = False
 
-        @property
-        def members(self):
-            predicate = lambda member: (member[0] not in self.ignored_members and 
-                                        member[0].startswith('_') is False)
-            return tuple(inspect.getmembers(type(self),  predicate))
-                   
-        @property
-        def vows(self):
-            return set((vow_name,vow)       for vow_name, vow       in self.members if inspect.ismethod(vow))
-        
-        @property
-        def subcontexts(self):
-            return set((subctx_name,subctx) for subctx_name, subctx in self.members if inspect.isclass(subctx))
-        
         def _get_first_available_topic(self, index=-1):
-
             def _check_topic_for_error(topic):
                 if hasattr(self, 'topic_error'):
                     topic.error = self.topic_error
                 return topic
 
             if self.topic_value:
-                if index > -1 and isinstance(self.topic_value, (list, set, tuple)):
+                if index > -1 and isinstance(self.topic_value, (list, tuple)):
                     topic = self.topic_value[index]
                 else:
                     topic = self.topic_value
@@ -123,7 +108,7 @@ class Vows(object):
 
         '''
 
-
+    #---- preggy ----#
     @staticmethod
     def assertion(func):
         return preggy.assertion(func)
@@ -131,7 +116,8 @@ class Vows(object):
     @staticmethod
     def create_assertions(func):
         return preggy.create_assertions(func)
-
+    
+    #---- statics ----#
     @staticmethod
     def async_topic(topic):
         return async_topic(topic)
@@ -172,14 +158,13 @@ class Vows(object):
         cls.exclusion_patterns = test_name_pattern
 
     @classmethod
-    def run(cls, on_vow_success, on_vow_error):
+    def run(cls, on_vow_hooks):
         #   FIXME: Add Docstring
         #
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
         runner = VowsRunner(cls.suites,
                             cls.Context,
-                            on_vow_success,
-                            on_vow_error,
+                            on_vow_hooks,
                             cls.exclusion_patterns)
         return runner.run()
