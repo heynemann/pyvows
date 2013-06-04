@@ -35,8 +35,10 @@ class VowsParallelRunner(VowsRunnerABC):
     pool = Pool(1000)
 
     def run(self):
+        start_time = time.time()
         super(VowsParallelRunner, self).run()
         self.pool.join()
+        self.result.elapsed_time = elapsed(start_time)
         return self.result
         
     def run_context(self, ctx_collection, ctx_obj=None, index=-1, suite=None):

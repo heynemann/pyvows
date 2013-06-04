@@ -53,7 +53,6 @@ class VowsRunnerABC(object):
         return False
 
     def run(self):
-        start_time = time.time()
         for suite, batches in self.suites.items():
             for batch in batches:
                 self.run_context(
@@ -62,7 +61,6 @@ class VowsRunnerABC(object):
                     index          = -1,
                     suite          = suite
                 )
-        self.result.elapsed_time = elapsed(start_time)
         
 
     def run_context(self, ctx_collection, ctx_obj=None, index=-1, suite=None):
