@@ -135,10 +135,12 @@ def run(path, pattern, verbosity, show_progress, exclusion_patterns=None):
         Vows.exclude(exclusion_patterns)
 
     Vows.collect(path, pattern)
-
-    on_success = show_progress and VowsDefaultReporter.on_vow_success or None
-    on_error = show_progress and VowsDefaultReporter.on_vow_error or None
-    result = Vows.run(on_success, on_error)
+    
+    on_vow_hooks = {
+        True:  show_progress and VowsDefaultReporter.on_vow_success or None ,
+        False: show_progress and VowsDefaultReporter.on_vow_error or None
+    }
+    result = Vows.run(on_vow_hooks)
     
     # Don't bother covering.  A failure here will be obvious; if this 
     # doesn't work, PyVows doesn't work.

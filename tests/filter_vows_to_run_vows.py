@@ -53,7 +53,7 @@ class FilterOutVowsFromCommandLine(Vows.Context):
 
         def can_be_initialized_with_6_arguments(self, topic):
             try:
-                topic(None, Vows.Context, None, None, None)
+                topic(None, Vows.Context, None, None)
             except Exception as e:
                 expect(e).Not.to_be_instance_of(TypeError)
         
@@ -62,14 +62,14 @@ class FilterOutVowsFromCommandLine(Vows.Context):
         ###     refactored code in pyvows.runner.
         ###
         # def removes_appropriate_contexts(self, topic):
-        #     r = topic(None, Vows.Context, None, None, set(['foo', 'bar']))
+        #     r = topic(None, Vows.Context, None, set(['foo', 'bar']))
         #     col = []
         #     r.run_context(col, 'footer')
         #     expect(len(col)).to_equal(0)
         # 
         # def leaves_unmatched_contexts(self, topic):
         #     VowsRunner.teardown = None
-        #     r = topic(None, Vows.Context, None, None, set(['foo', 'bar']))
+        #     r = topic(None, Vows.Context, None, set(['foo', 'bar']))
         #     col = []
         #     r.run_context(col, ctx_obj='baz')
         #     expect(len(col)).to_equal(1)
