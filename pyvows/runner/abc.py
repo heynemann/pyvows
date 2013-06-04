@@ -10,14 +10,17 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 import re, sys, time
+import inspect
 
-from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
 from pyvows.utils import elapsed
+from pyvows.result import VowsResult
+from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
 
 #-------------------------------------------------------------------------------------------------
 
 class VowsRunnerABC(object):
-
+    result = VowsResult()
+    
     def __init__(self, suites, context_class, on_vow_success, on_vow_error, exclusion_patterns):
         self.suites = suites  # a suite is a file with pyvows tests
         self.context_class = context_class
@@ -26,8 +29,23 @@ class VowsRunnerABC(object):
         self.exclusion_patterns = exclusion_patterns
         if self.exclusion_patterns:
             self.exclusion_patterns = set([re.compile(x) for x in self.exclusion_patterns])
+    
+    def _get_vows_and_subcontexts(self, ctx_obj):
+        special_names = set(['setup', 'teardown', 'topic'])
+        if hasattr(ctx_obj, 'ignored_members'):
+            special_names.update(ctx_obj.ignored_members)
 
-    def is_excluded(self, name):
+        # removes any special methods from ctx_members
+        filterfunc = lambda member: not (member[0] in special_names or member[0].startswith('_'))
+        ctx_members = filter(filterfunc, inspect.getmembers(type(ctx_obj)))
+        ctx_members = tuple(ctx_members)
+        # now separate out the two types we're concerned with
+        vows        = set((vow_name,vow)       for vow_name, vow       in ctx_members if inspect.ismethod(vow))
+        subcontexts = set((subctx_name,subctx) for subctx_name, subctx in ctx_members if inspect.isclass(subctx))
+
+        return vows, subcontexts
+        
+    def _is_excluded(self, name):
         '''Return whether `name` is in `self.exclusion_patterns`.'''
         for pattern in self.exclusion_patterns:
             if pattern.search(name):
@@ -35,10 +53,20 @@ class VowsRunnerABC(object):
         return False
 
     def run(self):
-        pass
+        start_time = time.time()
+        for suite, batches in self.suites.items():
+            for batch in batches:
+                self.run_context(
+                    ctx_collection = self.result.contexts,
+                    ctx_obj        = batch(None),
+                    index          = -1,
+                    suite          = suite
+                )
+        self.result.elapsed_time = elapsed(start_time)
+        
 
-    def run_context(self):
-        pass
+    def run_context(self, ctx_collection, ctx_obj=None, index=-1, suite=None):
+        NotImplemented
 
     def run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated):
         #   FIXME: Add Docstring
@@ -60,8 +88,7 @@ class VowsRunnerABC(object):
         }
 
         try:
-            result = vow(ctx_obj, topic)
-            vow_result['result'] = result
+            vow_result['result'] = vow(ctx_obj, topic)
             vow_result['succeeded'] = True
             if self.on_vow_success:
                 self.on_vow_success(vow_result)
