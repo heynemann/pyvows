@@ -20,9 +20,9 @@ from gevent.pool import Pool
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import FunctionWrapper
-from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
 from pyvows.utils import elapsed
 from pyvows.runner.abc import VowsRunnerABC
+from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
 
 #-------------------------------------------------------------------------------------------------
 
