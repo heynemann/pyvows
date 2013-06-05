@@ -150,7 +150,7 @@ class AssertionIsLike(Vows.Context):
 
     class WhenWeGetAnError(Vows.Context):
         def topic(self, last):
-            expect('a').to_be_like('b')
+            expect('a').to_be_like('b', diff=False)
 
         def we_get_an_understandable_message(self, topic):
             expect(topic).to_have_an_error_message_of("Expected topic('a') to be like 'b'")
