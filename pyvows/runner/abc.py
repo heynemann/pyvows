@@ -74,18 +74,14 @@ class VowsRunnerABC(object):
         start_time = time.time()
         filename, lineno = get_file_info_for(vow._original)
 
-        vow_result = {
-            'context_instance': ctx_obj,
-            'name': vow_name,
-            'enumerated': enumerated,
-            'result': None,
-            'topic': topic,
-            'error': None,
-            'succeeded': False,
-            'file': filename,
-            'lineno': lineno,
-            'elapsed': 0
-        }
+        vow_result = type(self.result).get_result_for_vow(
+            context_instance = ctx_obj,
+            name = vow_name,
+            enumerated = enumerated,
+            topic = topic,
+            file = filename,
+            lineno = lineno
+        )
 
         try:
             vow_result['result'] = vow(ctx_obj, topic)

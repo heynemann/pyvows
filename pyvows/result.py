@@ -11,6 +11,8 @@ each vow.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+import inspect
+
 #-------------------------------------------------------------------------------------------------
 
 class VowsResult(object):
@@ -116,3 +118,25 @@ class VowsResult(object):
         ]
         times.sort(key=lambda x: x['elapsed'], reverse=True)
         return times[:number]
+    
+    @classmethod
+    def get_result_for_ctx(cls, suite, ctx_obj):
+        ctx_result = {
+            'filename': suite or inspect.getsourcefile(ctx_obj.__class__),
+            'name': type(ctx_obj).__name__,
+            'tests': [],
+            'contexts': [],
+            'topic_elapsed': 0,
+        }
+        return ctx_result
+        
+    @classmethod
+    def get_result_for_vow(cls, **kw):
+        vow_result = dict(**kw)
+        vow_result.update({
+            'elapsed': 0,
+            'error': None,
+            'result': None,
+            'succeeded': False,
+        })
+        return vow_result

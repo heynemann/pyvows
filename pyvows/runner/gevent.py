@@ -50,23 +50,15 @@ class VowsParallelRunner(VowsRunnerABC):
             suite    = suite
         )
 
-
     def _run_context(self, ctx_collection, ctx_obj=None, index=-1, suite=None):
         #   FIXME: Add Docstring
         
-        ctx_name = type(ctx_obj).__name__
         #-----------------------------------------------------------------------
         # Local variables and defs
         #-----------------------------------------------------------------------
-        ctx_result = {
-            'filename': suite or inspect.getsourcefile(ctx_obj.__class__),
-            'name': ctx_name,
-            'tests': [],
-            'contexts': [],
-            'topic_elapsed': 0,
-        }
-
+        ctx_result = type(self.result).get_result_for_ctx(suite, ctx_obj)
         ctx_collection.append(ctx_result)
+        ctx_name = ctx_result['name']
         ctx_obj.index = index
         ctx_obj.pool = self.pool
         
