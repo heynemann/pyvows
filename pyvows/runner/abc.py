@@ -33,15 +33,19 @@ class VowsRunnerABC(object):
         special_names = set(['setup', 'teardown', 'topic', 'ignore'])
         if hasattr(ctx_obj, 'ignored_members'):
             special_names.update(ctx_obj.ignored_members)
-
+            
         # removes any special methods from ctx_members
-        filterfunc = lambda member: not (member[0] in special_names or member[0].startswith('_'))
+        filterfunc = lambda member: not (
+            member[0] in special_names  or 
+            member[0].startswith('_')   or 
+            self._is_excluded(member[0])
+        )
         ctx_members = filter(filterfunc, inspect.getmembers(type(ctx_obj)))
         ctx_members = tuple(ctx_members)
+        
         # now separate out the two types we're concerned with
-        vows        = set((vow_name,vow)       for vow_name, vow       in ctx_members if inspect.ismethod(vow))
+        vows        = set((vow_name,vow) for vow_name, vow in ctx_members if inspect.ismethod(vow))
         subcontexts = set((subctx_name,subctx) for subctx_name, subctx in ctx_members if inspect.isclass(subctx))
-
         return vows, subcontexts
         
     def _is_excluded(self, name):
@@ -60,10 +64,9 @@ class VowsRunnerABC(object):
                     index          = -1,
                     suite          = suite
                 )
-        
 
     def run_context(self, ctx_collection, ctx_obj=None, index=-1, suite=None):
-        NotImplemented
+        NotImplemented  # subclasses implement this
 
     def run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated):
         #   FIXME: Add Docstring
