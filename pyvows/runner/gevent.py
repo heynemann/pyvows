@@ -86,10 +86,25 @@ class VowsParallelRunner(VowsRunnerABC):
                 return topic
         def _run_tests(topic):
             def _run_with_topic(topic):
+                ctx_obj.topic_value = topic
+                is_generator = inspect.isgenerator(topic)
+
+                # setup generated topics if needed
+                if is_generator:
+                    try:
+                        ctx_obj.generated_topic = True
+                        ctx_obj.topic_value = tuple(topic)
+                    except Exception as e:
+                        is_generator = False
+                        topic = ctx_obj.topic_value = e
+                        topic.error = ctx_obj.topic_error = sys.exc_info()
+
+                topic = ctx_obj.topic_value
+                
                 def _run_vows_and_subcontexts(topic, index=-1, enumerated=False):
                     # methods
                     for vow_name, vow in vows:
-                        self._run_vow(
+                        self.run_vow(
                             ctx_result['tests'],
                             topic,
                             ctx_obj,
@@ -115,21 +130,7 @@ class VowsParallelRunner(VowsRunnerABC):
                         )
 
                 
-                ctx_obj.topic_value = topic
-                is_generator = inspect.isgenerator(topic)
-
-                # setup generated topics if needed
-                if is_generator:
-                    try:
-                        ctx_obj.generated_topic = True
-                        ctx_obj.topic_value = tuple(topic)
-                    except Exception as e:
-                        is_generator = False
-                        topic = ctx_obj.topic_value = e
-                        topic.error = ctx_obj.topic_error = sys.exc_info()
-
-                topic = ctx_obj.topic_value
-
+                
                 if is_generator:
                     for index, topic_value in enumerate(topic):
                         _run_vows_and_subcontexts(topic_value, index=index, enumerated=True)
@@ -159,11 +160,18 @@ class VowsParallelRunner(VowsRunnerABC):
         # Begin
         #-----------------------------------------------------------------------
         teardown = FunctionWrapper(ctx_obj.teardown)  # Wrapped teardown so it's called at the appropriate time
-        
         topic = _run_setup_and_topic(ctx_obj)
         _run_tests(topic)
         _run_teardown(topic)
 
-    def _run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated=False):
+    def run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated=False):
         #   FIXME: Add Docstring
-        self.pool.spawn(self.run_vow, tests_collection, topic, ctx_obj, vow, vow_name, enumerated)
+        self.pool.spawn(
+            super(VowsParallelRunner, self).run_vow, 
+            tests_collection, 
+            topic, 
+            ctx_obj,
+            vow, 
+            vow_name, 
+            enumerated
+        )
