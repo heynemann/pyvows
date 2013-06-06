@@ -33,13 +33,13 @@ class VowsRunnerABC(object):
         special_names = set(['setup', 'teardown', 'topic', 'ignore'])
         if hasattr(ctx_obj, 'ignored_members'):
             special_names.update(ctx_obj.ignored_members)
-            
+        
         # removes any special methods from ctx_members
-        filterfunc = lambda member: not (
-            member[0] in special_names  or 
-            member[0].startswith('_')   or 
+        filterfunc = lambda member: not any((
+            member[0] in special_names,
+            member[0].startswith('_'),
             self._is_excluded(member[0])
-        )
+        ))
         ctx_members = filter(filterfunc, inspect.getmembers(type(ctx_obj)))
         ctx_members = tuple(ctx_members)
         
