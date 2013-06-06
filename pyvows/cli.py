@@ -183,11 +183,11 @@ def main():
         cov.start()
 
     # Set up last two options before we run the tests
-    prune = arguments.exclude
+    exclusion_patterns = arguments.exclude
     verbosity = 2 if not arguments.verbosity else len(arguments.verbosity)
 
     # RUN ZE TESTS
-    result = run(path, pattern, verbosity, arguments.progress, prune)
+    result = run(path, pattern, verbosity, arguments.progress, exclusion_patterns)
 
     # Report the results
     reporter = VowsDefaultReporter(result, verbosity)
