@@ -55,9 +55,6 @@ class VowsParallelRunner(VowsRunnerABC):
         #   FIXME: Add Docstring
         
         ctx_name = type(ctx_obj).__name__
-        if self._is_excluded(ctx_name):
-            return
-
         #-----------------------------------------------------------------------
         # Local variables and defs
         #-----------------------------------------------------------------------
@@ -177,6 +174,4 @@ class VowsParallelRunner(VowsRunnerABC):
 
     def _run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated=False):
         #   FIXME: Add Docstring
-        if self._is_excluded(vow_name):
-            return
         self.pool.spawn(self.run_vow, tests_collection, topic, ctx_obj, vow, vow_name, enumerated)
