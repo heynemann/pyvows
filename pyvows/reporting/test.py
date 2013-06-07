@@ -58,7 +58,7 @@ class VowsTestReporter(VowsReporter):
     def pretty_print(self):
         '''Prints PyVows test results.'''
         print self.header('Vows Results')
-
+        
         if not self.result.contexts:
             # FIXME:
             #   If no vows are found, how could any be broken?

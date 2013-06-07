@@ -3,25 +3,31 @@
 it's a universal fallback.
 
 '''
+import time
 
+from pyvows.utils import elapsed
 from pyvows.runner.abc import VowsRunnerABC
-from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
 
 #-------------------------------------------------------------------------------------------------
 
-class VowsSequentialRunner(object):
-
+class VowsSequentialRunner(VowsRunnerABC):
+    ### FIXME:
+    ###
+    ###   Not working yet. Known issues:
+    ###
+    ###     - Breaks for async topics (async_vows.py also REQUIRES the gevent runner; is that a bug???)
+    ###     - Possible teardown issues (tests/no_subcontext_extension_vows.py)
+    ###     - <add more as discovered>
+    ###
+    
+    # def __init__(self, *args, **kw):
+    #     # Debugging
+    #     print 'Starting sequential runner...'
+    #     super(VowsSequentialRunner, self).__init__(*args, **kw)
+    
     def run(self):
-        pass
-        #for suite, batches in self.suites.items():
-        #    for batch in batches:
-        #        self.run_context(batch.__name__, batch(None))
-
-    def run_context(self, ctx_name, ctx_instance):
-        pass
-        # setup
-        # teardown
-        # topic
-        # vows
-        # subcontexts
-        # teardown
+        start_time = time.time()
+        super(VowsSequentialRunner, self).run()
+        self.result.elapsed_time = elapsed(start_time)
+        return self.result
+    

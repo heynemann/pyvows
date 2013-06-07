@@ -41,7 +41,7 @@ class VowsAsyncTopicValue(object):
         self.error = None
         if len(self.args) >= 1 and isinstance(self.args[0], Exception):
             self.error = self.args
-
+    
     def __getitem__(self, attr):
         if type(attr) is int:
             return self.args[attr]
@@ -50,6 +50,17 @@ class VowsAsyncTopicValue(object):
             return self.kw[attr]
 
         raise AttributeError
+    
+    ### For debugging runner.sequential
+    ###
+    # def __getitem__(self, attr):
+    #     if isinstance(attr, int):
+    #         return self.args[attr]
+    #     if attr in self.kw:
+    #         return self.kw[attr]
+    #     if hasattr(self, attr):
+    #         return getattr(self, attr)
+    #     raise AttributeError('Could not retrieve attr {0} for VowsAsyncTopicValue'.format(attr))
 
     def __getattr__(self, attr):
         if attr in self.kw:

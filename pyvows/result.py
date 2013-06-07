@@ -12,6 +12,7 @@ each vow.
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 import inspect
+import six
 
 #-------------------------------------------------------------------------------------------------
 
@@ -22,7 +23,8 @@ class ContextResult(object):
         'name',
         'tests',
         'contexts',
-        'topic_elapsed'
+        'topic_elapsed',
+        'parent'
     )
     
     def __init__(self, suite, ctx_obj):
@@ -31,6 +33,8 @@ class ContextResult(object):
         self.tests = []
         self.contexts = []
         self.topic_elapsed = 0.0
+        if hasattr(ctx_obj, 'parent') and ctx_obj.parent is not None:
+            self.parent = ctx_obj.parent
     
     def __getitem__(self, item):
         return getattr(self, str(item))
@@ -46,7 +50,8 @@ class ContextResult(object):
         if all(vows_passed) and all(ctx_passed):
             return True
         return False
-        
+
+
 class VowResult(object):
     __slots__ = (
         'context_instance',
@@ -73,8 +78,15 @@ class VowResult(object):
         self.error = None
         self.result = None
         self.succeeded = False
+    
+    def __contains__(self, item):
+        return hasattr(self, str(item))
         
     def __getitem__(self, item):
+        if not isinstance(item, (six.string_types, six.text_type)):
+            msg = 'Cannot get item {0} for VowResult object'.format(item)
+            raise TypeError(msg)
+        
         return getattr(self, str(item))
     
     def __setitem__(self, item, val):
@@ -176,21 +188,3 @@ class VowsResult(object):
     
     def eval_context(self, context):
         return bool(context)
-    
-    @classmethod
-    def get_result_for_ctx(cls, suite, ctx_obj):
-        # ctx_result = {
-        #     'filename': suite or inspect.getsourcefile(ctx_obj.__class__),
-        #     'name':     type(ctx_obj).__name__,
-        #     'tests': [],
-        #     'contexts': [],
-        #     'topic_elapsed': 0,
-        # }
-        return ContextResult(
-            suite or inspect.getsourcefile(ctx_obj.__class__),
-            ctx_obj
-        )
-        
-    @classmethod
-    def get_result_for_vow(cls, ctx_obj, vow_name, enumerated, topic, file, lineno):
-        return VowResult(ctx_obj, vow_name, enumerated, topic, file, lineno)

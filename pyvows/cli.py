@@ -140,6 +140,7 @@ def run(path, pattern, verbosity, show_progress, exclusion_patterns=None):
         False: show_progress and VowsDefaultReporter.on_vow_error or None
     }
     result = Vows.run(on_vow_hooks)
+    from pprint import pprint
     
     # Don't bother covering.  A failure here will be obvious; if this 
     # doesn't work, PyVows doesn't work.

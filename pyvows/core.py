@@ -9,15 +9,12 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-import inspect
 import os
 import sys
-import warnings
 
 import preggy
 
 from pyvows import utils
-from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import _batch, async_topic
 from pyvows.runner import VowsRunner
 

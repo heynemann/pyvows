@@ -10,7 +10,6 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 from functools import wraps
-import re
 
 from pyvows.async_topic import VowsAsyncTopic
 
