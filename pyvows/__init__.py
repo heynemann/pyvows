@@ -35,7 +35,10 @@ To learn more, check out:   http://pyvows.org
 
 #-------------------------------------------------------------------------------------------------
 
-from preggy import expect
+try:
+    from preggy import expect
+except:
+    pass
 
 try:
     from pyvows.core import Vows, expect

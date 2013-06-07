@@ -12,7 +12,7 @@
 import sys
 from textwrap import dedent
 # external
-from setuptools import setup
+from setuptools import setup, find_packages
 # local
 from pyvows import version
 
@@ -21,7 +21,7 @@ _install_requires = [
     'gevent>=0.13.6',
     'preggy>=0.5.8',
 ]
-if sys.version_info < (2,7):
+if sys.version_info < (2, 7):
     _install_requires.append('argparse >= 1.1')
 
 
@@ -30,31 +30,31 @@ setup(
     name='pyVows',
     description='pyVows is a BDD test engine based on Vows.js <http://vowsjs.org>.',
     long_description=dedent(
-        '''pyVows is a test engine based on Vows.js. It features topic-based testing, 
-        (*fast*) parallel running of tests, code coverage reports, test profiling, and 
-        more: 
-        
+        '''pyVows is a test engine based on Vows.js. It features topic-based testing,
+        (*fast*) parallel running of tests, code coverage reports, test profiling, and
+        more:
+
         http://pyvows.org
-        
+
         '''),
-    
-    
+
+
     ### URLs
     url='http://pyvows.org',
-    
-    
+
+
     ### TECHNICAL INFO
     version=version.to_str(),
     install_requires=_install_requires,
-    packages=['pyvows', 'pyvows.reporting'],
-    package_dir={'pyvows':'pyvows'},
+    packages=find_packages(),
+    package_dir={'pyvows': 'pyvows'},
     entry_points={
         'console_scripts': [
             'pyvows = pyvows.cli:main'
         ]
     },
-    
-    
+
+
     ### PEOPLE & LICENSE
     author='Bernardo Heynemann',
     author_email='heynemann@gmail.com',
@@ -62,11 +62,11 @@ setup(
     #maintainer_email = 'rafael@caricio.com',
     maintainer='Zearin',
     license='MIT',
-    
-    
-    ### CATEGORIZATION 
-    keywords = 'test testing vows tdd bdd development coverage profile profiling',
-    classifiers = [
+
+
+    ### CATEGORIZATION
+    keywords='test testing vows tdd bdd development coverage profile profiling',
+    classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
@@ -79,7 +79,4 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Topic :: Software Development :: Testing'
     ],
-    
 )
-
-
