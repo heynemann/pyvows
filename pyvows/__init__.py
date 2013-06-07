@@ -33,4 +33,14 @@ To learn more, check out:   http://pyvows.org
 
 # flake8: noqa
 
-from pyvows.core import Vows, expect
+#-------------------------------------------------------------------------------------------------
+
+try:
+    from preggy import expect
+except:
+    pass
+
+try:
+    from pyvows.core import Vows, expect
+except ImportError:
+    pass
