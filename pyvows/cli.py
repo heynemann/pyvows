@@ -33,6 +33,7 @@ from pyvows import version
 
 #-------------------------------------------------------------------------------------------------
 
+
 class Messages(object):  # pragma: no cover
     '''A simple container for command-line interface strings.'''
 
@@ -212,17 +213,22 @@ def main():
             cov.stop()
             xml = ''
 
-            with tempfile.NamedTemporaryFile() as tmp:
-                cov.xml_report(outfile=tmp.name)
-                tmp.seek(0)
-                xml = tmp.read()
+            try:
+                with tempfile.NamedTemporaryFile() as tmp:
+                    cov.xml_report(outfile=tmp.name)
+                    tmp.seek(0)
+                    xml = tmp.read()
+            except Exception:
+                err = sys.exc_info()[1]
+                print("Could not run coverage. Error: %s" % err)
 
-            if arguments.cover_report:
-                with open(arguments.cover_report, 'w') as report:
-                    report.write(xml)
+            if xml:
+                if arguments.cover_report:
+                    with open(arguments.cover_report, 'w') as report:
+                        report.write(xml)
 
-            arguments.cover_threshold /= 100.0
-            reporter.print_coverage(xml, arguments.cover_threshold)
+                arguments.cover_threshold /= 100.0
+                reporter.print_coverage(xml, arguments.cover_threshold)
 
     # Write XUnit if necessary
     if arguments.xunit_output:
