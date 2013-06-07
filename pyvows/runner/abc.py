@@ -75,12 +75,12 @@ class VowsRunnerABC(object):
         filename, lineno = get_file_info_for(vow._original)
 
         vow_result = type(self.result).get_result_for_vow(
-            context_instance = ctx_obj,
-            name = vow_name,
-            enumerated = enumerated,
-            topic = topic,
-            file = filename,
-            lineno = lineno
+            ctx_obj,
+            vow_name,
+            enumerated,
+            topic,
+            filename,
+            lineno
         )
 
         try:
@@ -106,5 +106,3 @@ class VowsRunnerABC(object):
 
         vow_result['elapsed'] = elapsed(start_time)
         tests_collection.append(vow_result)
-
-        return vow_result

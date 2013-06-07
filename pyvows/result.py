@@ -15,6 +15,75 @@ import inspect
 
 #-------------------------------------------------------------------------------------------------
 
+
+class ContextResult(object):
+    __slots__ = (
+        'filename',
+        'name',
+        'tests',
+        'contexts',
+        'topic_elapsed'
+    )
+    
+    def __init__(self, suite, ctx_obj):
+        self.filename = suite or inspect.getsourcefile(ctx_obj.__class__)
+        self.name = type(ctx_obj).__name__
+        self.tests = []
+        self.contexts = []
+        self.topic_elapsed = 0.0
+    
+    def __getitem__(self, item):
+        return getattr(self, str(item))
+    
+    def __setitem__(self, item, val):
+        setattr(self, str(item), val)
+        
+    def __bool__(self):
+        '''Returns whether vows and contexts tested successfully.  Recursive.
+        '''
+        vows_passed = [bool(test) for test in self.tests]
+        ctx_passed = [bool(ctx) for ctx in self.contexts]
+        if all(vows_passed) and all(ctx_passed):
+            return True
+        return False
+        
+class VowResult(object):
+    __slots__ = (
+        'context_instance',
+        'elapsed',
+        'enumerated',
+        'error',
+        'file',
+        'lineno',
+        'name',
+        'result',
+        'succeeded',
+        'topic'
+    )
+    
+    def __init__(self, ctx_obj, vow_name, enumerated, topic, file, lineno):
+        self.context_instance = ctx_obj
+        self.name = vow_name
+        self.enumerated = enumerated
+        self.topic = topic
+        self.file = file
+        self.lineno = lineno
+        #---- These begin the same ----#
+        self.elapsed = 0.0
+        self.error = None
+        self.result = None
+        self.succeeded = False
+        
+    def __getitem__(self, item):
+        return getattr(self, str(item))
+    
+    def __setitem__(self, item, val):
+        setattr(self, str(item), val)
+        
+    def __bool__(self):
+        return self.succeeded
+
+
 class VowsResult(object):
     '''Collects success/failure/total statistics (as well as elapsed
     time) for the outcomes of tests.
@@ -42,7 +111,7 @@ class VowsResult(object):
             contexts = self.contexts
 
         for context in contexts:
-            test_count += sum([count_func(i) for i in context['tests']])
+            test_count += sum([count_func(test) for test in context['tests']])
             test_count += self._count_tests(contexts=context['contexts'],
                                             first=False,
                                             count_func=count_func)
@@ -93,20 +162,6 @@ class VowsResult(object):
         '''Returns the number of tests that failed.'''
         return self._count_tests(contexts=None, first=True, count_func=lambda test: 0 if test['succeeded'] else 1)
 
-    def eval_context(self, context):
-        '''Returns a boolean indicating whether `context` tested
-        successfully.
-
-        '''
-        succeeded = True
-        for context in context['contexts']:
-            succeeded = succeeded and self.eval_context(context)
-
-        for test in context['tests']:
-            succeeded = succeeded and test['succeeded']
-
-        return succeeded
-
     def get_worst_topics(self, number=10, threshold=0.1):
         '''Returns the top `number` slowest topics which took longer
         than `threshold` to test.
@@ -119,24 +174,23 @@ class VowsResult(object):
         times.sort(key=lambda x: x['elapsed'], reverse=True)
         return times[:number]
     
+    def eval_context(self, context):
+        return bool(context)
+    
     @classmethod
     def get_result_for_ctx(cls, suite, ctx_obj):
-        ctx_result = {
-            'filename': suite or inspect.getsourcefile(ctx_obj.__class__),
-            'name': type(ctx_obj).__name__,
-            'tests': [],
-            'contexts': [],
-            'topic_elapsed': 0,
-        }
-        return ctx_result
+        # ctx_result = {
+        #     'filename': suite or inspect.getsourcefile(ctx_obj.__class__),
+        #     'name':     type(ctx_obj).__name__,
+        #     'tests': [],
+        #     'contexts': [],
+        #     'topic_elapsed': 0,
+        # }
+        return ContextResult(
+            suite or inspect.getsourcefile(ctx_obj.__class__),
+            ctx_obj
+        )
         
     @classmethod
-    def get_result_for_vow(cls, **kw):
-        vow_result = dict(**kw)
-        vow_result.update({
-            'elapsed': 0,
-            'error': None,
-            'result': None,
-            'succeeded': False,
-        })
-        return vow_result
+    def get_result_for_vow(cls, ctx_obj, vow_name, enumerated, topic, file, lineno):
+        return VowResult(ctx_obj, vow_name, enumerated, topic, file, lineno)
