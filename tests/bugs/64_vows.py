@@ -17,7 +17,6 @@ class VowsTestReporterExceptions(Vows.Context):
 
     def topic(self):
         v = VowsTestReporter(VowsResult(), 0)
-        v.print_traceback = lambda a, b, c: None
         v.humanized_print = lambda a: None
         return v
 

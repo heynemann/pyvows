@@ -43,12 +43,12 @@ PYVOWS_MODULES = (
 
 @Vows.assertion
 def to_have_a_docstring(topic):
-    '''Custom assertion.  Raises a VowsAssertionError if `topic` has no
+    '''Custom assertion.  Raises a AssertionError if `topic` has no
     docstring.
 
     '''
     if not hasattr(topic, '__doc__'):
-        raise VowsAssertionError('Expected topic({0}) to have a docstring', topic)
+        raise AssertionError('Expected topic({0}) to have a docstring', topic)
 
 
 @Vows.batch
