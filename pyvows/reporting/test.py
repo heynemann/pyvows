@@ -143,7 +143,6 @@ class VowsTestReporter(VowsReporter):
                 # print file and line number
                 if 'file' in test:
                     file_msg = 'found in {test[file]} at line {test[lineno]}'.format(test=test)
-                    print
                     print self.indent_msg(red(file_msg))
                     print
 
