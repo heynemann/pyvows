@@ -78,7 +78,7 @@ class VowsReporter(object):
             'Some camel case string'
 
         '''
-        return re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?=[0-9]\b))', ' ', string).strip()
+        return re.sub(r'((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|(?=[0-9]\b))', ' ', string).strip()
 
     def under_split(self, string):
         '''Replaces all underscores in `string` with spaces.'''
