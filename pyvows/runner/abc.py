@@ -39,32 +39,6 @@ class VowsRunnerABC(object):
         if self.exclusion_patterns:
             self.exclusion_patterns = set([re.compile(x) for x in self.exclusion_patterns])
     
-    def _get_vows_and_subcontexts(self, ctx_obj):
-        special_names = set(['setup', 'teardown', 'topic', 'ignore'])
-        if hasattr(ctx_obj, 'ignored_members'):
-            special_names.update(ctx_obj.ignored_members)
-        
-        # removes any special methods from ctx_members
-        filterfunc = lambda member: not any((
-            member[0] in special_names,
-            member[0].startswith('_'),
-            self._is_excluded(member[0])
-        ))
-        ctx_members = filter(filterfunc, inspect.getmembers(type(ctx_obj)))
-        ctx_members = tuple(ctx_members)
-        
-        # now separate out the two types we're concerned with
-        vows        = set((vow_name,vow) for vow_name, vow in ctx_members if inspect.ismethod(vow))
-        subcontexts = set((subctx_name,subctx) for subctx_name, subctx in ctx_members if inspect.isclass(subctx))
-        return vows, subcontexts
-    
-    def _is_excluded(self, name):
-        '''Return whether `name` is in `self.exclusion_patterns`.'''
-        for pattern in self.exclusion_patterns:
-            if pattern.search(name):
-                return True
-        return False
-
     def run(self):
         for suite, batches in self.suites.items():
             for batch in batches:
@@ -186,23 +160,22 @@ class VowsRunnerABC(object):
         _run_teardown(topic)
         
 
-    def run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated):
+    def run_vow(self, tests_collection, topic, ctx_obj, vow, enumerated=False):
         #   FIXME: Add Docstring
 
         start_time = time.time()
         filename, lineno = get_file_info_for(vow._original)
         vow_result = VowResult(
             ctx_obj,
-            vow_name,
-            enumerated,
+            vow,
             topic,
-            filename,
-            lineno
+            lineno,
+            enumerated=enumerated
         )
 
         try:
-            vow_result['result'] = vow(ctx_obj, topic)
-            vow_result['succeeded'] = True
+            vow_result.result = vow(ctx_obj, topic)
+            vow_result.succeeded = True
             if self.on_vow_hooks[True]:
                 self.on_vow_hooks[True](vow_result)
         except:
@@ -212,7 +185,7 @@ class VowsRunnerABC(object):
             #       *   Describe why we're catching every exception, or
             #       *   Fix to catch specific kinds of exceptions
             err_type, err_value, err_traceback = sys.exc_info()
-            vow_result['error'] = {
+            vow_result.error = {
                 'type': err_type,
                 'value': err_value,
                 'traceback': err_traceback
@@ -220,5 +193,5 @@ class VowsRunnerABC(object):
             if self.on_vow_hooks[False]:
                 self.on_vow_hooks[False](vow_result)
 
-        vow_result['elapsed'] = elapsed(start_time)
+        vow_result.elapsed = elapsed(start_time)
         tests_collection.append(vow_result)

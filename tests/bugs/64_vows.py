@@ -7,8 +7,13 @@
 # Copyright (c) 2013 nathan dotz
 
 from pyvows import Vows, expect
-from pyvows.result import VowsResult
+from pyvows.result import VowsResult, ContextResult, VowResult
 from pyvows.reporting import VowsTestReporter  # , VowsDefaultReporter
+
+
+def mock_context():
+    class MockContext(Vows.Context): pass
+    return MockContext
 
 
 @Vows.batch
@@ -21,17 +26,7 @@ class VowsTestReporterExceptions(Vows.Context):
 
     def should_not_raise_TypeError_on_tests_without_a_topic(self, topic):
         try:
-            # Notice that the test dict here has no 'topic' key.
-            test = {'name':             'Mock Test Result',
-                    'succeeded':        False,
-                    'context_instance': Vows.Context(),
-                    'error': {'type': '',
-                              'value': '',
-                              'traceback': ''}
-                    }
-            context = {'tests': [test],
-                       'contexts': []
-                       }
+            context = ContextResult('_mock_file.py', mock_context()() ) # has no 'topic'
             topic.print_context('Derp', context)
         except AssertionError as e:
             expect(e).to_be_an_error_like(AssertionError)

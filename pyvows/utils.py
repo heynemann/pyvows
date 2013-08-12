@@ -18,7 +18,15 @@ import time
 
 elapsed = lambda start_time: float(round(time.time() - start_time, 6))
 
-
+def get_path_for_module(module, relpath=True):
+    '''Returns the path for the module `module`.'''
+    modpath = module.replace('.', os.path.sep)
+    modpath = os.path.abspath(modpath)
+    if relpath:
+        modpath = os.path.relpath(modpath)
+    modpath += '.py'
+    return modpath
+    
 def locate(pattern, root=os.curdir, recursive=True):
     '''Recursively locates test files when `pyvows` is run from the
     command line.

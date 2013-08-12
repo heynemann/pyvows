@@ -14,6 +14,8 @@ each vow.
 import inspect
 import six
 
+from pyvows import utils
+from pyvows.runner import utils as runutils
 #-------------------------------------------------------------------------------------------------
 
 
@@ -26,22 +28,22 @@ class ContextResult(object):
         'topic_elapsed',
         'parent'
     )
-    
+
     def __init__(self, suite, ctx_obj):
-        self.filename = suite or inspect.getsourcefile(ctx_obj.__class__)
-        self.name = type(ctx_obj).__name__
+        self.filename = suite
+        self.name = ctx_obj.__name__
         self.tests = []
         self.contexts = []
         self.topic_elapsed = 0.0
         if hasattr(ctx_obj, 'parent') and ctx_obj.parent is not None:
             self.parent = ctx_obj.parent
-    
+
     def __getitem__(self, item):
         return getattr(self, str(item))
-    
+
     def __setitem__(self, item, val):
         setattr(self, str(item), val)
-        
+
     def __bool__(self):
         '''Returns whether vows and contexts tested successfully.  Recursive.
         '''
@@ -50,6 +52,9 @@ class ContextResult(object):
         if all(vows_passed) and all(ctx_passed):
             return True
         return False
+
+    def __nonzero__(self):
+        return self.__bool__()
 
 
 class VowResult(object):
@@ -65,35 +70,37 @@ class VowResult(object):
         'succeeded',
         'topic'
     )
-    
-    def __init__(self, ctx_obj, vow_name, enumerated, topic, file, lineno):
+
+    def __init__(self, ctx_obj, vow, topic, lineno, enumerated=False):
         self.context_instance = ctx_obj
-        self.name = vow_name
-        self.enumerated = enumerated
+        self.name = vow.__name__
         self.topic = topic
-        self.file = file
-        self.lineno = lineno
+        self.file, self.lineno = runutils.get_file_info_for(vow._original)
+        self.enumerated = enumerated
         #---- These begin the same ----#
         self.elapsed = 0.0
         self.error = None
         self.result = None
         self.succeeded = False
-    
+
     def __contains__(self, item):
         return hasattr(self, str(item))
-        
+
+    def __bool__(self):
+        return self.succeeded
+
+    def __nonzero__(self):
+        return self.__bool__()
+
     def __getitem__(self, item):
         if not isinstance(item, (six.string_types, six.text_type)):
             msg = 'Cannot get item {0} for VowResult object'.format(item)
             raise TypeError(msg)
-        
+
         return getattr(self, str(item))
-    
+
     def __setitem__(self, item, val):
         setattr(self, str(item), val)
-        
-    def __bool__(self):
-        return self.succeeded
 
 
 class VowsResult(object):
@@ -185,6 +192,6 @@ class VowsResult(object):
         ]
         times.sort(key=lambda x: x['elapsed'], reverse=True)
         return times[:number]
-    
+
     def eval_context(self, context):
         return bool(context)

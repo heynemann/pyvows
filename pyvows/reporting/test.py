@@ -12,7 +12,7 @@ from __future__ import division
 
 import sys
 
-from pyvows.color import yellow, red, blue
+from pyvows.color import yellow, red, blue, bold
 from pyvows.errors import VowsInternalError
 from pyvows.reporting.common import (
     ensure_encoded,
@@ -57,6 +57,7 @@ class VowsTestReporter(VowsReporter):
     #-------------------------------------------------------------------------
     def pretty_print(self):
         '''Prints PyVows test results.'''
+        
         print self.header('Vows Results')
         
         if not self.result.contexts:
@@ -72,8 +73,11 @@ class VowsTestReporter(VowsReporter):
             print
 
         for context in self.result.contexts:
-            self.print_context(context['name'], context)
+            self.print_context(context.name, context)
 
+        if self.verbosity >= V_VERBOSE or self.result.errored_tests:
+            print
+            
         print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
             self.status_symbol,
@@ -96,19 +100,18 @@ class VowsTestReporter(VowsReporter):
 
         def _print_successful_context():
             honored = ensure_encoded(VowsReporter.HONORED)
-            topic = ensure_encoded(test['topic'])
-            name = ensure_encoded(test['name'])
-
-            if self.verbosity == V_VERBOSE:
-                self.humanized_print('{0} {1}'.format(honored, name))
-            elif self.verbosity >= V_EXTRA_VERBOSE:
-                if test['enumerated']:
-                    self.humanized_print('{0} {1} - {2}'.format(honored, topic, name))
-                else:
-                    self.humanized_print('{0} {1}'.format(honored, name))
+            topic = ensure_encoded(test.topic)
+            name = ensure_encoded(test.name)
+            
+            if self.verbosity >= V_VERBOSE:
+                msg = '{0} {1}'.format(honored, name)
+                if self.verbosity >= V_EXTRA_VERBOSE:
+                    if test.enumerated:
+                        msg = '{0} {1} - {2}'.format(honored, yellow(topic), name)
+                self.humanized_print(msg)
 
         def _print_failed_context():
-            ctx = test['context_instance']
+            ctx = test.context_instance
 
             def _print_traceback():
                 self.indent += 2
@@ -120,14 +123,14 @@ class VowsTestReporter(VowsReporter):
                 
                 traceback_args = None
                 if (hasattr(test, 'topic') 
-                        and hasattr(test['topic'], 'error')  
-                        and test['topic']['error'] is not None):
-                    print '\n' + self.indent_msg(blue('Topic Error:'))
-                    traceback_args = tuple(*test['topic'].error)
+                        and hasattr(test.topic, 'error')  
+                        and test.topic.error is not None):
+                    print '\n', self.indent_msg(blue('Topic Error:'))
+                    traceback_args = tuple(*test.topic.error)
                 else:
-                    traceback_args = (test['error']['type'],
-                                      test['error']['value'],
-                                      test['error']['traceback'])
+                    traceback_args = (test.error['type'],
+                                      test.error['value'],
+                                      test.error['traceback'])
                 self.print_traceback(*traceback_args)
                 
                 # except Exception:
@@ -141,8 +144,10 @@ class VowsTestReporter(VowsReporter):
                 #     raise VowsInternalError(err_msg, 'pyvows.reporting.test', ctx)
 
                 # print file and line number
-                if 'file' in test:
-                    file_msg = 'found in {test[file]} at line {test[lineno]}'.format(test=test)
+                if hasattr(test, 'file'):
+                    file_msg = 'found in {file} at line {lineno}'.format(
+                        **{'file':test.file, 'lineno':test.lineno} 
+                    )
                     print
                     print self.indent_msg(red(file_msg))
                     print
@@ -151,11 +156,11 @@ class VowsTestReporter(VowsReporter):
 
             self.humanized_print('{0} {test}'.format(
                 VowsReporter.BROKEN,
-                test=test['name']))
+                test=test.name))
 
             # print generated topic (if applicable)
             if ctx.generated_topic:
-                value = yellow(test['topic'])
+                value = yellow(test.topic)
                 self.humanized_print('')
                 self.humanized_print('\tTopic value:')
                 self.humanized_print('\t{value}'.format(value=value))
@@ -164,14 +169,14 @@ class VowsTestReporter(VowsReporter):
             # print traceback
             _print_traceback()
 
-        for test in context['tests']:
-            if test['succeeded']:
+        for test in context.tests:
+            if test:
                 _print_successful_context()
             else:
                 _print_failed_context()
 
         # I hereby (re)curse you...!
-        for context in context['contexts']:
-            self.print_context(context['name'], context)
+        for context in context.contexts:
+            self.print_context(context.name, context)
 
         self.indent -= 1

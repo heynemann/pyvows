@@ -64,6 +64,7 @@ class Vows(object):
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
+            self.name = self.__name__ = type(self).__name__
 
         def _get_first_available_topic(self, index=-1):
             def _check_topic_for_error(topic):
@@ -128,9 +129,7 @@ class Vows(object):
         the file name.
 
         '''
-        suite = ctx_class.__module__.replace('.', os.path.sep)
-        suite = os.path.abspath(suite)
-        suite += '.py'
+        suite = utils.get_path_for_module( ctx_class.__module__ )
         if suite not in Vows.suites:
             Vows.suites[suite] = set()
         Vows.suites[suite].add(ctx_class)
