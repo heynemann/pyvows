@@ -1,3 +1,3 @@
 gevent
 argparse
-preggy>=0.5.12
+preggy>=0.5.14
