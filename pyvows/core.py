@@ -140,14 +140,7 @@ class Vows(object):
         #   FIXME: Add Docstring
         #
         #   *   Only used in `cli.py`
-        path = os.path.abspath(path)
-        sys.path.insert(0, path)
-        files = utils.locate(pattern, path)
-        for module_path in files:
-            module_name = os.path.splitext(
-                module_path.replace(path, '').replace(os.sep, '.').lstrip('.')
-            )[0]
-            __import__(module_name)
+        return utils.collect(path, pattern)
 
     @classmethod
     def exclude(cls, test_name_pattern):

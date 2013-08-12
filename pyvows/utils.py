@@ -13,10 +13,21 @@ import fnmatch
 import glob
 import os
 import time
+import sys
 
 #-------------------------------------------------------------------------------------------------
 
 elapsed = lambda start_time: float(round(time.time() - start_time, 6))
+
+def collect(path, pattern):
+    path = os.path.abspath(path)
+    sys.path.insert(0, path)
+    files = locate(pattern, path)
+    for module_path in files:
+        module_name = os.path.splitext(
+            module_path.replace(path, '').replace(os.sep, '.').lstrip('.')
+        )[0]
+        __import__(module_name)
 
 def get_path_for_module(module, relpath=True):
     '''Returns the path for the module `module`.'''
