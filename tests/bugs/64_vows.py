@@ -27,7 +27,7 @@ class VowsTestReporterExceptions(Vows.Context):
     def should_not_raise_TypeError_on_tests_without_a_topic(self, topic):
         try:
             context = ContextResult('_mock_file.py', mock_context()() ) # has no 'topic'
-            topic.print_context('Derp', context)
+            topic.print_context(context)
         except AssertionError as e:
             expect(e).to_be_an_error_like(AssertionError)
             expect(e).Not.to_be_an_error_like(TypeError)

@@ -154,7 +154,7 @@ class VowsReporter(object):
         `indentation`).
 
         '''
-        msg = self.under_split(msg)
+        msg = self.under_split(str(msg))
         msg = self.camel_split(msg)
         msg = msg.replace('  ', ' ')  # normalize spaces if inserted by
                                       # both of the above

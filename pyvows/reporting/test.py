@@ -73,7 +73,7 @@ class VowsTestReporter(VowsReporter):
             print
 
         for context in self.result.contexts:
-            self.print_context(context.name, context)
+            self.print_context(context)
 
         if self.verbosity >= V_VERBOSE or self.result.errored_tests:
             print
@@ -87,16 +87,16 @@ class VowsTestReporter(VowsReporter):
 
         print
 
-    def print_context(self, name, context):
+    def print_context(self, context):
         #   FIXME: Add Docstring
         #
         #       *   Is this only used in certain cases?
         #           *   If so, which?
         self.indent += 1
-
+        
         if (self.verbosity >= V_VERBOSE or
                 not self.result.eval_context(context)):
-            self.humanized_print(name)
+            self.humanized_print(context)
 
         def _print_successful_context():
             honored = ensure_encoded(VowsReporter.HONORED)
@@ -126,7 +126,7 @@ class VowsTestReporter(VowsReporter):
                         and hasattr(test.topic, 'error')  
                         and test.topic.error is not None):
                     print '\n', self.indent_msg(blue('Topic Error:'))
-                    traceback_args = tuple(*test.topic.error)
+                    traceback_args = tuple(test.topic.error)
                 else:
                     traceback_args = (test.error['type'],
                                       test.error['value'],
@@ -177,6 +177,6 @@ class VowsTestReporter(VowsReporter):
 
         # I hereby (re)curse you...!
         for context in context.contexts:
-            self.print_context(context.name, context)
+            self.print_context(context)
 
         self.indent -= 1

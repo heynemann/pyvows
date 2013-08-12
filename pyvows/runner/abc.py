@@ -20,11 +20,7 @@ from pyvows.result import (
     ContextResult
 )
 from pyvows.utils import elapsed
-from pyvows.runner.utils import (
-    get_code_for, 
-    get_file_info_for, 
-    get_topics_for
-)
+from pyvows.runner import utils as rutils
 
 #-------------------------------------------------------------------------------------------------
 
@@ -53,12 +49,9 @@ class VowsRunnerABC(object):
         #-----------------------------------------------------------------------
         # Local variables and defs
         #-----------------------------------------------------------------------
-        ctx_result = ContextResult(
-            suite or inspect.getsourcefile(ctx_obj.__class__),
-            ctx_obj
-        )
+        ctx_result = ContextResult(suite, ctx_obj)
         ctx_collection.append(ctx_result)
-        ctx_name = ctx_result['name']
+        ctx_name = ctx_result.name
         ctx_obj.index = index
         teardown = FunctionWrapper(ctx_obj.teardown)  # Wrapped teardown so it's called at the appropriate time
         def _run_setup_and_topic(ctx_obj):
@@ -75,12 +68,12 @@ class VowsRunnerABC(object):
                     start_time = time.time()
                     try:
                         topic_func = getattr(ctx_obj, 'topic')
-                        topic_list = get_topics_for(topic_func, ctx_obj)
+                        topic_list = rutils.get_topics_for(topic_func, ctx_obj)
                         topic = topic_func(*topic_list)
                     except Exception as e:
                         topic = e
                         topic.error = ctx_obj.topic_error = sys.exc_info()
-                    ctx_result['topic_elapsed'] = elapsed(start_time)
+                    ctx_result.topic_elapsed = elapsed(start_time)
             finally:
                 return topic
         def _run_tests(topic):
@@ -102,17 +95,16 @@ class VowsRunnerABC(object):
                 
                 def _run_vows_and_subcontexts(topic, index=-1, enumerated=False):
                     # methods
-                    for vow_name, vow in vows:
+                    for vow in vows:
                         self.run_vow(
-                            ctx_result['tests'],
+                            ctx_result.tests,
                             topic,
                             ctx_obj,
                             teardown.wrap(vow),
-                            vow_name,
                             enumerated=enumerated)
 
                     # classes
-                    for subctx_name, subctx in subcontexts:
+                    for subctx in subcontexts:
                         # resolve user-defined Context classes
                         if not issubclass(subctx, self.context_class):
                             subctx = type(ctx_name, (subctx, self.context_class), {})
@@ -121,10 +113,10 @@ class VowsRunnerABC(object):
                         subctx_obj.teardown = teardown.wrap(subctx_obj.teardown)
 
                         self.run_context(
-                            ctx_result['contexts'],
+                            ctx_result.contexts,
                             ctx_obj=subctx_obj,
                             index=index,
-                            suite=suite or ctx_result['filename']
+                            suite=suite
                         )                
                 
                 if is_generator:
@@ -136,7 +128,7 @@ class VowsRunnerABC(object):
                 if hasattr(topic, 'error'):
                     ctx_obj.topic_error = topic.error
             
-            vows, subcontexts = self._get_vows_and_subcontexts(ctx_obj)
+            vows, subcontexts = rutils.get_vows_and_subcontexts(ctx_obj, self.exclusion_patterns)
 
             if not isinstance(topic, VowsAsyncTopic):
                 _run_with_topic(topic)
@@ -164,12 +156,10 @@ class VowsRunnerABC(object):
         #   FIXME: Add Docstring
 
         start_time = time.time()
-        filename, lineno = get_file_info_for(vow._original)
         vow_result = VowResult(
             ctx_obj,
             vow,
             topic,
-            lineno,
             enumerated=enumerated
         )
 

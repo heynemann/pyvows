@@ -45,15 +45,15 @@ class VowsProfileReporter(VowsReporter):
                 name = self.under_split(topic['context'])
                 name = self.camel_split(name)
 
-                topic['path'] = os.path.realpath(topic['path'])
-                topic['path'] = '{0!s}'.format(topic['path'])
-                topic['path'] = os.path.relpath(topic['path'], os.path.abspath(os.curdir))
+                topic['file'] = os.path.realpath(topic['file'])
+                topic['file'] = '{0!s}'.format(topic['file'])
+                topic['file'] = os.path.relpath(topic['file'], os.path.abspath(os.curdir))
 
                 data = {
                     'number': '{number:#2}'.format(number=index + 1),
-                    'time': '{time:.05f}s'.format(time=topic['elapsed']),
+                    'time': '{time:.05f}s'.format(time=topic['topic_elapsed']),
                     'path': '{path:<{width}}'.format(
-                        path=topic['path'][-MAX_PATH_SIZE:],
+                        path=topic['file'][-MAX_PATH_SIZE:],
                         width=MAX_PATH_SIZE),
                     'name': '{name}'.format(name=name),
                 }

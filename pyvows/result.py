@@ -17,10 +17,13 @@ import six
 from pyvows import utils
 from pyvows.runner import utils as runutils
 #-------------------------------------------------------------------------------------------------
+INDENT = '  '
 
 
 class ContextResult(object):
     __slots__ = (
+        '__name__',
+        'ctx_object',
         'filename',
         'name',
         'tests',
@@ -30,23 +33,17 @@ class ContextResult(object):
     )
 
     def __init__(self, suite, ctx_obj):
+        self.ctx_object = ctx_obj
         self.filename = suite
-        self.name = ctx_obj.__name__
+        self.name = self.__name__ = ctx_obj.__name__
         self.tests = []
         self.contexts = []
         self.topic_elapsed = 0.0
         if hasattr(ctx_obj, 'parent') and ctx_obj.parent is not None:
             self.parent = ctx_obj.parent
 
-    def __getitem__(self, item):
-        return getattr(self, str(item))
-
-    def __setitem__(self, item, val):
-        setattr(self, str(item), val)
-
     def __bool__(self):
-        '''Returns whether vows and contexts tested successfully.  Recursive.
-        '''
+        '''Returns whether vows and contexts tested successfully.  Recursive.'''
         vows_passed = [bool(test) for test in self.tests]
         ctx_passed = [bool(ctx) for ctx in self.contexts]
         if all(vows_passed) and all(ctx_passed):
@@ -55,10 +52,14 @@ class ContextResult(object):
 
     def __nonzero__(self):
         return self.__bool__()
+        
+    def __str__(self):
+        return self.name
 
 
 class VowResult(object):
     __slots__ = (
+        '__name__',
         'context_instance',
         'elapsed',
         'enumerated',
@@ -71,9 +72,9 @@ class VowResult(object):
         'topic'
     )
 
-    def __init__(self, ctx_obj, vow, topic, lineno, enumerated=False):
+    def __init__(self, ctx_obj, vow, topic, enumerated=False):
         self.context_instance = ctx_obj
-        self.name = vow.__name__
+        self.name = self.__name__ = vow.__name__
         self.topic = topic
         self.file, self.lineno = runutils.get_file_info_for(vow._original)
         self.enumerated = enumerated
@@ -83,24 +84,14 @@ class VowResult(object):
         self.result = None
         self.succeeded = False
 
-    def __contains__(self, item):
-        return hasattr(self, str(item))
-
     def __bool__(self):
         return self.succeeded
 
     def __nonzero__(self):
         return self.__bool__()
-
-    def __getitem__(self, item):
-        if not isinstance(item, (six.string_types, six.text_type)):
-            msg = 'Cannot get item {0} for VowResult object'.format(item)
-            raise TypeError(msg)
-
-        return getattr(self, str(item))
-
-    def __setitem__(self, item, val):
-        setattr(self, str(item), val)
+        
+    def __str__(self):
+        return self.name
 
 
 class VowsResult(object):
@@ -130,8 +121,8 @@ class VowsResult(object):
             contexts = self.contexts
 
         for context in contexts:
-            test_count += sum([count_func(test) for test in context['tests']])
-            test_count += self._count_tests(contexts=context['contexts'],
+            test_count += sum([count_func(test) for test in context.tests])
+            test_count += self._count_tests(contexts=context.contexts,
                                             first=False,
                                             count_func=count_func)
 
@@ -149,11 +140,11 @@ class VowsResult(object):
 
         for context in contexts:
             topic_times.append({
-                'context': context['name'],
-                'path':    context['filename'],
-                'elapsed': context['topic_elapsed']
+                'context'       : context.name,
+                'file'          : context.filename,
+                'topic_elapsed' : context.topic_elapsed
             })
-            ctx_topic_times = self._get_topic_times(context['contexts'])
+            ctx_topic_times = self._get_topic_times(context.contexts)
             topic_times.extend(ctx_topic_times)
 
         return topic_times
@@ -174,12 +165,12 @@ class VowsResult(object):
     @property
     def successful_tests(self):
         '''Returns the number of tests that passed.'''
-        return self._count_tests(contexts=None, first=True, count_func=lambda test: 1 if test['succeeded'] else 0)
+        return self._count_tests(contexts=None, first=True, count_func=lambda test: 1 if bool(test) else 0)
 
     @property
     def errored_tests(self):
         '''Returns the number of tests that failed.'''
-        return self._count_tests(contexts=None, first=True, count_func=lambda test: 0 if test['succeeded'] else 1)
+        return self._count_tests(contexts=None, first=True, count_func=lambda test: 0 if bool(test) else 1)
 
     def get_worst_topics(self, number=10, threshold=0.1):
         '''Returns the top `number` slowest topics which took longer
@@ -188,9 +179,9 @@ class VowsResult(object):
         '''
         times = [
             time for time in self._get_topic_times()
-            if time['elapsed'] > 0 and time['elapsed'] >= threshold
+            if time['topic_elapsed'] > 0 and time['topic_elapsed'] >= threshold
         ]
-        times.sort(key=lambda x: x['elapsed'], reverse=True)
+        times.sort(key=lambda x: x['topic_elapsed'], reverse=True)
         return times[:number]
 
     def eval_context(self, context):
