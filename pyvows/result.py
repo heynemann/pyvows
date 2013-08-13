@@ -34,7 +34,7 @@ class ContextResult(object):
         'parent'
     )
 
-    def __init__(self, suite, ctx_obj):
+    def __init__(self, ctx_obj):
         self.ctx_object = ctx_obj
         self.filename = ctx_obj.suite
         self.filename = self.filename.rstrip('co') # point to the source ".py", not ".pyc"

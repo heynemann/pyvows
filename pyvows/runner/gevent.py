@@ -18,6 +18,7 @@ from gevent.pool import Pool
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import FunctionWrapper
 from pyvows import utils
+from pyvows.result import ContextResult
 from pyvows.runner.abc import VowsRunnerABC
 from pyvows.runner import utils as rutils
 
@@ -37,7 +38,7 @@ class VowsParallelRunner(VowsRunnerABC):
         self.result.elapsed_time = utils.elapsed(start_time)
         return self.result
         
-    def run_context(self, ctx_collection, ctx_obj=None, index=-1, suite=None):
+    def run_context(self, ctx_collection, ctx_obj=None, index=-1):
         ctx_obj.pool = self.pool
         run_context = super(VowsParallelRunner, self).run_context
         self.pool.spawn(
@@ -45,19 +46,15 @@ class VowsParallelRunner(VowsRunnerABC):
             ctx_collection,
             ctx_obj  = ctx_obj,
             index    = -1,
-            suite    = suite
         )
 
-    def _run_context(self, ctx_collection, ctx_obj=None, index=-1, suite=None):
+    def _run_context(self, ctx_collection, ctx_obj=None, index=-1):
         #   FIXME: Add Docstring
         
         #-----------------------------------------------------------------------
         # Local variables and defs
         #-----------------------------------------------------------------------
-        ctx_result = type(self.result).get_result_for_ctx( 
-            utils.get_path_for_module(type(ctx_obj).__module__),
-            ctx_obj 
-            )
+        ctx_result = ContextResult(ctx_obj)
         ctx_collection.append(ctx_result)
         ctx_obj.index = index
         ctx_obj.pool = self.pool

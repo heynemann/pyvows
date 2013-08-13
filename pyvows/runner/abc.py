@@ -41,15 +41,14 @@ class VowsRunnerABC(object):
                 self.run_context(
                     ctx_collection = self.result.contexts,
                     ctx_obj        = batch(None),
-                    index          = -1,
-                    suite          = suite
+                    index          = -1
                 )
 
-    def run_context(self, ctx_collection, ctx_obj=None, index=-1, suite=None):
+    def run_context(self, ctx_collection, ctx_obj=None, index=-1):
         #-----------------------------------------------------------------------
         # Local variables and defs
         #-----------------------------------------------------------------------
-        ctx_result = ContextResult(suite, ctx_obj)
+        ctx_result = ContextResult(ctx_obj)
         ctx_collection.append(ctx_result)
         ctx_name = ctx_result.name
         ctx_obj.index = index
@@ -115,9 +114,7 @@ class VowsRunnerABC(object):
                         self.run_context(
                             ctx_result.contexts,
                             ctx_obj=subctx_obj,
-                            index=index,
-                            suite=suite
-                        )                
+                            index=index                        )                
                 
                 if is_generator:
                     for index, topic_value in enumerate(topic):
