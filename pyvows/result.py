@@ -183,6 +183,3 @@ class VowsResult(object):
         ]
         times.sort(key=lambda x: x['topic_elapsed'], reverse=True)
         return times[:number]
-
-    def eval_context(self, context):
-        return bool(context)

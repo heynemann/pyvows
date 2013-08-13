@@ -94,8 +94,7 @@ class VowsTestReporter(VowsReporter):
         #           *   If so, which?
         self.indent += 1
         
-        if (self.verbosity >= V_VERBOSE or
-                not self.result.eval_context(context)):
+        if (self.verbosity >= V_VERBOSE or bool(context) is False):
             self.humanized_print(context)
 
         def _print_successful_context():
