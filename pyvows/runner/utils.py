@@ -81,7 +81,7 @@ def get_vows_and_subcontexts(ctx_obj, exclusion_patterns):
         
     # removes any special methods from ctx_members
     filterfunc = lambda member: not any((
-        member[0] in type(ctx_obj).ignored_members,
+        member[0] in ctx_obj.ignored_members,
         member[0].startswith('_'),
         _is_excluded(member[0], exclusion_patterns)
     ))
