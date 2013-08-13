@@ -105,7 +105,11 @@ class Vows(object):
                 * nested Contexts are executed sequentially
 
         '''
-
+        
+        @property
+        def suite(self):
+            return type(self).__module__
+            
     #---- preggy ----#
     @staticmethod
     def assertion(func):
@@ -129,7 +133,7 @@ class Vows(object):
         the file name.
 
         '''
-        suite = utils.get_path_for_module( ctx_class.__module__ )
+        suite = ctx_class.suite
         if suite not in Vows.suites:
             Vows.suites[suite] = set()
         Vows.suites[suite].add(ctx_class)
