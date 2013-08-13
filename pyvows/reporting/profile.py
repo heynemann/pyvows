@@ -33,7 +33,7 @@ class VowsProfileReporter(VowsReporter):
         MAX_PATH_SIZE = 40
         topics = self.result.get_worst_topics(number=10, threshold=threshold)
 
-        if topics:
+        if len(topics):
             print self.header('Slowest Topics')
 
             table_header = yellow('  {0}'.format(dim('#')))

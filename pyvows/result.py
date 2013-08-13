@@ -11,7 +11,9 @@ each vow.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+import os
 import inspect
+
 import six
 
 from pyvows import utils
@@ -34,7 +36,8 @@ class ContextResult(object):
 
     def __init__(self, suite, ctx_obj):
         self.ctx_object = ctx_obj
-        self.filename = suite
+        self.filename = ctx_obj.suite
+        self.filename = self.filename.rstrip('co') # point to the source ".py", not ".pyc"
         self.name = self.__name__ = ctx_obj.__name__
         self.tests = []
         self.contexts = []
@@ -178,8 +181,9 @@ class VowsResult(object):
 
         '''
         times = [
-            time for time in self._get_topic_times()
-            if time['topic_elapsed'] > 0 and time['topic_elapsed'] >= threshold
+            info for info in self._get_topic_times()
+            if 0 < threshold <= info['topic_elapsed']
         ]
         times.sort(key=lambda x: x['topic_elapsed'], reverse=True)
         return times[:number]
+        
