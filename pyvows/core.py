@@ -9,6 +9,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+import inspect
 import os
 import sys
 
@@ -59,13 +60,14 @@ class Vows(object):
         
         ignored_members = set(['topic', 'setup', 'teardown', 'ignore', 'members', 'vows', 'subcontexts'])
         
+        
         def __init__(self, parent=None):
             self.parent = parent
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
-            self.name = self.__name__ = type(self).__name__
-
+            self.name = self.__name__ = getattr(type(self), '__name__')
+            
         def _get_first_available_topic(self, index=-1):
             def _check_topic_for_error(topic):
                 if hasattr(self, 'topic_error'):
@@ -108,7 +110,7 @@ class Vows(object):
         
         @property
         def suite(self):
-            return type(self).__module__
+            return inspect.getfile(type(self))
             
     #---- preggy ----#
     @staticmethod
