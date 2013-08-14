@@ -17,7 +17,7 @@ import sys
 
 #-------------------------------------------------------------------------------------------------
 
-elapsed = lambda start_time: float(round(time.time() - start_time, 6))
+elapsed = lambda start_time: float(round(time.time() - start_time, 6))  # pylint: disable=invalid-name
 
 def collect(path, pattern):
     path = os.path.abspath(path)
@@ -37,7 +37,7 @@ def get_path_for_module(module, relpath=True):
         modpath = os.path.relpath(modpath)
     modpath += '.py'
     return modpath
-    
+
 def locate(pattern, root=os.curdir, recursive=True):
     '''Recursively locates test files when `pyvows` is run from the
     command line.
@@ -48,11 +48,10 @@ def locate(pattern, root=os.curdir, recursive=True):
     if recursive:
         return_files = []
         for path, dirs, files in os.walk(root_path):
-            return_files += [os.path.join(path, file) for file in fnmatch.filter(files, pattern)]
+            return_files += [os.path.join(path, file_) for file_ in fnmatch.filter(files, pattern)]
         return return_files
     else:
-        return glob(os.path.join(root_path, pattern))
-
+        return glob.glob(os.path.join(root_path, pattern))
 
 # Not covered because this is easy to test (just print to STDOUT)
 def template(): # pragma: no cover
@@ -61,8 +60,10 @@ def template(): # pragma: no cover
     the command line as you wish.
 
     '''
+    
+    # pylint: disable=invalid-name
+    
     from datetime import date
-    import sys
     from textwrap import dedent
 
     from pyvows import version
@@ -83,7 +84,6 @@ def template(): # pragma: no cover
 
     ##  Local Imports
     import
-
 
     ##  TESTS  ##
     @Vows.batch

@@ -3,7 +3,7 @@
 module).
 
 '''
-
+# pylint: disable=bare-except,invalid-name,star-args,too-few-public-methods
 
 # pyVows testing engine
 # https://github.com/heynemann/pyvows
@@ -19,6 +19,8 @@ import sys
 
 class VowsAsyncTopic(object):
     #   FIXME: Add Docstring
+    
+    
     def __init__(self, func, args, kw):
         self.func = func
         self.args = args
@@ -35,22 +37,31 @@ class VowsAsyncTopic(object):
 
 class VowsAsyncTopicValue(object):
     #   FIXME: Add Docstring
+    
     def __init__(self, args, kw):
         self.args = args
         self.kw = kw
         self.error = None
         if len(self.args) >= 1 and isinstance(self.args[0], Exception):
             self.error = self.args
-    
+
+    def __getattr__(self, attr):
+        if attr in self.kw:
+            return self.kw[attr]
+        if hasattr(self, attr):
+            return self.attr
+        raise AttributeError
+
     def __getitem__(self, attr):
         if type(attr) is int:
             return self.args[attr]
-
         if attr in self.kw:
             return self.kw[attr]
-
         raise AttributeError
-    
+
+    def __len__(self):
+        pass
+
     ### For debugging runner.sequential
     ###
     # def __getitem__(self, attr):
@@ -61,12 +72,3 @@ class VowsAsyncTopicValue(object):
     #     if hasattr(self, attr):
     #         return getattr(self, attr)
     #     raise AttributeError('Could not retrieve attr {0} for VowsAsyncTopicValue'.format(attr))
-
-    def __getattr__(self, attr):
-        if attr in self.kw:
-            return self.kw[attr]
-
-        if hasattr(self, attr):
-            return self.attr
-
-        raise AttributeError

@@ -10,8 +10,6 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 import inspect
-import os
-import sys
 
 import preggy
 
@@ -21,8 +19,7 @@ from pyvows.runner import VowsRunner
 
 #-------------------------------------------------------------------------------------------------
 
-expect = preggy.expect
-
+expect = preggy.expect  # pylint: disable=invalid-name
 
 class Vows(object):
     '''This class contains almost the entire interface for using PyVows.  (The
@@ -40,7 +37,6 @@ class Vows(object):
     suites = dict()
     exclusion_patterns = set()
 
-
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
         write `from pyvows import Vows, expect` in your test module, then extend
@@ -57,17 +53,16 @@ class Vows(object):
         they are available if your test suite has extra pre- and
         post-testing work to be done in any given `Context`.
         '''
-        
+        # pylint: disable=no-member
         ignored_members = set(['topic', 'setup', 'teardown', 'ignore', 'members', 'vows', 'subcontexts'])
-        
-        
+
         def __init__(self, parent=None):
             self.parent = parent
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
             self.name = self.__name__ = getattr(type(self), '__name__')
-            
+
         def _get_first_available_topic(self, index=-1):
             def _check_topic_for_error(topic):
                 if hasattr(self, 'topic_error'):
@@ -93,7 +88,8 @@ class Vows(object):
             '''
             for arg in args:
                 self.ignored_members.add(arg)
-
+        
+        # pylint: disable=multiple-statements
         def setup(self): pass
         def teardown(self): pass
 
@@ -107,11 +103,12 @@ class Vows(object):
                 * nested Contexts are executed sequentially
 
         '''
+        # pylint: enable=multiple-statements
         
         @property
         def suite(self):
             return inspect.getfile(type(self))
-            
+
     #---- preggy ----#
     @staticmethod
     def assertion(func):
@@ -120,7 +117,7 @@ class Vows(object):
     @staticmethod
     def create_assertions(func):
         return preggy.create_assertions(func)
-    
+
     #---- statics ----#
     @staticmethod
     def async_topic(topic):

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Abstract base class for all PyVows Runner implementations.'''
 
-
 # pyvows testing engine
 # https://github.com/heynemann/pyvows
 
@@ -26,7 +25,7 @@ from pyvows.runner import utils as rutils
 
 class VowsRunnerABC(object):
     result = VowsResult()
-    
+
     def __init__(self, suites, context_class, on_vow_hooks, exclusion_patterns=None):
         self.suites = suites  # a suite is a file with pyvows tests
         self.context_class = context_class
@@ -34,7 +33,7 @@ class VowsRunnerABC(object):
         self.exclusion_patterns = exclusion_patterns
         if self.exclusion_patterns:
             self.exclusion_patterns = set([re.compile(x) for x in self.exclusion_patterns])
-    
+
     def run(self):
         for suite, batches in self.suites.items():
             for batch in batches:
@@ -91,7 +90,7 @@ class VowsRunnerABC(object):
                         topic.error = ctx_obj.topic_error = sys.exc_info()
 
                 topic = ctx_obj.topic_value
-                
+
                 def _run_vows_and_subcontexts(topic, index=-1, enumerated=False):
                     # methods
                     for vow in vows:
@@ -115,7 +114,7 @@ class VowsRunnerABC(object):
                             ctx_result.contexts,
                             ctx_obj=subctx_obj,
                             index=index                        )                
-                
+
                 if is_generator:
                     for index, topic_value in enumerate(topic):
                         _run_vows_and_subcontexts(topic_value, index=index, enumerated=True)
@@ -124,7 +123,7 @@ class VowsRunnerABC(object):
 
                 if hasattr(topic, 'error'):
                     ctx_obj.topic_error = topic.error
-            
+
             vows, subcontexts = rutils.get_vows_and_subcontexts(ctx_obj, self.exclusion_patterns)
 
             if not isinstance(topic, VowsAsyncTopic):
@@ -140,14 +139,12 @@ class VowsRunnerABC(object):
                 topic = e
                 topic.error = ctx_obj.topic_error = ('teardown', sys.exc_info())
 
-
         #-----------------------------------------------------------------------
         # Begin
         #-----------------------------------------------------------------------
         topic = _run_setup_and_topic(ctx_obj)
         _run_tests(topic)
         _run_teardown(topic)
-        
 
     def run_vow(self, tests_collection, topic, ctx_obj, vow, enumerated=False):
         #   FIXME: Add Docstring

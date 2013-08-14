@@ -37,7 +37,7 @@ To learn more, check out:   http://pyvows.org
 
 try:
     from preggy import expect
-except:
+except ImportError:
     pass
 
 try:

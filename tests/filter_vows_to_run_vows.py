@@ -20,9 +20,9 @@ class FilterOutVowsFromCommandLine(Vows.Context):
         def topic(self):
             return cli
 
-        def should_be_not_error_when_called_with_5_args(self, topic):
+        def should_be_not_error_when_called_with_4_args(self, topic):
             try:
-                topic.run(None, None, None, None, None)
+                topic.run(None, None, None, None)
             except Exception as e:
                 expect(e).Not.to_be_instance_of(TypeError)
 
@@ -30,7 +30,7 @@ class FilterOutVowsFromCommandLine(Vows.Context):
 
             patterns = ['foo', 'bar', 'baz']
             try:
-                topic.run(None, '*_vows.py', 2, False, patterns)
+                topic.run(None, '*_vows.py', False, patterns)
             except Exception:
                 expect(Vows.exclusion_patterns).to_equal(patterns)
 

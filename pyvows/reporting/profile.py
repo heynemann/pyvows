@@ -25,11 +25,6 @@ class VowsProfileReporter(VowsReporter):
         to test.
         '''
 
-        '''Prints the 10 slowest topics that took longer than
-        `threshold` to test.
-
-        '''
-
         MAX_PATH_SIZE = 40
         topics = self.result.get_worst_topics(number=10, threshold=threshold)
 

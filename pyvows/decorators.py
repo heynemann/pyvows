@@ -2,6 +2,8 @@
 '''This module is the foundation that allows users to write PyVows-style tests.
 '''
 
+# pylint: disable=protected-access
+
 # pyVows testing engine
 # https://github.com/heynemann/pyvows
 
@@ -46,6 +48,8 @@ class FunctionWrapper(object):
     the wrapped functions have been called.
 
     '''
+    # pylint: disable=too-few-public-methods
+    
     def __init__(self, func):
         self.waiting = 0
         self.func = func

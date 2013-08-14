@@ -23,6 +23,7 @@ INDENT = '  '
 
 
 class ContextResult(object):
+    # pylint: disable=too-many-instance-attributes,too-few-public-methods
     __slots__ = (
         '__name__',
         'ctx_object',
@@ -55,12 +56,12 @@ class ContextResult(object):
 
     def __nonzero__(self):
         return self.__bool__()
-        
+
     def __str__(self):
         return self.name
 
-
 class VowResult(object):
+    # pylint: disable=too-many-instance-attributes,too-few-public-methods
     __slots__ = (
         '__name__',
         'context_instance',
@@ -79,7 +80,7 @@ class VowResult(object):
         self.context_instance = ctx_obj
         self.name = self.__name__ = vow.__name__
         self.topic = topic
-        self.file, self.lineno = runutils.get_file_info_for(vow._original)
+        self.file, self.lineno = runutils.get_file_info_for(vow._original) # pylint: disable=protected-access
         self.enumerated = enumerated
         #---- These begin the same ----#
         self.elapsed = 0.0
@@ -92,10 +93,9 @@ class VowResult(object):
 
     def __nonzero__(self):
         return self.__bool__()
-        
+
     def __str__(self):
         return self.name
-
 
 class VowsResult(object):
     '''Collects success/failure/total statistics (as well as elapsed
@@ -186,4 +186,3 @@ class VowsResult(object):
         ]
         times.sort(key=lambda x: x['topic_elapsed'], reverse=True)
         return times[:number]
-        

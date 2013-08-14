@@ -60,25 +60,25 @@ def get_topics_for(topic_function, ctx_obj):
             break
         context = context.parent
         child = child.parent
-        
+
     return topics
-    
+
 def get_vows_and_subcontexts(ctx_obj, exclusion_patterns):
     '''Returns a (vows, subcontexts) tuple of the contents of `ctx_obj`. Any 
     vows or subcontexts whose name matches any `exclusion_patterns` will
     not be included.  
-    
+
     `exclusion_patterns` should be a set of compiled regular expression objects.
-    
+
     '''
-    
+
     def _is_excluded(name, exclusion_patterns):
         '''Return whether `name` is in `self.exclusion_patterns`.'''
         for pattern in exclusion_patterns:
             if pattern.search(name):
                 return True
         return False
-        
+
     # removes any special methods from ctx_members
     filterfunc = lambda member: not any((
         member[0] in ctx_obj.ignored_members,
@@ -91,6 +91,5 @@ def get_vows_and_subcontexts(ctx_obj, exclusion_patterns):
     # now separate out the two types we're concerned with
     vows = frozenset(vow for vow_name, vow in ctx_members if inspect.ismethod(vow))
     subcontexts = frozenset(subctx for subctx_name, subctx in ctx_members if inspect.isclass(subctx))
-    
+
     return vows, subcontexts
-    

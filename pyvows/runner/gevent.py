@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 '''The GEvent implementation of PyVows runner.'''
 
-
 # pyvows testing engine
 # https://github.com/heynemann/pyvows
 
@@ -37,7 +36,7 @@ class VowsParallelRunner(VowsRunnerABC):
         self.pool.join()
         self.result.elapsed_time = utils.elapsed(start_time)
         return self.result
-        
+
     def run_context(self, ctx_collection, ctx_obj=None, index=-1):
         ctx_obj.pool = self.pool
         run_context = super(VowsParallelRunner, self).run_context
@@ -50,7 +49,7 @@ class VowsParallelRunner(VowsRunnerABC):
 
     def _run_context(self, ctx_collection, ctx_obj=None, index=-1):
         #   FIXME: Add Docstring
-        
+
         #-----------------------------------------------------------------------
         # Local variables and defs
         #-----------------------------------------------------------------------
@@ -58,7 +57,7 @@ class VowsParallelRunner(VowsRunnerABC):
         ctx_collection.append(ctx_result)
         ctx_obj.index = index
         ctx_obj.pool = self.pool
-        
+
         def _run_setup_and_topic(ctx_obj):
             try:
                 ctx_obj.setup()
@@ -86,7 +85,7 @@ class VowsParallelRunner(VowsRunnerABC):
         def _run_tests(topic):
             def _run_with_topic(topic):
                 ctx_obj.topic_value = topic
-                
+
                 # setup generated topics if needed
                 if ctx_obj.generated_topic is True:
                     try:
@@ -97,7 +96,7 @@ class VowsParallelRunner(VowsRunnerABC):
                         topic.error = ctx_obj.topic_error = sys.exc_info()
 
                 topic = ctx_obj.topic_value
-                
+
                 def _run_vows_and_subcontexts(topic, index=-1, enumerated=False):
                     # methods
                     for vow in vows:
@@ -133,7 +132,7 @@ class VowsParallelRunner(VowsRunnerABC):
 
                 if hasattr(topic, 'error'):
                     ctx_obj.topic_error = topic.error
-            
+
             vows, subcontexts = rutils.get_vows_and_subcontexts(ctx_obj, self.exclusion_patterns)
 
             if not isinstance(topic, VowsAsyncTopic):
@@ -149,7 +148,6 @@ class VowsParallelRunner(VowsRunnerABC):
                 topic = e
                 topic.error = ctx_obj.topic_error = ('teardown', sys.exc_info())
 
-
         #-----------------------------------------------------------------------
         # Begin
         #-----------------------------------------------------------------------
@@ -160,7 +158,7 @@ class VowsParallelRunner(VowsRunnerABC):
 
     def run_vow(self, tests_collection, topic, ctx_obj, vow, enumerated=False):
         #   FIXME: Add Docstring
-        
+
         # Same as the parent class' method, but called via self.pool 
         self.pool.spawn(
             super(VowsParallelRunner, self).run_vow, 

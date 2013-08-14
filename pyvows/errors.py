@@ -23,6 +23,7 @@ class VowsInternalError(Exception):  # pragma: no cover
     '''
 
     def __init__(self, *args):
+        # pylint: disable=super-init-not-called
         if not isinstance(args[0], str):
             raise TypeError('VowsInternalError must be instantiated with a string as the first argument')
         if not len(args) >= 2:

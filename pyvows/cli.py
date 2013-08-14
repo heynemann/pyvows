@@ -5,6 +5,8 @@ running tests, and the almighty `if __name__ == '__main__': main()`.
 
 '''
 
+# pylint: disable=line-too-long
+
 # pyVows testing engine
 # https://github.com/heynemann/pyvows
 
@@ -33,10 +35,11 @@ from pyvows import version
 
 #-------------------------------------------------------------------------------------------------
 
-
 class Messages(object):  # pragma: no cover
     '''A simple container for command-line interface strings.'''
-
+    
+    # pylint: disable=too-few-public-methods
+    
     summary = 'Run PyVows tests.'
 
     path = 'Directory to look for vows recursively. If a file is passed,' + \
@@ -60,7 +63,9 @@ class Messages(object):  # pragma: no cover
 
 
 class Parser(argparse.ArgumentParser):
+
     def __init__(self, description=Messages.summary, **kwargs):
+        # pylint: disable=no-member
         super(Parser, self).__init__(
             description=description,
             **kwargs)
@@ -77,22 +82,10 @@ class Parser(argparse.ArgumentParser):
         ### Coverage
         cover_group = self.add_argument_group('Test Coverage')
         cover_group.add_argument('-c', '--cover', action='store_true', default=False, help=Messages.cover)
-        cover_group.add_argument(
-            '-l', '--cover-package', action='append', default=[],
-            help=Messages.cover_package, metavar=metavar('package')
-        )
-        cover_group.add_argument(
-            '-o', '--cover-omit', action='append', default=[],
-            help=Messages.cover_omit, metavar=metavar('file')
-        )
-        cover_group.add_argument(
-            '-t', '--cover-threshold', type=float, default=80.0,
-            help=Messages.cover_threshold, metavar=metavar('number')
-        )
-        cover_group.add_argument(
-            '-r', '--cover-report', action='store', default=None,
-            help=Messages.cover_report, metavar=metavar('file')
-        )
+        cover_group.add_argument('-l', '--cover-package', action='append', default=[], help=Messages.cover_package, metavar=metavar('package'))
+        cover_group.add_argument('-o', '--cover-omit', action='append', default=[], help=Messages.cover_omit, metavar=metavar('file'))
+        cover_group.add_argument('-t', '--cover-threshold', type=float, default=80.0, help=Messages.cover_threshold, metavar=metavar('number'))
+        cover_group.add_argument('-r', '--cover-report', action='store', default=None, help=Messages.cover_report, metavar=metavar('file'))
 
         ### XUnit
         xunit_group = self.add_argument_group('XUnit')
@@ -122,8 +115,7 @@ class Parser(argparse.ArgumentParser):
 
         self.add_argument('path', nargs='?', default=os.curdir, help=Messages.path)
 
-
-def run(path, pattern, verbosity, show_progress, exclusion_patterns=None):
+def run(path, pattern, show_progress, exclusion_patterns=None):
     #   FIXME: Add Docstring
 
     # This calls Vows.run(), which then calls VowsRunner.run()
@@ -135,64 +127,47 @@ def run(path, pattern, verbosity, show_progress, exclusion_patterns=None):
         Vows.exclude(exclusion_patterns)
 
     Vows.collect(path, pattern)
-    
+
     on_vow_hooks = {
         True:  show_progress and VowsDefaultReporter.on_vow_success or None ,
         False: show_progress and VowsDefaultReporter.on_vow_error or None
     }
     result = Vows.run(on_vow_hooks)
-    from pprint import pprint
-    
+
     # Don't bother covering.  A failure here will be obvious; if this 
     # doesn't work, PyVows doesn't work.
     return result  # pragma: no cover  
 
-
-def main():
-    '''PyVows' runtime implementation.
-    '''
-    # needs to be imported here, else the no-color option won't work
-    from pyvows.reporting import VowsDefaultReporter
-
-    arguments = Parser().parse_args()
-
-    # Print template if needed
-    if arguments.template:  # pragma: no cover
-        from pyvows.utils import template
-        template()
-        sys.exit()  # Exit after printing template, since it's
-                    # supposed to be redirected from STDOUT by the user
-
+def _pre_run(arguments):
     # Determine path
     path, pattern = arguments.path, arguments.pattern
     if not path:
         path = os.curdir
     elif isfile(path):
         path, pattern = split(path)
-        
 
     # De-colorize if needed
     if arguments.no_color:
-        for color_name, value in inspect.getmembers(Fore):
-            if not color_name.startswith('_'):
-                setattr(Fore, color_name, '')
-
+        color_names = frozenset([item[0] for item in inspect.getmembers(Fore)])
+        for color in color_names:
+            if color.startswith('_') is False:
+                setattr(Fore, color, '')
+    
     # Prepare coverage if needed
+    cov = None
     if arguments.cover and COVERAGE_AVAILABLE:
         cov = coverage(source=arguments.cover_package,
                        omit=arguments.cover_omit)
         cov.erase()
         cov.start()
+        
 
     # Set up last two options before we run the tests
     exclusion_patterns = arguments.exclude
     verbosity = 2 if not arguments.verbosity else len(arguments.verbosity)
-
-    # RUN ZE TESTS
-    result = run(path, pattern, verbosity, arguments.progress, exclusion_patterns)
-
-    # Report the results
-    reporter = VowsDefaultReporter(result, verbosity)
+    return path, pattern, cov, exclusion_patterns, verbosity
+    
+def print_report(arguments, reporter, result, cov):
     reporter.pretty_print()
 
     # Print profile if necessary
@@ -218,9 +193,9 @@ def main():
                     cov.xml_report(outfile=tmp.name)
                     tmp.seek(0)
                     xml = tmp.read()
-            except Exception:
-                err = sys.exc_info()[1]
-                print("Could not run coverage. Error: %s" % err)
+            except Exception as err:  # pylint: disable=broad-except
+                #err = sys.exc_info()[1]
+                print("Could not run coverage. Error: {0}".format(err))
 
             if xml:
                 if arguments.cover_report:
@@ -234,6 +209,31 @@ def main():
     if arguments.xunit_output:
         xunit = XUnitReporter(result)
         xunit.write_report(arguments.xunit_file)
+        
+    
+def main():
+    '''PyVows' runtime implementation.
+    '''
+    # needs to be imported here, else the no-color option won't work
+    #from pyvows.reporting import VowsDefaultReporter
+
+    arguments = Parser().parse_args()
+
+    # Print template if needed
+    if arguments.template:  # pragma: no cover
+        from pyvows.utils import template
+        template()
+        sys.exit()  # Exit after printing template, since it's
+                    # supposed to be redirected from STDOUT by the user
+
+    path, pattern, cov, exclusion_patterns, verbosity = _pre_run(arguments)
+
+    # RUN ZE TESTS
+    result = run(path, pattern, arguments.progress, exclusion_patterns)
+
+    # Report the results
+    reporter = VowsDefaultReporter(result, verbosity)
+    print_report(arguments, reporter, result, cov)
 
     sys.exit(result.errored_tests)
 
