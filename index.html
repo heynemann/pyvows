@@ -5,7 +5,7 @@
   <head>
     <meta charset='UTF-8' />
 
-    <title>pyVows » Asynchronous BDD for Python</title>
+    <title>PyVows » Asynchronous BDD for Python</title>
 
     <link rel ='alternate stylesheet'
           type='text/less'
@@ -156,7 +156,7 @@
 
         <div class="content">
           <section id="intro">
-            <h1>pyVows</h1>
+            <h1>PyVows</h1>
             <h2><span>Asynchronous</span> behaviour driven <span>development</span> for Python.</h2>
 
             <h3>
@@ -230,10 +230,10 @@ A nested context with no topics
         <div class="content">
             <h1>Synopsis</h1>
 
-            <p>pyVows is a <a href="http://en.wikipedia.org/wiki/Behavior_Driven_Development">behavior driven development</a> framework for <a href="http://www.python.org">Python</a>.</p>
-            <p>pyVows is inspired by <a href="http://vowsjs.org">Vows</a>, a BDD framework for node.js.</p>
+            <p>PyVows is a <a href="http://en.wikipedia.org/wiki/Behavior_Driven_Development">behavior driven development</a> framework for <a href="http://www.python.org">Python</a>.</p>
+            <p>PyVows is inspired by <a href="http://vowsjs.org">Vows</a>, a BDD framework for node.js.</p>
             <p>Much of what’s written here is based or the same as in <a href="http://vowsjs.org">Vows</a> docs.</p>
-            <p>As its node.js counterpart does, pyVows executes your tests in parallel when it makes sense, and sequentially when there are dependencies.</p>
+            <p>As its node.js counterpart does, PyVows executes your tests in parallel when it makes sense, and sequentially when there are dependencies.</p>
             <p>Imagine we’re testing a method that sums two integers, like this:</p>
 
             <pre class="brush:python">
@@ -262,7 +262,7 @@ A nested context with no topics
             </pre>
 
             <p>Which is all fine and dandy, except that we are executing the <code>add_two_numbers</code> function three times. In this simple scenario, it might not matter if a function is executed many times. But with real code, we want to minimize calls, so our tests are always as fast as possible.</p>
-            <p>This is how the above test would look like in pyVows:</p>
+            <p>This is how the above test would look like in PyVows:</p>
 
             <pre class="brush:python">
     class SumContext(Vows.Context):
@@ -375,7 +375,7 @@ A nested context with no topics
         <div class="content">
             <h1>Installing</h1>
 
-            <p>The easiest way to install pyVows, is via <a href="http://www.pip-installer.org/en/latest/">pip</a>, the Python package manager, like so:</p>
+            <p>The easiest way to install PyVows, is via <a href="http://www.pip-installer.org/en/latest/">pip</a>, the Python package manager, like so:</p>
 
             <pre><code>$ pip install pyvows</code></pre>
 
@@ -396,11 +396,11 @@ A nested context with no topics
         <div class="content">
             <h1>Guide</h1>
 
-            <p>To understand pyVows, we’re going to start with a general overview of the different components involved in writing tests, and then go through some of them in more detail.</p>
+            <p>To understand PyVows, we’re going to start with a general overview of the different components involved in writing tests, and then go through some of them in more detail.</p>
 
             <h2>Structure of a test batch</h2>
 
-            <p>Test batches in pyVows are the largest unit of tests. The convention is to have one test batch per file, and have the batch’s class match the file name. Test batches are created with <code>@Vows.batch</code> decorator.</p>
+            <p>Test batches in PyVows are the largest unit of tests. The convention is to have one test batch per file, and have the batch’s class match the file name. Test batches are created with <code>@Vows.batch</code> decorator.</p>
 
             <pre class="brush:python">
     @Vows.batch
@@ -464,7 +464,7 @@ A nested context with no topics
             <ul>
               <li></li>
             </ul>
-            <p>» A <em>Suite</em> is a set of one or more <em>batches</em> that pyVows will execute.</p>
+            <p>» A <em>Suite</em> is a set of one or more <em>batches</em> that PyVows will execute.</p>
 
             <p>» A <em>batch</em> is a context, representing a structure of nested <em>contexts</em>.</p>
 
@@ -511,8 +511,8 @@ A nested context with no topics
 
             <h2>How topics work</h2>
 
-            <p><a href="http://vowsjs.org" target="_blank">Vows</a> introduces an <strong>incredibly powerful</strong>, yet very simple way of writing your tests. pyVows leverages the same approach towards the same goals.</p>
-            <p>Understanding <em>topics</em> is one of the keys to understanding pyVows. Unlike other testing frameworks, pyVows forces a clear separation between the element which is tested—the <em>topic</em>—and the tests themselves—the <em>vows</em>.</p>
+            <p><a href="http://vowsjs.org" target="_blank">Vows</a> introduces an <strong>incredibly powerful</strong>, yet very simple way of writing your tests. PyVows leverages the same approach towards the same goals.</p>
+            <p>Understanding <em>topics</em> is one of the keys to understanding PyVows. Unlike other testing frameworks, PyVows forces a clear separation between the element which is tested—the <em>topic</em>—and the tests themselves—the <em>vows</em>.</p>
 
             <p>Let’s start with a simple example of a context:</p>
 
@@ -594,7 +594,7 @@ A nested context with no topics
 
             <p>When your tests become more complex, spanning multiple files, you’re going to need a way to run them as a single entity.</p>
 
-            <p>pyVows’ test runner can run multiple test suites at once. To use it, just pass the directory as the argument instead of the file, like this:</p>
+            <p>PyVows’ test runner can run multiple test suites at once. To use it, just pass the directory as the argument instead of the file, like this:</p>
 
             <pre><code>pyvows vows/</code></pre>
 
@@ -659,7 +659,7 @@ A nested context with no topics
 
             <h2>Context inheritance</h2>
 
-            <p>pyVows context model allows for some interesting inheritance scenarios. Imagine we have the following method to test:</p>
+            <p>PyVows context model allows for some interesting inheritance scenarios. Imagine we have the following method to test:</p>
 
             <pre class="brush:python">
     def add(a, b):
@@ -798,7 +798,10 @@ A nested context with no topics
                         expect(sum).to_equal(expected)
             </pre>
 
-            <p>This way, we’re testing the sum of <em>all</em> combinations of 0 to 9 plus 0 to 9, yet it is still very simple.</p>
+            <p>This way, we’re testing the sum of <em>all</em> combinations of 
+                <code>0</code> to <code>9</code> plus 
+                <code>0</code> to <code>9</code>, 
+                yet it is still very simple.</p>
 
             <p>Now we can add <em>as many scenarios as we can think of</em>. And we won’t have to write a single new vow!</p>
 
@@ -806,7 +809,7 @@ A nested context with no topics
 
             <p>Imagine you need to test an asynchronous method called <em>async_square</em>. It takes a number and returns that number’s square—but it does so <em>asynchronously</em>.</p>
             <p>Normally, this would be a problem. Your tests wouldn’t wait for the callback—or even pass a callback, for that matter. This is where <em>pyvows</em> comes to your rescue.</p>
-            <p>Testing asynchronous topics is as trivial as decorating the <code>topic</code> method with the <em><code>Vows.async_topic</code></em> decorator.</p>
+            <p>Testing asynchronous topics is as trivial as decorating the <code>topic</code> method with the <em><code>@Vows.async_topic</code></em> decorator.</p>
 
             <pre class="brush:python">
     def async_square(a, callback):
@@ -833,7 +836,7 @@ A nested context with no topics
 
             <h2>Assertions</h2>
 
-            <p>pyVows features an extensible assertion model with many useful functions, as well as error reporting.</p>
+            <p>PyVows features an extensible assertion model with many useful functions, as well as error reporting.</p>
 
             <p>It’s always best to use the most specific assertion functions when testing a value. You’ll get much better error reporting, because your intention is clearer.</p>
 
@@ -863,12 +866,12 @@ A nested context with no topics
 
             <pre><code>Expected topic([1, 2, 3]) to have 5 of length, but it had 3.</code></pre>
 
-            <p>Other useful assertion functions bundled with pyVows include <code>to_match</code>, <code>to_be_instance_of</code>,
+            <p>Other useful assertion functions bundled with PyVows include <code>to_match</code>, <code>to_be_instance_of</code>,
             <code>to_include</code>, and <code>to_be_empty</code>. Check out the <a href="#reference">reference</a> for the full list.</p>
 
             <h3>Custom Assertions</h3>
 
-            <p>Creating new assertions for use with <code>expect</code> is as simple as using the <code>Vows.create_assertions</code> decorator on a function. The function expects <code>topic</code> as the first parameter, and <code>expectation</code> second:</p>
+            <p>Creating new assertions for use with <code>expect</code> is as simple as using the <code>@Vows.create_assertions</code> decorator on a function. The function expects <code>topic</code> as the first parameter, and <code>expectation</code> second:</p>
 
             <pre class="brush:python">
     @Vows.create_assertions
@@ -1123,9 +1126,9 @@ A nested context with no topics
         <div class="content">
             <h1>About</h1>
 
-            <p>Both pyVows and this website are <strong>HEAVILY</strong> inspired by the work done by <a href="http://cloudhead.io">Alexis Sellier</a>, more commonly known as <a href="http://cloudhead.io">cloudhead</a>. He’s responsible for <a href="http://cloudhead.io/toto">toto</a>, <a href="http://github.com/cloudhead/less.js">LESS</a>, <a href="http://github.com/cloudhead/hijs">hijs</a>, and a lot more.</p>
+            <p>Both PyVows and this website are <strong>HEAVILY</strong> inspired by the work done by <a href="http://cloudhead.io">Alexis Sellier</a>, more commonly known as <a href="http://cloudhead.io">cloudhead</a>. He’s responsible for <a href="http://cloudhead.io/toto">toto</a>, <a href="http://github.com/cloudhead/less.js">LESS</a>, <a href="http://github.com/cloudhead/hijs">hijs</a>, and a lot more.</p>
             <p>More than that, he’s responsible for a shift in <em>the way we write</em> tests. We have cleaner, leaner, and meaner tests now. And they are <strong>fast</strong>.</p>
-            <p>pyVows was developed by <a href="http://blog.heynemann.com.br" target="_blank">Bernardo Heynemann</a>, and features contribution by <a href="https://github.com/rafaelcaricio" target="_blank">Rafael Carício</a>, <a href="https://github.com/fabiomcosta">Fábio Costa</a>, <a href="https://github.com/truemped">Daniel Truemper</a> and <a href="https://github.com/Zearin" target="_blank">Zearin</a>.</p>
+            <p>PyVows was developed by <a href="http://blog.heynemann.com.br" target="_blank">Bernardo Heynemann</a>, and features contribution by <a href="https://github.com/rafaelcaricio" target="_blank">Rafael Carício</a>, <a href="https://github.com/fabiomcosta">Fábio Costa</a>, <a href="https://github.com/truemped">Daniel Truemper</a> and <a href="https://github.com/Zearin" target="_blank">Zearin</a>.</p>
             <p>The design for this website is the work of <a href="http://cloudhead.io">Alexis Sellier</a>, and this website is intended as a compliment and as recognition of his great work, not as a copy.</p>
 
             <footer>
