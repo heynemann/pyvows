@@ -49,6 +49,7 @@ class Messages(object):  # pragma: no cover
     cover_omit = 'Exclude %(metavar)s from coverage. May be specified many times. (default: no files)'
     cover_threshold = 'Coverage below %(metavar)s is considered a failure. (default: %(default)s)'
     cover_report = 'Store coverage report as %(metavar)s. (default: %(default)r)'
+    cover_report_html = 'Write HTML coverage report. (default: %(default)r)'
     xunit_output = 'Enable XUnit output. (default: %(default)s)'
     xunit_file = 'Store XUnit output as %(metavar)s. (default: %(default)r)'
     exclude = 'Exclude tests and contexts that match regex-pattern %(metavar)s'
@@ -93,6 +94,9 @@ class Parser(argparse.ArgumentParser):
             '-r', '--cover-report', action='store', default=None,
             help=Messages.cover_report, metavar=metavar('file')
         )
+        cover_group.add_argument(
+            '-R', '--html-report', action='store_true', default=False,
+            help=Messages.cover_report_html)
 
         ### XUnit
         xunit_group = self.add_argument_group('XUnit')
@@ -217,6 +221,14 @@ def main():
 
                 arguments.cover_threshold /= 100.0
                 reporter.print_coverage(xml, arguments.cover_threshold)
+
+    # write HTML report if necesary
+    if arguments.html_report:
+        import coverage as cov_mod
+        try:
+            cov.html_report()
+        except cov_mod.misc.CoverageException as err:
+            print("Could not create coverage report. Error: %s" % err)
 
     # Write XUnit if necessary
     if arguments.xunit_output:
