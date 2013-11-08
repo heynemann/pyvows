@@ -49,6 +49,7 @@ class WhenMakingFileAssertions(Vows.Context):
                 yield item
 
         class AssertingThatTheyDo(Vows.Context):
+            @Vows.capture_error
             def topic(self, parent_topic):
                 return isafile(parent_topic)
 
@@ -56,6 +57,7 @@ class WhenMakingFileAssertions(Vows.Context):
                 expect(topic).to_be_an_error_like(AssertionError)
 
         class AssertingThatTheyDoNot(Vows.Context):
+            @Vows.capture_error
             def topic(self, parent_topic):
                 return isnotafile(parent_topic)
 
@@ -68,6 +70,7 @@ class WhenMakingFileAssertions(Vows.Context):
                 yield item
 
         class AssertingTheyAreFiles(Vows.Context):
+            @Vows.capture_error
             def topic(self, parent_topic):
                 return isafile(parent_topic)
 
@@ -75,6 +78,7 @@ class WhenMakingFileAssertions(Vows.Context):
                 expect(topic).not_to_be_an_error()
 
         class AssertingTheyAreNotFiles(Vows.Context):
+            @Vows.capture_error
             def topic(self, parent_topic):
                 return isnotafile(parent_topic)
 
@@ -87,6 +91,7 @@ class WhenMakingFileAssertions(Vows.Context):
                 return f
 
             class AssertingTheyAreFiles(Vows.Context):
+                @Vows.capture_error
                 def topic(self, parent_topic):
                     return isafile(parent_topic)
 
@@ -94,6 +99,7 @@ class WhenMakingFileAssertions(Vows.Context):
                     expect(topic).not_to_be_an_error()
 
             class AssertingTheyAreNotFiles(Vows.Context):
+                @Vows.capture_error
                 def topic(self, parent_topic):
                     return isnotafile(parent_topic)
 

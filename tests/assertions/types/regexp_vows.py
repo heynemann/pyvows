@@ -23,6 +23,7 @@ class AssertionRegexp(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self, last):
                 expect(last).to_match(r'^other.+$')
 
@@ -37,6 +38,7 @@ class AssertionRegexp(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self, last):
                 expect(last).not_to_match(r'^some.+$')
 

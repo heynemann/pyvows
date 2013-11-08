@@ -23,6 +23,7 @@ class AssertionIsNumeric(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self):
                 expect('s').to_be_numeric()
 
@@ -38,6 +39,7 @@ class AssertionIsNumeric(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self):
                 expect(2).not_to_be_numeric()
 
