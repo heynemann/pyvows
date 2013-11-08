@@ -17,7 +17,7 @@ import preggy
 
 from pyvows import utils
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
-from pyvows.decorators import _batch, async_topic
+from pyvows.decorators import _batch, async_topic, capture_error
 from pyvows.runner import VowsRunner
 
 #-------------------------------------------------------------------------------------------------
@@ -118,6 +118,10 @@ class Vows(object):
                       DeprecationWarning,
                       stacklevel=2)
         return async_topic(topic)
+
+    @staticmethod
+    def capture_error(topic_func):
+        return capture_error(topic_func)
 
     @staticmethod
     def batch(ctx_class):

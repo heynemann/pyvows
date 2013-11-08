@@ -35,12 +35,30 @@ def async_topic(topic):
     def wrapper(*args, **kw):
         return VowsAsyncTopic(topic, args, kw)
     wrapper._original = topic
+    wrapper._wrapper_type = 'async_topic'
     wrapper.__name__ = topic.__name__
+    return wrapper
+
+def capture_error(topic_func):
+    '''Topic decorator.  Allows any errors raised to become the topic value.
+
+    By default, errors raised in topic functions are reported as
+    errors. But sometimes you want the error to be the topic value, in
+    which case decorate the topic function with this decorator.'''
+    def wrapper(*args, **kw):
+        try:
+            return topic_func(*args, **kw)
+        except Exception as e:
+            return e
+    wrapper._original = topic_func
+    wrapper._wrapper_type = 'capture_error'
+    wrapper.__name__ = topic_func.__name__
     return wrapper
 
 #-------------------------------------------------------------------------------------------------
 
 class FunctionWrapper(object):
+
     '''Function decorator.  Simply calls the decorated function when all
     the wrapped functions have been called.
 

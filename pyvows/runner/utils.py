@@ -31,10 +31,11 @@ def get_topics_for(topic_function, ctx_obj):
     if not ctx_obj.parent:
         return []
  
-    # check for async topic
+    # check for decorated topic function
     if hasattr(topic_function, '_original'):
+        # _wrapper_type is 'async_topic' or 'capture_error'
+        async = (getattr(topic_function, '_wrapper_type', None) == 'async_topic')
         topic_function = topic_function._original
-        async = True
     else:
         async = False
  
