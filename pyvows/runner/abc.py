@@ -85,3 +85,10 @@ class VowsRunnerABC(object):
         tests_collection.append(vow_result)
  
         return vow_result
+
+
+class VowsTopicError(Exception):
+    """Wraps an error in the setup or topic functions"""
+    def __init__(self, source, exc_info):
+        self.source = source
+        self.exc_info = exc_info
