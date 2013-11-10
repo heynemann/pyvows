@@ -23,6 +23,7 @@ class AssertionEquality(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self, last):
                 expect(1).to_equal(2)
 
@@ -36,6 +37,7 @@ class AssertionEquality(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self, last):
                 expect(1).not_to_equal(1)
 

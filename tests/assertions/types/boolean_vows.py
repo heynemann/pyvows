@@ -51,6 +51,7 @@ class AssertionIsTrue(Vows.Context):
 
     class WhenWeGetAnError(Vows.Context):
 
+        @Vows.capture_error
         def topic(self, last):
             expect(False).to_be_true()
 
@@ -105,6 +106,7 @@ class AssertionIsFalse(Vows.Context):
 
     class WhenWeGetAnError(Vows.Context):
 
+        @Vows.capture_error
         def topic(self):
             expect(True).to_be_false()
 

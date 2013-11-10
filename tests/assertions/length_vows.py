@@ -44,6 +44,7 @@ class AssertionLength(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self, last):
                 expect('a').to_length(2)
 
@@ -52,6 +53,7 @@ class AssertionLength(Vows.Context):
 
     class NotToLength(Vows.Context):
         class WhenWeGetAnError(Vows.Context):
+            @Vows.capture_error
             def topic(self, last):
                 expect('a').not_to_length(1)
 

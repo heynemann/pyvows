@@ -22,6 +22,7 @@ class AssertionIsNull(Vows.Context):
             expect(topic).to_be_null()
 
         class WhenWeGetAnError(Vows.Context):
+            @Vows.capture_error
             def topic(self, last):
                 expect(1).to_be_null()
 
@@ -36,6 +37,7 @@ class AssertionIsNull(Vows.Context):
             expect(topic).not_to_be_null()
 
         class WhenWeGetAnError(Vows.Context):
+            @Vows.capture_error
             def topic(self, last):
                 expect(None).not_to_be_null()
 

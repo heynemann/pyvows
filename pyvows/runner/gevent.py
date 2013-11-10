@@ -23,7 +23,7 @@ from pyvows.decorators import FunctionWrapper
 from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
 from pyvows.result import VowsResult
 from pyvows.utils import elapsed
-from pyvows.runner.abc import VowsRunnerABC
+from pyvows.runner.abc import VowsRunnerABC, VowsTopicError
 
 #-------------------------------------------------------------------------------------------------
 
@@ -74,35 +74,37 @@ class VowsParallelRunner(VowsRunnerABC):
             'tests': [],
             'contexts': [],
             'topic_elapsed': 0,
+            'error': None,
         }
          
         ctx_collection.append(ctx_result)
         ctx_obj.index = index
         ctx_obj.pool = self.pool
         teardown = FunctionWrapper(ctx_obj.teardown)  # Wrapped teardown so it's called at the appropriate time
-         
-        def _run_setup_and_topic(ctx_obj):
+
+        def _run_setup_and_topic(ctx_obj, index):
+            # Run setup function
             try:
                 ctx_obj.setup()
             except Exception as e:
-                topic = e
-                topic.error = ctx_obj.topic_error = ('setup', sys.exc_info())
-            else:  # setup() had no errors
-                topic = None
-                if not hasattr(ctx_obj, 'topic'): # ctx_obj has no topic
-                    topic = ctx_obj._get_first_available_topic(index) 
-                else: 
-                    start_time = time.time()
-                    try:
-                        topic_func = getattr(ctx_obj, 'topic')
-                        topic_list = get_topics_for(topic_func, ctx_obj)
-                        topic = topic_func(*topic_list)
-                    except Exception as e:
-                        topic = e
-                        topic.error = ctx_obj.topic_error = sys.exc_info()
-                    ctx_result['topic_elapsed'] = elapsed(start_time)
-            finally:
+                raise VowsTopicError('setup', sys.exc_info())
+
+            # Find & run topic function
+            if not hasattr(ctx_obj, 'topic'): # ctx_obj has no topic
+                return ctx_obj._get_first_available_topic(index)
+
+            try:
+                topic_func = ctx_obj.topic
+                topic_list = get_topics_for(topic_func, ctx_obj)
+
+                start_time = time.time()
+                topic = topic_func(*topic_list)
+                ctx_result['topic_elapsed'] = elapsed(start_time)
                 return topic
+
+            except Exception as e:
+                raise VowsTopicError('topic', sys.exc_info())
+
         def _run_tests(topic):
             def _run_with_topic(topic):
                 def _run_vows_and_subcontexts(topic, index=-1, enumerated=False):
@@ -134,32 +136,25 @@ class VowsParallelRunner(VowsRunnerABC):
                             index=index,
                             suite=suite or ctx_result['filename']
                         )
- 
-                 
-                ctx_obj.topic_value = topic
-                is_generator = inspect.isgenerator(topic)
-                 
+
                 # setup generated topics if needed
+                is_generator = inspect.isgenerator(topic)
                 if is_generator:
                     try:
                         ctx_obj.generated_topic = True
-                        ctx_obj.topic_value = list(topic)
+                        topic = ctx_obj.topic_value = list(topic)
                     except Exception as e:
-                        is_generator = False
-                        topic = ctx_obj.topic_value = e
-                        topic.error = ctx_obj.topic_error = sys.exc_info()
-                 
-                topic = ctx_obj.topic_value
-                 
+                        # Actually getting the values from the generator may raise exception
+                        raise VowsTopicError('topic', sys.exc_info())
+                else:
+                    ctx_obj.topic_value = topic
+
                 if is_generator:
                     for index, topic_value in enumerate(topic):
                         _run_vows_and_subcontexts(topic_value, index=index, enumerated=True)
                 else:
                     _run_vows_and_subcontexts(topic)
- 
-                if hasattr(topic, 'error'):
-                    ctx_obj.topic_error = topic.error
- 
+
             special_names = set(['setup', 'teardown', 'topic'])
             if hasattr(ctx_obj, 'ignored_members'):
                 special_names.update(ctx_obj.ignored_members)
@@ -178,21 +173,26 @@ class VowsParallelRunner(VowsRunnerABC):
                 def handle_callback(*args, **kw):
                     _run_with_topic(VowsAsyncTopicValue(args, kw))
                 topic(handle_callback)
+
         def _run_teardown(topic):
             try:
                 teardown()
             except Exception as e:
-                topic = e
-                topic.error = ctx_obj.topic_error = ('teardown', sys.exc_info())
-                 
- 
+                raise VowsTopicError('teardown', sys.exc_info())
+
         #-----------------------------------------------------------------------
         # Begin
         #-----------------------------------------------------------------------
-        topic = _run_setup_and_topic(ctx_obj)
-        _run_tests(topic)
-        _run_teardown(topic)
- 
+        try:
+            topic = _run_setup_and_topic(ctx_obj, index)
+            # Only run tests & teardown if setup & topic run without errors
+            _run_tests(topic)
+            _run_teardown(topic)
+        except VowsTopicError as e:
+            ctx_obj.topic_error = e   # is this needed still?
+            ctx_result['error'] = e
+
+
     def _run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated=False):
         #   FIXME: Add Docstring
         if self.is_excluded(vow_name):    

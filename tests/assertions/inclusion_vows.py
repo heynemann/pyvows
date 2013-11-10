@@ -79,6 +79,7 @@ class AssertionInclude(Vows.Context):
             expect(topic).Not.to_include('else')
 
     class WhenWeGetAnError(Vows.Context):
+        @Vows.capture_error
         def topic(self, last):
             expect('a').to_include('b')
 
@@ -86,6 +87,7 @@ class AssertionInclude(Vows.Context):
             expect(topic).to_have_an_error_message_of("Expected topic('a') to include 'b'")
 
     class WhenWeGetAnErrorOnNot(Vows.Context):
+        @Vows.capture_error
         def topic(self, last):
             expect('a').not_to_include('a')
 
