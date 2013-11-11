@@ -157,11 +157,12 @@ class VowsTestReporter(VowsReporter):
             # print traceback
             _print_traceback()
 
+        # Show any error raised by the setup, topic or teardown functions
         if context.get('error', None):
             e = context['error']
-            print '\n' + self.indent_msg(blue("Error in %s:" % e.source))
+            print '\n' + self.indent_msg(blue("Error in {0!s}:".format(e.source)))
             self.print_traceback(*e.exc_info)
-            print self.indent_msg(blue("Nested tests following this error have not been run."))
+            print self.indent_msg(red("Nested tests following this error have not been run."))
 
         else:
             for test in context['tests']:

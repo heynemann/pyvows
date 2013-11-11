@@ -96,17 +96,20 @@ class VowsResult(object):
         successfully.
 
         '''
-        # Didn't succeed if there was an error in setup, topic or teardown
-        if context.get('error', None):
-            return False
+        succeeded = True
 
+        # Success only if there wasn't an error in setup, topic or teardown
+        succeeded = succeeded and (not context.get('error', None))
+
+        # Success only if all subcontexts succeeded
         for context in context['contexts']:
-            if not self.eval_context(context): return False
+            succeeded = succeeded and self.eval_context(context)
 
+        # Success only if all tests succeeded
         for test in context['tests']:
-            if not test['succeeded']: return False
+            succeeded = succeeded and test['succeeded']
 
-        return True
+        return succeeded
 
     def get_worst_topics(self, number=10, threshold=0.1):
         '''Returns the top `number` slowest topics which took longer

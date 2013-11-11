@@ -12,37 +12,64 @@ from pyvows import Vows, expect
 from pyvows.reporting import VowsDefaultReporter
 from pyvows.runner.abc import VowsTopicError
 
+# These tests check that the reporting, which happens after all tests
+# have run, correctly shows the errors raised in topic functions.
+
 @Vows.batch
 class ErrorReporting(Vows.Context):
 
-    def setup(self):
-        class MockResult:
-            def eval_context(self, context):
-                return False
-        self.reporter = VowsDefaultReporter(MockResult(), 0)
+    class TracebackOfTopicError:
 
-    class PrintingAContextWithATopicError:
-        def topic(self):
-            mock_exc_info = ('type', 'value', 'traceback')
-            context = {
-                'contexts': [],
-                'error': VowsTopicError('topic', mock_exc_info),
-                'filename': '/path/to/vows.py',
-                'name': 'TestContext',
-                'tests': [],
-                'topic_elapsed': 0
-            }
-            return context
+        def setup(self):
+            # The eval_context() method of the result object is called by
+            # the reporter to decide if a context was successful or
+            # not. Here we are testing the reporting of errors, so provide
+            # a mock result which always says it has failed.
+            class MockResult:
+                def eval_context(self, context):
+                    return False
+            self.reporter = VowsDefaultReporter(MockResult(), 0)
 
-        def reporter_should_call_print_traceback_with_the_exception(self, context):
-            reporter = self.parent.reporter
-            called = [False]
-            def print_traceback(exc_type, exc_value, exc_traceback):
-                expect(exc_type).to_equal('type')
-                expect(exc_value).to_equal('value')
-                expect(exc_traceback).to_equal('traceback')
-                called[0] = True
-            reporter.print_traceback = print_traceback
+            # Patch the print_traceback() method to just record its
+            # arguments.
+            self.print_traceback_args = None
+            def print_traceback(*args):
+                self.print_traceback_args = args
+            self.reporter.print_traceback = print_traceback
 
-            reporter.print_context('TestContext', context)
-            expect(called[0]).to_be_true()
+        class AContextWithATopicError:
+            def topic(self):
+                # Simulate a context whose topic() function raised an error
+                mock_exc_info = ('type', 'value', 'traceback')
+                context = {
+                    'contexts': [],
+                    'error': VowsTopicError('topic', mock_exc_info),
+                    'filename': '/path/to/vows.py',
+                    'name': 'TestContext',
+                    'tests': [],
+                    'topic_elapsed': 0
+                }
+                return context
+
+            def reporter_should_call_print_traceback_with_the_exception(self, context):
+                self.parent.print_traceback_args = None
+                self.parent.reporter.print_context('TestContext', context)
+                expect(self.parent.print_traceback_args).to_equal(('type', 'value', 'traceback'))
+
+        class ASuccessfulContext:
+            def topic(self):
+                # Simulate a context whose topic() didn't raise an error
+                context = {
+                    'contexts': [],
+                    'error': None,
+                    'filename': '/path/to/vows.py',
+                    'name': 'TestContext',
+                    'tests': [],
+                    'topic_elapsed': 0
+                }
+                return context
+
+            def reporter_should_not_call_print_traceback(self, context):
+                self.parent.print_traceback_args = None
+                self.parent.reporter.print_context('TestContext', context)
+                expect(self.parent.print_traceback_args).to_equal(None)

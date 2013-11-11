@@ -11,6 +11,9 @@
 from pyvows import Vows, expect
 
 
+# These tests demonstrate what happens when the topic function raises
+# or returns an exception.
+
 @Vows.batch
 class ErrorsInTopicFunction(Vows.Context):
 
@@ -25,6 +28,13 @@ class ErrorsInTopicFunction(Vows.Context):
             def subcontexts_should_also_not_run(self, topic):
                 raise RuntimeError("Should not reach here")
 
+    class WhenTopicRaisesAnExceptionWithCaptureErrorDecorator:
+        @Vows.capture_error
+        def topic(self):
+            return 42 / 0
+
+        def it_is_passed_to_tests_as_normal(self, topic):
+            expect(topic).to_be_an_error_like(ZeroDivisionError)
 
     class WhenTopicReturnsAnException:
         def topic(self):
