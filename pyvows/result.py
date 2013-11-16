@@ -97,9 +97,15 @@ class VowsResult(object):
 
         '''
         succeeded = True
+
+        # Success only if there wasn't an error in setup, topic or teardown
+        succeeded = succeeded and (not context.get('error', None))
+
+        # Success only if all subcontexts succeeded
         for context in context['contexts']:
             succeeded = succeeded and self.eval_context(context)
 
+        # Success only if all tests succeeded
         for test in context['tests']:
             succeeded = succeeded and test['succeeded']
 

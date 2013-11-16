@@ -150,6 +150,7 @@ class AssertionIsLike(Vows.Context):
                 })
 
     class WhenWeGetAnError(Vows.Context):
+        @Vows.capture_error
         def topic(self, last):
             expect('a').to_be_like('b')
 
@@ -157,6 +158,7 @@ class AssertionIsLike(Vows.Context):
             expect(topic).to_have_an_error_message_of("Expected topic('a') to be like 'b'")
 
     class WhenWeGetAnErrorOnNot(Vows.Context):
+        @Vows.capture_error
         def topic(self, last):
             expect('a').not_to_be_like('a')
 

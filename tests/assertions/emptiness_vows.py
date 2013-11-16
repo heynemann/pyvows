@@ -44,6 +44,7 @@ class AssertionIsEmpty(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self, last):
                 expect([1]).to_be_empty()
 
@@ -81,6 +82,7 @@ class AssertionIsEmpty(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self, last):
                 expect([]).not_to_be_empty()
 

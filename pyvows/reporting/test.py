@@ -117,17 +117,10 @@ class VowsTestReporter(VowsReporter):
                 ###     Commented out try/except; potential debugging hinderance
                 
                 #try:
-                
-                traceback_args = None
-                if (hasattr(test, 'topic') 
-                        and hasattr(test['topic'], 'error')  
-                        and test['topic']['error'] is not None):
-                    print '\n' + self.indent_msg(blue('Topic Error:'))
-                    traceback_args = tuple(*test['topic'].error)
-                else:
-                    traceback_args = (test['error']['type'],
-                                      test['error']['value'],
-                                      test['error']['traceback'])
+
+                traceback_args = (test['error']['type'],
+                                  test['error']['value'],
+                                  test['error']['traceback'])
                 self.print_traceback(*traceback_args)
                 
                 # except Exception:
@@ -164,11 +157,19 @@ class VowsTestReporter(VowsReporter):
             # print traceback
             _print_traceback()
 
-        for test in context['tests']:
-            if test['succeeded']:
-                _print_successful_context()
-            else:
-                _print_failed_context()
+        # Show any error raised by the setup, topic or teardown functions
+        if context.get('error', None):
+            e = context['error']
+            print '\n' + self.indent_msg(blue("Error in {0!s}:".format(e.source)))
+            self.print_traceback(*e.exc_info)
+            print self.indent_msg(red("Nested tests following this error have not been run."))
+
+        else:
+            for test in context['tests']:
+                if test['succeeded']:
+                    _print_successful_context()
+                else:
+                    _print_failed_context()
 
         # I hereby (re)curse you...!
         for context in context['contexts']:

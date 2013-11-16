@@ -31,6 +31,7 @@ class AssertionIsInstance(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self, last):
                 expect(2).to_be_instance_of(str)
 
@@ -45,6 +46,7 @@ class AssertionIsInstance(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self, last):
                 expect(2).not_to_be_instance_of(int)
 

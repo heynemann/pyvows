@@ -34,6 +34,7 @@ class AssertionErrors(Vows.Context):
             expect(topic).to_have_an_error_message_of('some bogus error')
 
         class ErrorMessages(Vows.Context):
+            @Vows.capture_error 
             def topic(self, last):
                 raise Exception('1 does not equal 2')
             
@@ -60,6 +61,7 @@ class AssertionErrors(Vows.Context):
                 expect(topic).to_be_an_error()
 
             class WhenWeGetAnError(Vows.Context):
+                @Vows.capture_error
                 def topic(self, last):
                     expect(2).to_be_an_error()
 

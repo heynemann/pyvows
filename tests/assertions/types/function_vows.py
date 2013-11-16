@@ -29,6 +29,7 @@ class AssertionIsFunction(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self):
                 expect(4).to_be_a_function()
 
@@ -45,9 +46,10 @@ class AssertionIsFunction(Vows.Context):
 
         class WhenWeGetAnError(Vows.Context):
 
+            @Vows.capture_error
             def topic(self):
                 expect(a_function).not_to_be_a_function()
 
             def we_get_an_understandable_message(self, topic):
-                expect(topic).to_have_an_error_message_of(
-                    'Expected topic({0!s}) not to be a function or a method'.format(a_function))
+                msg = 'Expected topic({0!s}) not to be a function or a method'.format(a_function)
+                expect(topic).to_have_an_error_message_of(msg)
