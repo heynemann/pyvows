@@ -5,7 +5,7 @@ ci_test: setup
 	@env PYTHONPATH=. python pyvows/cli.py --cover --cover-package=pyvows --cover-threshold=80.0 -r pyvows.coverage.xml -x tests/
 
 setup:
-	@pip install -e.\[TESTS\]
+	@pip install -Ue .\[tests\]
 
 publish:
 	python setup.py sdist upload
