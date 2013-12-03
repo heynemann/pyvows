@@ -1,5 +1,0 @@
-argparse
-colorama
-coverage
-preggy
-gevent>=0.13.6

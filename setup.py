@@ -17,6 +17,13 @@ from setuptools import setup, find_packages
 from pyvows import version
 
 
+
+_test_requires = [
+    'argparse',
+    'colorama',
+    'coverage'
+
+]
 _install_requires = [
     'gevent>=0.13.6',
     'preggy>=0.5.8',
@@ -46,6 +53,9 @@ setup(
     ### TECHNICAL INFO
     version=version.to_str(),
     install_requires=_install_requires,
+    extras_require={
+        'tests': _test_requires,
+    },
     packages=find_packages(),
     package_dir={'pyvows': 'pyvows'},
     entry_points={
