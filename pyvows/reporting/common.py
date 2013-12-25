@@ -11,6 +11,7 @@ have been run.
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 from __future__ import division
 
+import os
 import re
 import traceback
 
@@ -84,12 +85,12 @@ class VowsReporter(object):
         '''Replaces all underscores in `string` with spaces.'''
         return ' '.join(string.split('_'))
 
-    def format_traceback(self, traceback_list):
+    def format_traceback(self, traceback_list, unfiltered_traceback=False):
         '''Adds the current level of indentation to a traceback (so it matches
         the current context's indentation).
 
         '''
-
+        
         # TODO:
         #   ...Is this a decorator?  If so, please add a comment or docstring
         #   to make it explicit.
@@ -97,8 +98,26 @@ class VowsReporter(object):
             if msg.strip().startswith('File'):
                 return self.indent_msg(msg)
             return msg
-
-        tb_list = [_indent(tb) for tb in traceback_list]
+        
+        if unfiltered_traceback:
+            tb_list = [_indent(tb) for tb in traceback_list]
+        else:
+            internal_tb_locs = frozenset(('{0}preggy{0}core.py', 
+                                          '{0}preggy{0}assertions{0}',
+                                          '{0}pyvows{0}reporting{0}',
+                                          '{0}pyvows{0}runner{0}',
+                                          '{0}pyvows{0}async_topic.py',
+                                          '{0}pyvows{0}core.py',
+                                          '{0}pyvows{0}decorators.py',
+                                          '{0}pyvows{0}errors.py',))
+            
+            def _is_internal_tb(msg):
+                for loc in internal_tb_locs:
+                    if loc.format(os.sep) in msg:
+                        return True
+                return False
+        
+            tb_list = [_indent(tb) for tb in traceback_list if not _is_internal_tb(tb)]
         return ''.join(tb_list)
 
     def format_python_constants(self, msg):
@@ -126,19 +145,14 @@ class VowsReporter(object):
             '\n',
             ruler=ruler,
             msg=msg)
-
         msg = green(bold(msg))
-
         return msg
 
     def indent_msg(self, msg, indentation=None):
         '''Returns `msg` with the indentation specified by `indentation`.
 
         '''
-        if indentation is not None:
-            indent = self.TAB * indentation
-        else:
-            indent = self.TAB * self.indent
+        indent = indentation is None and self.TAB * self.indent or self.TAB * indentation
 
         return '{indent}{msg}'.format(
             indent=indent,
@@ -165,11 +179,7 @@ class VowsReporter(object):
 
     def print_traceback(self, err_type, err_obj, err_traceback):
         '''Prints a color-formatted traceback with appropriate indentation.'''
-        if isinstance(err_obj, AssertionError):
-            error_msg = err_obj
-        else:
-            error_msg = unicode(err_obj)
-
+        error_msg = isinstance(err_obj, AssertionError) and err_obj or unicode(err_obj)
         print self.indent_msg(red(error_msg))
 
         if self.verbosity >= V_NORMAL:
