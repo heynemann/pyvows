@@ -26,7 +26,7 @@ _test_requires = [
 ]
 _install_requires = [
     'gevent>=0.13.6',
-    'preggy>=0.5.8',
+    'preggy>=0.11.1',
 ]
 if sys.version_info < (2, 7):
     _install_requires.append('argparse >= 1.1')
