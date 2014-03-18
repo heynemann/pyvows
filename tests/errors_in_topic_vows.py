@@ -24,7 +24,7 @@ class ErrorsInTopicFunction(Vows.Context):
         def tests_should_not_run(self, topic):
             raise RuntimeError("Should not reach here")
 
-        class SubContext:
+        class SubContext(Vows.Context):
             def subcontexts_should_also_not_run(self, topic):
                 raise RuntimeError("Should not reach here")
 
