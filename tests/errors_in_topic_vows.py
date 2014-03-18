@@ -17,18 +17,18 @@ from pyvows import Vows, expect
 @Vows.batch
 class ErrorsInTopicFunction(Vows.Context):
 
-    class WhenTopicRaisesAnException(Vows.Context):
+    class WhenTopicRaisesAnException:
         def topic(self):
             return 42 / 0
 
         def tests_should_not_run(self, topic):
             raise RuntimeError("Should not reach here")
 
-        class SubContext(Vows.Context):
+        class SubContext:
             def subcontexts_should_also_not_run(self, topic):
                 raise RuntimeError("Should not reach here")
 
-    class WhenTopicRaisesAnExceptionWithCaptureErrorDecorator(Vows.Context):
+    class WhenTopicRaisesAnExceptionWithCaptureErrorDecorator:
         @Vows.capture_error
         def topic(self):
             return 42 / 0
@@ -36,7 +36,7 @@ class ErrorsInTopicFunction(Vows.Context):
         def it_is_passed_to_tests_as_normal(self, topic):
             expect(topic).to_be_an_error_like(ZeroDivisionError)
 
-    class WhenTopicReturnsAnException(Vows.Context):
+    class WhenTopicReturnsAnException:
         def topic(self):
             try:
                 return 42 / 0
