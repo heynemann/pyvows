@@ -11,7 +11,7 @@ running tests, and the almighty `if __name__ == '__main__': main()`.
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
-from __future__ import division
+from __future__ import division, print_function
 
 import argparse
 import inspect
@@ -191,10 +191,10 @@ def main():
     if result.successful and arguments.cover:
         # if coverage was requested, but unavailable, warn the user
         if not COVERAGE_AVAILABLE:
-            print
-            print yellow('WARNING: Cover disabled because coverage could not be found.')
-            print yellow('Make sure it is installed and accessible.')
-            print
+            print()
+            print(yellow('WARNING: Cover disabled because coverage could not be found.'))
+            print(yellow('Make sure it is installed and accessible.'))
+            print()
 
         # otherwise, we're good
         else:

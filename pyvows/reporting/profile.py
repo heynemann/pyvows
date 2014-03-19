@@ -34,12 +34,12 @@ class VowsProfileReporter(VowsReporter):
         topics = self.result.get_worst_topics(number=10, threshold=threshold)
 
         if topics:
-            print self.header('Slowest Topics')
+            print(self.header('Slowest Topics'))
 
             table_header = yellow('  {0}'.format(dim('#')))
             table_header += yellow('  Elapsed     Context File Path                         ')
             table_header += yellow('  Context Name')
-            print table_header
+            print(table_header)
 
             for index, topic in enumerate(topics):
                 name = self.under_split(topic['context'])
@@ -70,9 +70,10 @@ class VowsProfileReporter(VowsReporter):
 
                     data[k] = colorized(v)
 
-                print ' {number}  {time}{0}{path}{0}{name}'.format(
-                    4 * ' ',
-                    **data
-                )
+                print(
+                    ' {number}  {time}{0}{path}{0}{name}'.format(
+                        4 * ' ',
+                        **data)
+                    )
 
-            print
+            print()

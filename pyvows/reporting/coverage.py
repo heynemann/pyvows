@@ -9,7 +9,7 @@ have been run.
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
-from __future__ import division
+from __future__ import division, print_function
 
 from xml.etree import ElementTree as etree
 
@@ -78,7 +78,7 @@ class VowsCoverageReporter(VowsReporter):
     #-------------------------------------------------------------------------
     def print_coverage(self, xml, cover_threshold):
         '''Prints code coverage statistics for your tests.'''
-        print self.header('Code Coverage')
+        print(self.header('Code Coverage'))
 
         root = self.parse_coverage_xml(xml)
         klasses = sorted(root['classes'], key=lambda klass: klass['line_rate'])
@@ -96,7 +96,7 @@ class VowsCoverageReporter(VowsReporter):
             if 100.0 < max_coverage < coverage:
                 max_coverage = coverage
                 if max_coverage == 100.0:
-                    print
+                    print()
 
             coverage = coverage
             progress = int(coverage * PROGRESS_SIZE)
@@ -112,7 +112,7 @@ class VowsCoverageReporter(VowsReporter):
             if coverage == 0.000 and not klass['uncovered_lines']:
                 continue
 
-            print self.format_class_coverage(
+            print(self.format_class_coverage(
                 cover_character=cover_character,
                 klass=klass['name'],
                 space1=' ' * (max_length - len(klass['name'])),
@@ -120,17 +120,16 @@ class VowsCoverageReporter(VowsReporter):
                 coverage=coverage,
                 space2=' ' * (PROGRESS_SIZE - progress + offset),
                 lines=self.get_uncovered_lines(klass['uncovered_lines']),
-                cover_threshold=cover_threshold)
+                cover_threshold=cover_threshold))
 
-        print
+        print()
 
         total_coverage = root['overall']
         cover_character = VowsReporter.HONORED if (total_coverage >= cover_threshold) else VowsReporter.BROKEN
         progress = int(total_coverage * PROGRESS_SIZE)
 
-        print self.format_overall_coverage(cover_character, max_length, progress, total_coverage)
-
-        print
+        print(self.format_overall_coverage(cover_character, max_length, progress, total_coverage))
+        print()
 
     def format_class_coverage(self, cover_character, klass, space1, progress, coverage, space2, lines, cover_threshold):
         '''Accepts coverage data for a class and returns a formatted string (intended for

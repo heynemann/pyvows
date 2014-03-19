@@ -8,7 +8,7 @@ have been run.
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
-from __future__ import division
+from __future__ import division, print_function
 
 import sys
 
@@ -57,31 +57,32 @@ class VowsTestReporter(VowsReporter):
     #-------------------------------------------------------------------------
     def pretty_print(self):
         '''Prints PyVows test results.'''
-        print self.header('Vows Results')
+        print(self.header('Vows Results'))
 
         if not self.result.contexts:
             # FIXME:
             #   If no vows are found, how could any be broken?
-            print '{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
-                indent=self.TAB * self.indent,
-                broken=VowsReporter.BROKEN,
-            )
+            print(
+                '{indent}{broken} No vows found! » 0 honored • 0 broken (0.0s)'.format(
+                    indent=self.TAB * self.indent,
+                    broken=VowsReporter.BROKEN)
+                )
             return
 
         if self.verbosity >= V_VERBOSE or self.result.errored_tests:
-            print
+            print()
 
         for context in self.result.contexts:
             self.print_context(context['name'], context)
 
-        print '{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
+        print('{0}{1} OK » {honored:d} honored • {broken:d} broken ({time:.6f}s)'.format(
             self.TAB * self.indent,
             self.status_symbol,
             honored=self.result.successful_tests,
             broken=self.result.errored_tests,
-            time=self.result.elapsed_time)
+            time=self.result.elapsed_time))
 
-        print
+        print()
 
     def print_context(self, name, context):
         #   FIXME: Add Docstring
@@ -136,9 +137,9 @@ class VowsTestReporter(VowsReporter):
                 # print file and line number
                 if 'file' in test:
                     file_msg = 'found in {test[file]} at line {test[lineno]}'.format(test=test)
-                    print
-                    print self.indent_msg(red(file_msg))
-                    print
+                    print('\n', 
+                          self.indent_msg(red(file_msg)), 
+                          '\n')
 
                 self.indent -= 2
 
@@ -160,9 +161,9 @@ class VowsTestReporter(VowsReporter):
         # Show any error raised by the setup, topic or teardown functions
         if context.get('error', None):
             e = context['error']
-            print '\n' + self.indent_msg(blue("Error in {0!s}:".format(e.source)))
+            print('\n', self.indent_msg(blue("Error in {0!s}:".format(e.source))))
             self.print_traceback(*e.exc_info)
-            print self.indent_msg(red("Nested tests following this error have not been run."))
+            print(self.indent_msg(red("Nested tests following this error have not been run.")))
 
         else:
             for test in context['tests']:

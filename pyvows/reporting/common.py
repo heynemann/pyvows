@@ -9,7 +9,7 @@ have been run.
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
-from __future__ import division
+from __future__ import division, print_function
 
 import re
 import traceback
@@ -161,7 +161,7 @@ class VowsReporter(object):
         msg = msg.capitalize()
         msg = self.format_python_constants(msg)
 
-        print self.indent_msg(msg, indentation)
+        print(self.indent_msg(msg, indentation))
 
     def print_traceback(self, err_type, err_obj, err_traceback):
         '''Prints a color-formatted traceback with appropriate indentation.'''
@@ -170,11 +170,11 @@ class VowsReporter(object):
         else:
             error_msg = unicode(err_obj)
 
-        print self.indent_msg(red(error_msg))
+        print(self.indent_msg(red(error_msg)))
 
         if self.verbosity >= V_NORMAL:
             traceback_msg = traceback.format_exception(err_type, err_obj, err_traceback)
             traceback_msg = self.format_traceback(traceback_msg)
             traceback_msg = '\n{traceback}'.format(traceback=traceback_msg)
             traceback_msg = self.indent_msg(yellow(traceback_msg))
-            print traceback_msg
+            print(traceback_msg)
