@@ -10,52 +10,59 @@
 
 # stdlib
 import sys
-from textwrap import dedent
+
 # external
-from setuptools import setup, find_packages
+from setuptools import (setup, find_packages)
+
 # local
-from pyvows import version
+import pyvows
+import pyvows.version
 
 
+#--------------------------------------------------------------------------------
+#   REQUIREMENTS
+#--------------------------------------------------------------------------------
+REQUIREMENTS = {
+    'install': [
+        'gevent>=0.13.6',
+        'preggy>=0.11.1',
+        ],
 
-_test_requires = [
-    'argparse',
-    'colorama',
-    'coverage'
+    'test': [
+        'argparse',
+        'colorama',
+        'coverage',
+        ],
+}
 
-]
-_install_requires = [
-    'gevent>=0.13.6',
-    'preggy>=0.11.1',
-]
+REQUIREMENTS['extras'] = {'tests': REQUIREMENTS['test']}
+
 if sys.version_info < (2, 7):
-    _install_requires.append('argparse >= 1.1')
+    REQUIREMENTS['install'].append('argparse >= 1.1')
 
 
+#--------------------------------------------------------------------------------
+#   SETUP
+#--------------------------------------------------------------------------------
 setup(
-    ### OVERVIEW
-    name='pyVows',
-    description='pyVows is a BDD test engine based on Vows.js <http://vowsjs.org>.',
-    long_description=dedent(
-        '''pyVows is a test engine based on Vows.js. It features topic-based testing,
-        (*fast*) parallel running of tests, code coverage reports, test profiling, and
-        more:
+    #--------------------------------------------------------------------------------
+    #   OVERVIEW
+    #--------------------------------------------------------------------------------
+    name='pyvows',
+    description=pyvows.__description__,
+    long_description=pyvows.__doc__,
 
-        http://pyvows.org
+    #--------------------------------------------------------------------------------
+    #   URLs
+    #--------------------------------------------------------------------------------
+    url=pyvows.__url__,
 
-        '''),
-
-
-    ### URLs
-    url='http://pyvows.org',
-
-
-    ### TECHNICAL INFO
-    version=version.to_str(),
-    install_requires=_install_requires,
-    extras_require={
-        'tests': _test_requires,
-    },
+    #--------------------------------------------------------------------------------
+    #   TECHNICAL INFO
+    #--------------------------------------------------------------------------------
+    version=pyvows.version.to_str(),
+    install_requires=REQUIREMENTS['install'],
+    extras_require=REQUIREMENTS['extras'],
     packages=find_packages(),
     package_dir={'pyvows': 'pyvows'},
     entry_points={
@@ -64,29 +71,17 @@ setup(
         ]
     },
 
+    #--------------------------------------------------------------------------------
+    #   PEOPLE & LICENSE
+    #--------------------------------------------------------------------------------
+    author=pyvows.__author__,
+    author_email=pyvows.__author_email__,
+    maintainer=pyvows.__maintainer__,
+    license=pyvows.__license__,
 
-    ### PEOPLE & LICENSE
-    author='Bernardo Heynemann',
-    author_email='heynemann@gmail.com',
-    #maintainer = 'Rafael Carício',
-    #maintainer_email = 'rafael@caricio.com',
-    maintainer='Zearin',
-    license='MIT',
-
-
-    ### CATEGORIZATION
-    keywords='test testing vows tdd bdd development coverage profile profiling',
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Natural Language :: English',
-        'Operating System :: MacOS',
-        'Operating System :: POSIX',
-        'Operating System :: Unix',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Topic :: Software Development :: Testing'
-    ],
+    #--------------------------------------------------------------------------------
+    #   CATEGORIZATION
+    #--------------------------------------------------------------------------------
+    keywords=pyvows.__keywords__,
+    classifiers=pyvows.__classifiers__,
 )

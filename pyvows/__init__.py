@@ -1,25 +1,19 @@
 # -*- coding: utf-8 -*-
-'''PyVows is a Behavior-Driven Development framework for Python.  (And and it
-is **fast**!)
+'''PyVows is a test engine based on Vows.js. It features topic-based testing,
+(fast!) parallel running of tests, code coverage reports, test profiling, and
+more.
+
+PyVows is inspired by Vows.js, a BDD framework for Node.js.
 
 ---
 
-PyVows runs tests asynchronously.  This makes tests which target I/O
-run much faster, by running them concurrently. A faster test suite gets
-run more often, thus improving the feedback cycle.
+PyVows runs tests asynchronously.  This makes tests which target I/O run much 
+faster, by executing them concurrently. 
 
-PyVows is inspired by Vows, a BDD framework for Node.js.
+A faster test suite gets run more often, thus improving the feedback cycle.
 
-----
-
-You typically shouldn't need to import any specific modules from the `pyvows`
-package.  Normal use is:
-
-    from pyvows import Vows, expect
-
-----
-
-To learn more, check out:   http://pyvows.org
+Learn more:
+http://pyvows.org
 
 '''
 
@@ -32,6 +26,37 @@ To learn more, check out:   http://pyvows.org
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 # flake8: noqa
+
+#-------------------------------------------------------------------------------------------------
+
+
+#   PEOPLE
+__author__ = 'Bernardo Heynemann'
+__author_email__ = 'heynemann@gmail.com'
+
+__maintainer__ = 'Zearin'
+#__maintainer__ = 'Rafael Carício'
+#__maintainer_email__ = 'rafael@caricio.com'
+
+
+#   MISC
+__url__ = 'http://pyvows.org'
+__keywords__ = 'test testing vows tdd bdd development coverage profile profiling'
+__description__ = 'pyvows is a BDD test engine (inspired by Vows.js)'
+__license__ = 'MIT'
+__classifiers__ = [
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: MIT License',
+    'Natural Language :: English',
+    'Operating System :: MacOS',
+    'Operating System :: POSIX',
+    'Operating System :: Unix',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 2.6',
+    'Programming Language :: Python :: 2.7',
+    'Topic :: Software Development :: Testing'
+]
 
 #-------------------------------------------------------------------------------------------------
 
