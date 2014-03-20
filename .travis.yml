@@ -1,3 +1,8 @@
+# References for this config file:
+#
+#        OVERVIEW:  http://docs.travis-ci.com/user/build-configuration/
+#   PYTHON CONFIG:  http://docs.travis-ci.com/user/languages/python/
+
 language: python
 python:
   - "2.6"
