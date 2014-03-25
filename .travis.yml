@@ -20,6 +20,8 @@ install:
     - pip install coveralls
 
     # weird travis-ci python paths
+    # FIXME: refactor this redundant code (see below, under `script`)
+    # FIXME: these list python2.7; what about python2.6?
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pymodules/python2.7/
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pyshared/python2.7/
@@ -30,6 +32,7 @@ install:
 
 
 script:
+    # FIXME: these list python2.7; what about python2.6?
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pymodules/python2.7/
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pyshared/python2.7/
