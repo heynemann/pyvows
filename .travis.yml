@@ -8,20 +8,28 @@ python:
     - "2.6"
     - "2.7"
 
-install:
+
+before_install:
     # update aptitude
     - sudo apt-get update -y
-
+    
+    # get pyenv
+    - curl https://raw.github.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
+    
     # install aptitude packages
     - LDFLAGS=-lm sudo apt-get install -y $(< .travis.requirements.txt)
 
+
+install:
     # install python requirements
     - make setup
     - pip install coveralls
 
     # weird travis-ci python paths
+    #
     # FIXME: refactor this redundant code (see below, under `script`)
     # FIXME: these list python2.7; what about python2.6?
+    #
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pymodules/python2.7/
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pyshared/python2.7/
@@ -31,15 +39,24 @@ install:
     - INSTALLDIR=$(python -c "import os; import gevent; print(os.path.dirname(gevent.__file__))")
 
 
-script:
-    # FIXME: these list python2.7; what about python2.6?
+before_script:
+    - # FIXME: these list python2.7; what about python2.6?
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pymodules/python2.7/
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
     - export PYTHONPATH=$PYTHONPATH:/usr/lib/pyshared/python2.7/
     - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages/
 
-    # finally run tests
+
+script:     # run the tests
     - env PYTHONPATH=. coverage run --source=pyvows  ./pyvows/__main__.py
+
+
+#after_script:
+#    -
+
+
+#after_failure:
+#    -
 
 
 after_success:
