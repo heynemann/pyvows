@@ -12,7 +12,7 @@
 import sys
 
 # external
-from setuptools import (setup, find_packages)
+import setuptools
 
 # local
 import pyvows
@@ -44,7 +44,7 @@ if sys.version_info < (2, 7):
 #--------------------------------------------------------------------------------
 #   SETUP
 #--------------------------------------------------------------------------------
-setup(
+setuptools.setup(
     #--------------------------------------------------------------------------------
     #   OVERVIEW
     #--------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ setup(
     version=pyvows.version.to_str(),
     install_requires=REQUIREMENTS['install'],
     extras_require=REQUIREMENTS['extras'],
-    packages=find_packages(),
+    packages=setuptools.find_packages(),
     package_dir={'pyvows': 'pyvows'},
     entry_points={
         'console_scripts': [
