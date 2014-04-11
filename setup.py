@@ -35,10 +35,14 @@ REQUIREMENTS = {
         ],
 }
 
-REQUIREMENTS['extras'] = {'tests': REQUIREMENTS['test']}
-
 if sys.version_info < (2, 7):
     REQUIREMENTS['install'].append('argparse >= 1.1')
+
+REQUIREMENTS.update(
+    {
+        'extras': {'tests': REQUIREMENTS['test']}
+    })
+
 
 
 #--------------------------------------------------------------------------------
