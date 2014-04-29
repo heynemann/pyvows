@@ -27,6 +27,8 @@ REQUIREMENTS = {
         'gevent>=0.13.6',
         'preggy>=0.11.1',
         ],
+        
+    'setup': [],
 
     'test': [
         'argparse',
@@ -45,10 +47,53 @@ REQUIREMENTS.update(
 
 
 
+
+#--------------------------------------------------------------------------------
+#   CUSTOM COMMANDS
+#--------------------------------------------------------------------------------
+class test(setuptools.Command):
+    description = "(pyvows) Test pyvows using itself"
+    user_options = list(tuple())
+    
+    _cli_args = ['export', r'PYTHONPATH=".:${PYTHONPATH}"', '&&', 'python', '-B', './pyvows']
+    _pyvows_args = ['--cover','--cover-package=pyvows','--cover-threshold=80.0','--profile']
+    
+    
+    def initialize_options(self): pass
+    def finalize_options(self):   pass
+    
+    def _prepare_run(self):
+        _cli_input = self.__class__._cli_args + self.__class__._pyvows_args
+        return _cli_input
+    
+    def run(self):
+        import subprocess
+        _cli_input = self._prepare_run()
+        _cli_input = ' '.join(_cli_input)
+        subprocess.call( 
+            _cli_input, 
+            stdin=sys.stdin, 
+            stdout=sys.stdout, 
+            stderr=sys.stderr, 
+            shell=True
+        )
+
+
+vows = test  # alias 'test' command
+
+
 #--------------------------------------------------------------------------------
 #   SETUP
 #--------------------------------------------------------------------------------
 setuptools.setup(
+    #--------------------------------------------------------------------------------
+    #   CUSTOM COMMANDS
+    #--------------------------------------------------------------------------------
+    cmdclass={
+        'test': test,
+        'vows': test,
+    },
+    
     #--------------------------------------------------------------------------------
     #   OVERVIEW
     #--------------------------------------------------------------------------------
