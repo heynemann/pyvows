@@ -13,6 +13,8 @@ module.
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+# pylint: disable=no-member
+
 try:
     from colorama import init, Fore, Style
     init(autoreset=True)

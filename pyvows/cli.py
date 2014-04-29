@@ -67,7 +67,7 @@ class Parser(argparse.ArgumentParser):
 
         #Easy underlining, if we ever need it in the future
         #uline   = lambda text: '\033[4m{0}\033[24m'.format(text)
-        metavar = lambda metavar: '{0}{metavar}{0}'.format(Style.RESET_ALL, metavar=metavar.upper())
+        metavar = lambda metavar: '{0}{metavar}{0}'.format(Style.RESET_ALL, metavar=metavar.upper())  # pylint:disable=no-member
 
         self.add_argument('-p', '--pattern', default='*_vows.py', help=Messages.pattern, metavar=metavar('pattern'))
 
