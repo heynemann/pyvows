@@ -33,7 +33,7 @@ def locate(pattern, root=os.curdir, recursive=True):
                 return_files.append(os.path.join(path, filename))
         return return_files
     else:
-        return glob(os.path.join(root_path, pattern))
+        return glob.glob(os.path.join(root_path, pattern))
 
 
 def template():
