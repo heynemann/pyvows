@@ -14,13 +14,12 @@ from __future__ import absolute_import
 import inspect
 import sys
 import time
-import re
 
 from gevent.pool import Pool
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.decorators import FunctionWrapper
-from pyvows.runner.utils import get_code_for, get_file_info_for, get_topics_for
+from pyvows.runner.utils import get_topics_for
 from pyvows.result import VowsResult
 from pyvows.utils import elapsed
 from pyvows.runner.abc import VowsRunnerABC, VowsTopicError
@@ -86,7 +85,7 @@ class VowsParallelRunner(VowsRunnerABC):
             # Run setup function
             try:
                 ctx_obj.setup()
-            except Exception as e:
+            except Exception:
                 raise VowsTopicError('setup', sys.exc_info())
 
             # Find & run topic function
@@ -98,11 +97,15 @@ class VowsParallelRunner(VowsRunnerABC):
                 topic_list = get_topics_for(topic_func, ctx_obj)
 
                 start_time = time.time()
+
+                if topic_func is None:
+                    return None
+
                 topic = topic_func(*topic_list)
                 ctx_result['topic_elapsed'] = elapsed(start_time)
                 return topic
 
-            except Exception as e:
+            except Exception:
                 raise VowsTopicError('topic', sys.exc_info())
 
         def _run_tests(topic):
@@ -143,7 +146,7 @@ class VowsParallelRunner(VowsRunnerABC):
                     try:
                         ctx_obj.generated_topic = True
                         topic = ctx_obj.topic_value = list(topic)
-                    except Exception as e:
+                    except Exception:
                         # Actually getting the values from the generator may raise exception
                         raise VowsTopicError('topic', sys.exc_info())
                 else:
@@ -177,7 +180,7 @@ class VowsParallelRunner(VowsRunnerABC):
         def _run_teardown(topic):
             try:
                 teardown()
-            except Exception as e:
+            except Exception:
                 raise VowsTopicError('teardown', sys.exc_info())
 
         #-----------------------------------------------------------------------
@@ -188,7 +191,8 @@ class VowsParallelRunner(VowsRunnerABC):
             # Only run tests & teardown if setup & topic run without errors
             _run_tests(topic)
             _run_teardown(topic)
-        except VowsTopicError as e:
+        except VowsTopicError:
+            e = sys.exc_info()[1]
             ctx_obj.topic_error = e   # is this needed still?
             ctx_result['error'] = e
 
