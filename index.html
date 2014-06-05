@@ -292,6 +292,9 @@ A nested context with no topics
     @Vows.batch
     class Divisions(Vows.Context):
         class WhenDividingANumberByZero(Vows.Context):
+            
+            # This decorator means we want an error for the topic
+            @Vows.capture_error
             def topic(self):
                 return 42 / 0
 
