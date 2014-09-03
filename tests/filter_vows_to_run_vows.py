@@ -63,7 +63,7 @@ class FilterOutVowsFromCommandLine(Vows.Context):
             expect(len(col)).to_equal(0)
 
         def leaves_unmatched_contexts(self, topic):
-            VowsRunner.teardown = None
+            VowsRunner.teardown = lambda self: None
             r = topic(None, None, None, None, ['foo', 'bar'])
             col = []
             r.run_context(col, 'baz', r)
