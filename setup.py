@@ -56,7 +56,7 @@ setup(
     extras_require={
         'tests': _test_requires,
     },
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests', 'tests.*']),
     package_dir={'pyvows': 'pyvows'},
     entry_points={
         'console_scripts': [
