@@ -44,7 +44,7 @@ class VowsRunnerABC(object):
         #   FIXME: Add Docstring
  
         start_time = time.time()
-        filename, lineno = get_file_info_for(vow._original)
+        filename, lineno = get_file_info_for(vow)
  
         vow_result = {
             'context_instance': ctx_obj,

@@ -35,7 +35,7 @@ class XUnitReporter(object):
     def summarize_results(self, result):
         #   FIXME: Add Docstring
         result_summary = {
-            'total': result.successful_tests + result.errored_tests,
+            'total': result.total_test_count,
             'errors': 0,
             'failures': result.errored_tests,
             'ts': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
@@ -68,6 +68,24 @@ class XUnitReporter(object):
 
     def create_test_case_elements(self, document, parent_node, context):
         #   FIXME: Add Docstring
+
+        topic_node = document.createElement('testcase')
+        topic_node.setAttribute('classname', context['name'])
+        topic_node.setAttribute('name', 'topic')
+        topic_node.setAttribute('time', '0.0')
+        if context.get('error', None):
+            e = context['error']
+            error_msg = 'Error in {0!s}'.format(e.source)
+            error_tb = traceback.format_exception(*e.exc_info)
+
+            failure_node = document.createElement('failure')
+            failure_node.setAttribute('type', e.__class__.__name__)
+            failure_node.setAttribute('message', error_msg)
+            failure_text = document.createTextNode(''.join(error_tb))
+            failure_node.appendChild(failure_text)
+            topic_node.appendChild(failure_node)
+        parent_node.appendChild(topic_node)
+
         for test in context['tests']:
             test_stats = {
                 'context': context['name'],
