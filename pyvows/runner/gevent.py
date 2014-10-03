@@ -18,7 +18,6 @@ import time
 from gevent.pool import Pool
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
-from pyvows.decorators import FunctionWrapper
 from pyvows.runner.utils import get_topics_for
 from pyvows.result import VowsResult
 from pyvows.utils import elapsed
@@ -50,16 +49,15 @@ class VowsParallelRunner(VowsRunnerABC):
                 self.pool.spawn(
                     self.run_context,
                     result.contexts,
-                    ctx_name = batch.__name__,
-                    ctx_obj  = batch(None),
-                    index    = -1,
-                    suite    = suite
+                    ctx_name=batch.__name__,
+                    ctx_obj=batch(None),
+                    index=-1,
+                    suite=suite
                 )
 
         self.pool.join()
         result.elapsed_time = elapsed(start_time)
         return result
-
 
     def run_context(self, ctx_collection, ctx_name=None, ctx_obj=None, index=-1, suite=None):
         #   FIXME: Add Docstring
@@ -92,7 +90,7 @@ class VowsParallelRunner(VowsRunnerABC):
                 raise VowsTopicError('setup', sys.exc_info())
 
             # Find & run topic function
-            if not hasattr(ctx_obj, 'topic'): # ctx_obj has no topic
+            if not hasattr(ctx_obj, 'topic'):  # ctx_obj has no topic
                 return ctx_obj._get_first_available_topic(index)
 
             try:
@@ -171,8 +169,8 @@ class VowsParallelRunner(VowsRunnerABC):
                 lambda member: not (member[0] in special_names or member[0].startswith('_')),
                 inspect.getmembers(type(ctx_obj))
             ))
-            vows        = set((vow_name,vow)       for vow_name, vow       in ctx_members if inspect.ismethod(vow))
-            subcontexts = set((subctx_name,subctx) for subctx_name, subctx in ctx_members if inspect.isclass(subctx))
+            vows = set((vow_name, vow) for vow_name, vow in ctx_members if inspect.ismethod(vow))
+            subcontexts = set((subctx_name, subctx) for subctx_name, subctx in ctx_members if inspect.isclass(subctx))
 
             if not isinstance(topic, VowsAsyncTopic):
                 _run_with_topic(topic)
@@ -202,7 +200,6 @@ class VowsParallelRunner(VowsRunnerABC):
             e = sys.exc_info()[1]
             ctx_obj.topic_error = e   # is this needed still?
             ctx_result['error'] = e
-
 
     def _run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated=False):
         #   FIXME: Add Docstring
