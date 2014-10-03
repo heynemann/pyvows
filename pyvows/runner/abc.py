@@ -9,7 +9,6 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
-import re
 import sys
 import time
 
@@ -21,21 +20,12 @@ from pyvows.utils import elapsed
 
 class VowsRunnerABC(object):
 
-    def __init__(self, suites, context_class, on_vow_success, on_vow_error, exclusion_patterns):
+    def __init__(self, suites, context_class, on_vow_success, on_vow_error, execution_plan):
         self.suites = suites  # a suite is a file with pyvows tests
         self.context_class = context_class
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
-        self.exclusion_patterns = exclusion_patterns
-        if self.exclusion_patterns:
-            self.exclusion_patterns = set([re.compile(x) for x in self.exclusion_patterns])
-
-    def is_excluded(self, name):
-        '''Return whether `name` is in `self.exclusion_patterns`.'''
-        for pattern in self.exclusion_patterns:
-            if pattern.search(name):
-                return True
-        return False
+        self.execution_plan = execution_plan
 
     def run(self):
         pass

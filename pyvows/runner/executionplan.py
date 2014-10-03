@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+'''The logic PyVows uses to discover contexts and vows'''
+
 import inspect
 import re
 
@@ -14,12 +17,12 @@ class ExecutionPlanner(object):
         plan = {}
         for suiteName, contextClasses in self.suites.iteritems():
             plan[suiteName] = {
-                'contexts': []
+                'contexts': {}
             }
             for contextClass in contextClasses:
                 contextPlan, isRequired = self.plan_context(contextClass, '')
                 if isRequired and not self.is_excluded(contextPlan['name']):
-                    plan[suiteName]['contexts'].append(contextPlan)
+                    plan[suiteName]['contexts'][contextClass.__name__] = contextPlan
         return plan
 
     def is_excluded(self, name):
@@ -45,11 +48,9 @@ class ExecutionPlanner(object):
         context = {
             'name': contextClass.__name__,
             'id': idBase + ('.' if idBase else '') + contextClass.__name__,
-            'contexts': [],
+            'contexts': {},
             'vows': []
         }
-
-        contextRequiredBecauseItContainsVowsOrSubcontexts = False
 
         special_names = set(['setup', 'teardown', 'topic'])
         if hasattr(contextClass, 'ignored_members'):
@@ -66,7 +67,6 @@ class ExecutionPlanner(object):
             and self.is_included(context['id'] + '.' + name)
             and not self.is_excluded(name)
         ]
-        contextRequiredBecauseItContainsVowsOrSubcontexts = bool(context['vows'])
 
         subcontexts = [
             (name, subcontext) for name, subcontext in contextMembers
@@ -76,7 +76,11 @@ class ExecutionPlanner(object):
         for name, subcontext in subcontexts:
             subcontextPlan, subcontextContainsIncludedSubcontexts = self.plan_context(subcontext, context['id'])
             if self.is_included(subcontextPlan['id']) or subcontextContainsIncludedSubcontexts:
-                contextRequiredBecauseItContainsVowsOrSubcontexts = True
-                context['contexts'].append(subcontextPlan)
+                context['contexts'][name] = subcontextPlan
+
+        if self.inclusion_patterns:
+            contextRequiredBecauseItContainsVowsOrSubcontexts = bool(context['contexts']) or bool(context['vows'])
+        else:
+            contextRequiredBecauseItContainsVowsOrSubcontexts = True
 
         return context, contextRequiredBecauseItContainsVowsOrSubcontexts

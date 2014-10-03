@@ -17,33 +17,34 @@ class DiscoveringExecutionTree(Vows.Context):
         def the_tree_matches(self, topic):
             baseline = {
                 'dummySuite': {
-                    'contexts': [
-                        {
+                    'contexts': {
+                        'UnrunnableBatch': {
                             'name': 'UnrunnableBatch',
                             'id': 'UnrunnableBatch',
                             'vows': [],
-                            'contexts': [
-                                {
+                            'contexts': {
+                                'SubA': {
                                     'name': 'SubA',
                                     'id': 'UnrunnableBatch.SubA',
                                     'vows': [],
-                                    'contexts': []
-                                }, {
+                                    'contexts': {}
+                                },
+                                'SubB': {
                                     'name': 'SubB',
                                     'id': 'UnrunnableBatch.SubB',
                                     'vows': ['testB_0'],
-                                    'contexts': [
-                                        {
+                                    'contexts': {
+                                        'SubC': {
                                             'name': 'SubC',
                                             'id': 'UnrunnableBatch.SubB.SubC',
                                             'vows': ['testB1_0', 'testB1_1'],
-                                            'contexts': []
+                                            'contexts': {}
                                         }
-                                    ]
+                                    }
                                 }
-                            ]
+                            }
                         }
-                    ]
+                    }
                 }
             }
             expect(topic).to_equal(baseline)
@@ -60,21 +61,21 @@ class DiscoveringExecutionTree(Vows.Context):
         def the_excluded_context_is_not_included(self, topic):
             baseline = {
                 'dummySuite': {
-                    'contexts': [
-                        {
+                    'contexts': {
+                        'UnrunnableBatch': {
                             'name': 'UnrunnableBatch',
                             'id': 'UnrunnableBatch',
                             'vows': [],
-                            'contexts': [
-                                {
+                            'contexts': {
+                                'SubA': {
                                     'name': 'SubA',
                                     'id': 'UnrunnableBatch.SubA',
                                     'vows': [],
-                                    'contexts': []
+                                    'contexts': {}
                                 }
-                            ]
+                            }
                         }
-                    ]
+                    }
                 }
             }
             expect(topic).to_equal(baseline)
@@ -91,7 +92,7 @@ class DiscoveringExecutionTree(Vows.Context):
         def the_excluded_context_is_not_included(self, topic):
             baseline = {
                 'dummySuite': {
-                    'contexts': []
+                    'contexts': {}
                 }
             }
             expect(topic).to_equal(baseline)
@@ -108,33 +109,34 @@ class DiscoveringExecutionTree(Vows.Context):
         def the_excluded_context_is_not_included(self, topic):
             baseline = {
                 'dummySuite': {
-                    'contexts': [
-                        {
+                    'contexts': {
+                        'UnrunnableBatch': {
                             'name': 'UnrunnableBatch',
                             'id': 'UnrunnableBatch',
                             'vows': [],
-                            'contexts': [
-                                {
+                            'contexts': {
+                                'SubA': {
                                     'name': 'SubA',
                                     'id': 'UnrunnableBatch.SubA',
                                     'vows': [],
-                                    'contexts': []
-                                }, {
+                                    'contexts': {}
+                                },
+                                'SubB': {
                                     'name': 'SubB',
                                     'id': 'UnrunnableBatch.SubB',
                                     'vows': ['testB_0'],
-                                    'contexts': [
-                                        {
+                                    'contexts': {
+                                        'SubC': {
                                             'name': 'SubC',
                                             'id': 'UnrunnableBatch.SubB.SubC',
                                             'vows': [],
-                                            'contexts': []
+                                            'contexts': {}
                                         }
-                                    ]
+                                    }
                                 }
-                            ]
+                            }
                         }
-                    ]
+                    }
                 }
             }
             expect(topic).to_equal(baseline)
@@ -164,21 +166,21 @@ class DiscoveringExecutionTree(Vows.Context):
         def target_context_topic_and_ancestors_topics_are_included(self, topic):
             baseline = {
                 'dummySuite': {
-                    'contexts': [
-                        {
+                    'contexts': {
+                        'UnrunnableBatch': {
                             'name': 'UnrunnableBatch',
                             'id': 'UnrunnableBatch',
                             'vows': [],
-                            'contexts': [
-                                {
+                            'contexts': {
+                                'SubB': {
                                     'name': 'SubB',
                                     'id': 'UnrunnableBatch.SubB',
                                     'vows': [],
-                                    'contexts': []
+                                    'contexts': {}
                                 }
-                            ]
+                            }
                         }
-                    ]
+                    }
                 }
             }
             expect(topic).to_equal(baseline)
@@ -195,28 +197,28 @@ class DiscoveringExecutionTree(Vows.Context):
         def the_only_the_targeted_vow_is_run_on_the_context(self, topic):
             baseline = {
                 'dummySuite': {
-                    'contexts': [
-                        {
+                    'contexts': {
+                        'UnrunnableBatch': {
                             'name': 'UnrunnableBatch',
                             'id': 'UnrunnableBatch',
                             'vows': [],
-                            'contexts': [
-                                {
+                            'contexts': {
+                                'SubB': {
                                     'name': 'SubB',
                                     'id': 'UnrunnableBatch.SubB',
                                     'vows': [],
-                                    'contexts': [
-                                        {
+                                    'contexts': {
+                                        'SubC': {
                                             'name': 'SubC',
                                             'id': 'UnrunnableBatch.SubB.SubC',
                                             'vows': ['testB1_0'],
-                                            'contexts': []
+                                            'contexts': {}
                                         }
-                                    ]
+                                    }
                                 }
-                            ]
+                            }
                         }
-                    ]
+                    }
                 }
             }
             expect(topic).to_equal(baseline)
@@ -233,33 +235,34 @@ class DiscoveringExecutionTree(Vows.Context):
         def the_other_batch_is_not_included(self, topic):
             baseline = {
                 'dummySuite': {
-                    'contexts': [
-                        {
+                    'contexts': {
+                        'UnrunnableBatch': {
                             'name': 'UnrunnableBatch',
                             'id': 'UnrunnableBatch',
                             'vows': [],
-                            'contexts': [
-                                {
+                            'contexts': {
+                                'SubA': {
                                     'name': 'SubA',
                                     'id': 'UnrunnableBatch.SubA',
                                     'vows': [],
-                                    'contexts': []
-                                }, {
+                                    'contexts': {}
+                                },
+                                'SubB': {
                                     'name': 'SubB',
                                     'id': 'UnrunnableBatch.SubB',
                                     'vows': ['testB_0'],
-                                    'contexts': [
-                                        {
+                                    'contexts': {
+                                        'SubC': {
                                             'name': 'SubC',
                                             'id': 'UnrunnableBatch.SubB.SubC',
                                             'vows': ['testB1_0', 'testB1_1'],
-                                            'contexts': []
+                                            'contexts': {}
                                         }
-                                    ]
+                                    }
                                 }
-                            ]
+                            }
                         }
-                    ]
+                    }
                 }
             }
             expect(topic).to_equal(baseline)

@@ -44,26 +44,25 @@ class VowsParallelRunner(VowsRunnerABC):
 
         start_time = time.time()
         result = VowsResult()
-        for suite, batches in self.suites.items():
+        for suiteName, suitePlan in self.execution_plan.iteritems():
+            batches = [batch for batch in self.suites[suiteName] if batch.__name__ in suitePlan['contexts']]
             for batch in batches:
                 self.pool.spawn(
                     self.run_context,
                     result.contexts,
-                    ctx_name=batch.__name__,
-                    ctx_obj=batch(None),
+                    batch.__name__,
+                    batch(None),
+                    suitePlan['contexts'][batch.__name__],
                     index=-1,
-                    suite=suite
+                    suite=suiteName
                 )
 
         self.pool.join()
         result.elapsed_time = elapsed(start_time)
         return result
 
-    def run_context(self, ctx_collection, ctx_name=None, ctx_obj=None, index=-1, suite=None):
+    def run_context(self, ctx_collection, ctx_name, ctx_obj, execution_plan, index=-1, suite=None):
         #   FIXME: Add Docstring
-
-        if self.is_excluded(ctx_name):
-            return
 
         #-----------------------------------------------------------------------
         # Local variables and defs
@@ -135,8 +134,9 @@ class VowsParallelRunner(VowsRunnerABC):
                         subctx_greenlet = self.pool.spawn(
                             self.run_context,
                             ctx_result['contexts'],
-                            ctx_name=subctx_name,
-                            ctx_obj=subctx_obj,
+                            subctx_name,
+                            subctx_obj,
+                            execution_plan['contexts'][subctx_name],
                             index=index,
                             suite=suite or ctx_result['filename']
                         )
@@ -160,17 +160,8 @@ class VowsParallelRunner(VowsRunnerABC):
                 else:
                     _run_vows_and_subcontexts(topic)
 
-            special_names = set(['setup', 'teardown', 'topic'])
-            if hasattr(ctx_obj, 'ignored_members'):
-                special_names.update(ctx_obj.ignored_members)
-
-            # remove any special methods from ctx_members
-            ctx_members = tuple(filter(
-                lambda member: not (member[0] in special_names or member[0].startswith('_')),
-                inspect.getmembers(type(ctx_obj))
-            ))
-            vows = set((vow_name, vow) for vow_name, vow in ctx_members if inspect.ismethod(vow))
-            subcontexts = set((subctx_name, subctx) for subctx_name, subctx in ctx_members if inspect.isclass(subctx))
+            vows = set((vow_name, getattr(type(ctx_obj), vow_name)) for vow_name in execution_plan['vows'])
+            subcontexts = set((subctx_name, getattr(type(ctx_obj), subctx_name)) for subctx_name in execution_plan['contexts'])
 
             if not isinstance(topic, VowsAsyncTopic):
                 _run_with_topic(topic)
@@ -182,17 +173,27 @@ class VowsParallelRunner(VowsRunnerABC):
         def _run_teardown():
             try:
                 for blocker in teardown_blockers:
-                    if blocker:  # Excluded vows return None from _run_vow
-                        blocker.join()
+                    blocker.join()
                 ctx_obj.teardown()
             except Exception:
                 raise VowsTopicError('teardown', sys.exc_info())
+
+        def _update_execution_plan():
+            '''Since Context.ignore can modify the ignored_members during setup or topic,
+                update the execution_plan to reflect the new ignored_members'''
+
+            for name in ctx_obj.ignored_members:
+                if name in execution_plan['vows']:
+                    execution_plan['vows'].remove(name)
+                if name in execution_plan['contexts']:
+                    del execution_plan['contexts'][name]
 
         #-----------------------------------------------------------------------
         # Begin
         #-----------------------------------------------------------------------
         try:
             topic = _run_setup_and_topic(ctx_obj, index)
+            _update_execution_plan()
             # Only run tests & teardown if setup & topic run without errors
             _run_tests(topic)
             _run_teardown()
@@ -203,6 +204,4 @@ class VowsParallelRunner(VowsRunnerABC):
 
     def _run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated=False):
         #   FIXME: Add Docstring
-        if self.is_excluded(vow_name):
-            return
         return self.pool.spawn(self.run_vow, tests_collection, topic, ctx_obj, vow, vow_name, enumerated)

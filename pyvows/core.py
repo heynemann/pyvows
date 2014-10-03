@@ -12,12 +12,14 @@
 import os
 import sys
 import warnings
+import copy
 
 import preggy
 
 from pyvows import utils
 from pyvows.decorators import _batch, async_topic, capture_error
 from pyvows.runner import VowsRunner
+from pyvows.runner.executionplan import ExecutionPlanner
 
 #-------------------------------------------------------------------------------------------------
 
@@ -39,6 +41,7 @@ class Vows(object):
     '''
     suites = dict()
     exclusion_patterns = set()
+    inclusion_patterns = set()
 
     class Context(object):
         '''Extend this class to create your test classes.  (The convention is to
@@ -64,6 +67,7 @@ class Vows(object):
             self.topic_value = None
             self.index = -1
             self.generated_topic = False
+            self.ignored_members = copy.copy(self.ignored_members)
 
         def _get_first_available_topic(self, index=-1):
             if self.topic_value:
@@ -158,16 +162,23 @@ class Vows(object):
         cls.exclusion_patterns = test_name_pattern
 
     @classmethod
+    def include(cls, test_name_pattern):
+        cls.inclusion_patterns = test_name_pattern
+
+    @classmethod
     def run(cls, on_vow_success, on_vow_error):
         #   FIXME: Add Docstring
         #
         #       *   Used by `run()` in `cli.py`
         #       *   Please add a useful description if you wrote this! :)
+
+        execution_plan = ExecutionPlanner(cls.suites, set(cls.exclusion_patterns), set(cls.inclusion_patterns)).plan()
+
         runner = VowsRunner(
             cls.suites,
             cls.Context,
             on_vow_success,
             on_vow_error,
-            cls.exclusion_patterns
+            execution_plan
         )
         return runner.run()
