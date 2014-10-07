@@ -51,7 +51,8 @@ class Messages(object):  # pragma: no cover
     cover_report = 'Store coverage report as %(metavar)s. (default: %(default)r)'
     xunit_output = 'Enable XUnit output. (default: %(default)s)'
     xunit_file = 'Store XUnit output as %(metavar)s. (default: %(default)r)'
-    exclude = 'Exclude tests and contexts that match regex-pattern %(metavar)s'
+    exclude = 'Exclude tests and contexts that match regex-pattern %(metavar)s [Mutually exclusive with --include]'
+    include = 'Include only tests and contexts that match regex-pattern %(metavar)s [Mutually exclusive with --exclude]'
     profile = 'Prints the 10 slowest topics. (default: %(default)s)'
     profile_threshold = 'Tests taking longer than %(metavar)s seconds are considered slow. (default: %(default)s)'
     no_color = 'Turn off colorized output. (default: %(default)s)'
@@ -73,6 +74,7 @@ class Parser(argparse.ArgumentParser):
 
         ### Filtering
         self.add_argument('-e', '--exclude', action='append', default=[], help=Messages.exclude, metavar=metavar('exclude'))
+        self.add_argument('-i', '--include', action='append', default=[], help=Messages.include, metavar=metavar('include'))
 
         ### Coverage
         cover_group = self.add_argument_group('Test Coverage')
@@ -123,7 +125,7 @@ class Parser(argparse.ArgumentParser):
         self.add_argument('path', nargs='?', default=os.curdir, help=Messages.path)
 
 
-def run(path, pattern, verbosity, show_progress, exclusion_patterns=None):
+def run(path, pattern, verbosity, show_progress, exclusion_patterns=None, inclusion_patterns=None):
     #   FIXME: Add Docstring
 
     # This calls Vows.run(), which then calls VowsRunner.run()
@@ -133,6 +135,8 @@ def run(path, pattern, verbosity, show_progress, exclusion_patterns=None):
 
     if exclusion_patterns:
         Vows.exclude(exclusion_patterns)
+    if inclusion_patterns:
+        Vows.include(inclusion_patterns)
 
     Vows.collect(path, pattern)
 
@@ -174,10 +178,8 @@ def main():
         cov.erase()
         cov.start()
 
-    prune = arguments.exclude
-
     verbosity = len(arguments.verbosity) if arguments.verbosity else 2
-    result = run(path, pattern, verbosity, arguments.progress, prune)
+    result = run(path, pattern, verbosity, arguments.progress, arguments.exclude, arguments.include)
     reporter = VowsDefaultReporter(result, verbosity)
 
     # Print test results first

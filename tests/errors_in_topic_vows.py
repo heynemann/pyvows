@@ -9,6 +9,8 @@
 # Copyright (c) 2013 Richard Lupton r.lupton@gmail.com
 
 from pyvows import Vows, expect
+from pyvows.runner import VowsRunner
+from pyvows.runner.executionplan import ExecutionPlanner
 
 
 # These tests demonstrate what happens when the topic function raises
@@ -37,14 +39,9 @@ class ErrorsInTopicFunction(Vows.Context):
 
     class WhenTopicRaisesAnUnexpectedException:
         def topic(self):
-            from pyvows.runner import VowsRunner
-            runner = VowsRunner(
-                {'dummySuite': set([WhenTopicRaisesAnException])},
-                Vows.Context,
-                None,
-                None,
-                set()
-            )
+            dummySuite = {'dummySuite': set([WhenTopicRaisesAnException])}
+            execution_plan = ExecutionPlanner(dummySuite, set(), set()).plan()
+            runner = VowsRunner(dummySuite, Vows.Context, None, None, execution_plan)
             return runner.run()
 
         def results_are_not_successful(self, topic):
@@ -55,14 +52,9 @@ class ErrorsInTopicFunction(Vows.Context):
 
     class WhenSubcontextTopicRaisesAnException:
         def topic(self):
-            from pyvows.runner import VowsRunner
-            runner = VowsRunner(
-                {'dummySuite': set([WhenTeardownIsDefined])},
-                Vows.Context,
-                None,
-                None,
-                set(['excluded_vows_do_not_block'])
-            )
+            dummySuite = {'dummySuite': set([WhenTeardownIsDefined])}
+            execution_plan = ExecutionPlanner(dummySuite, set(), set(['excluded_vows_do_not_block'])).plan()
+            runner = VowsRunner(dummySuite, Vows.Context, None, None, execution_plan)
             return runner.run()
 
         def results_are_not_successful(self, topic):
