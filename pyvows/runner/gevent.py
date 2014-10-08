@@ -94,12 +94,12 @@ class VowsParallelRunner(VowsRunnerABC):
 
             try:
                 topic_func = ctx_obj.topic
+                if topic_func is None:
+                    return None
+
                 topic_list = get_topics_for(topic_func, ctx_obj)
 
                 start_time = time.time()
-
-                if topic_func is None:
-                    return None
 
                 topic = topic_func(*topic_list)
                 ctx_result['topic_elapsed'] = elapsed(start_time)
