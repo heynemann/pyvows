@@ -84,6 +84,11 @@ class XUnitReporterVows(Vows.Context):
 
     class WhenShowingATopicError(Vows.Context):
         def topic(self):
+            try:
+                raise Exception('asdf')
+            except:
+                test_exc_info = sys.exc_info()
+
             result = ResultMock()
             result.successful_tests = 1
             result.errored_tests = 0
@@ -93,7 +98,7 @@ class XUnitReporterVows(Vows.Context):
                 {
                     'name': 'Context1',
                     'tests': [],
-                    'error': VowsTopicError('topic', sys.exc_info()),
+                    'error': VowsTopicError('topic', test_exc_info),
                     'contexts': []
                 }
             ]
@@ -107,6 +112,8 @@ class XUnitReporterVows(Vows.Context):
             def topic(self, testcase):
                 return testcase.firstChild
 
-            def should_have_exception_attributes(self, topic):
-                expect(topic.getAttribute('type')).to_equal('VowsTopicError')
-                expect(topic.getAttribute('message')).to_equal('Error in topic')
+            def should_have_original_exception_type(self, topic):
+                expect(topic.getAttribute('type')).to_equal('Exception')
+
+            def should_have_original_exception_message(self, topic):
+                expect(topic.getAttribute('message')).to_equal('Error in topic: asdf')

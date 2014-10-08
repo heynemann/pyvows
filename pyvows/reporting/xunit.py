@@ -75,11 +75,11 @@ class XUnitReporter(object):
         topic_node.setAttribute('time', '0.0')
         if context.get('error', None):
             e = context['error']
-            error_msg = 'Error in {0!s}'.format(e.source)
+            error_msg = 'Error in {0!s}: {1!s}'.format(e.source, e.exc_info[1])
             error_tb = traceback.format_exception(*e.exc_info)
 
             failure_node = document.createElement('failure')
-            failure_node.setAttribute('type', e.__class__.__name__)
+            failure_node.setAttribute('type', e.exc_info[0].__name__)
             failure_node.setAttribute('message', error_msg)
             failure_text = document.createTextNode(''.join(error_tb))
             failure_node.appendChild(failure_text)
