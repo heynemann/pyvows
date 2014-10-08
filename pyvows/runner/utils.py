@@ -42,7 +42,8 @@ def get_topics_for(topic_function, ctx_obj):
     code = get_code_for(topic_function)
  
     if not code:
-        raise RuntimeError('Function %s does not have a code property')
+        raise RuntimeError(
+            'Function %s does not have a code property' % topic_function)
  
     expected_args = code.co_argcount - 1
  
