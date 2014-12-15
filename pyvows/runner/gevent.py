@@ -14,8 +14,15 @@ from __future__ import absolute_import
 import inspect
 import sys
 import time
+import StringIO
+try:
+    from colorama.ansitowin32 import AnsiToWin32
+except ImportError:
+    def AnsiToWin32(*args, **kwargs):
+        return args[0]
 
 from gevent.pool import Pool
+import gevent.local
 
 from pyvows.async_topic import VowsAsyncTopic, VowsAsyncTopicValue
 from pyvows.runner.utils import get_topics_for
@@ -26,11 +33,29 @@ from pyvows.runner.abc import VowsRunnerABC, VowsTopicError
 #-----------------------------------------------------------------------------
 
 
+class _LocalOutput(gevent.local.local):
+    def __init__(self):
+        self.__dict__['stdout'] = StringIO.StringIO()
+        self.__dict__['stderr'] = StringIO.StringIO()
+
+
+class _StreamCapture(object):
+    def __init__(self, streamName):
+        self.__streamName = streamName
+
+    def __getattr__(self, name):
+        return getattr(getattr(VowsParallelRunner.output, self.__streamName), name)
+
+
 class VowsParallelRunner(VowsRunnerABC):
     #   FIXME: Add Docstring
 
     # Class is called from `pyvows.core:Vows.run()`,
     # which is called from `pyvows.cli.run()`
+
+    output = _LocalOutput()
+    orig_stdout = sys.stdout
+    orig_stderr = sys.stderr
 
     def __init__(self, *args, **kwargs):
         super(VowsParallelRunner, self).__init__(*args, **kwargs)
@@ -44,20 +69,26 @@ class VowsParallelRunner(VowsRunnerABC):
 
         start_time = time.time()
         result = VowsResult()
-        for suiteName, suitePlan in self.execution_plan.iteritems():
-            batches = [batch for batch in self.suites[suiteName] if batch.__name__ in suitePlan['contexts']]
-            for batch in batches:
-                self.pool.spawn(
-                    self.run_context,
-                    result.contexts,
-                    batch.__name__,
-                    batch(None),
-                    suitePlan['contexts'][batch.__name__],
-                    index=-1,
-                    suite=suiteName
-                )
+        if self.capture_output:
+            self._capture_streams(self.capture_output)
+        try:
+            for suiteName, suitePlan in self.execution_plan.iteritems():
+                batches = [batch for batch in self.suites[suiteName] if batch.__name__ in suitePlan['contexts']]
+                for batch in batches:
+                    self.pool.spawn(
+                        self.run_context,
+                        result.contexts,
+                        batch.__name__,
+                        batch(None),
+                        suitePlan['contexts'][batch.__name__],
+                        index=-1,
+                        suite=suiteName
+                    )
 
-        self.pool.join()
+            self.pool.join()
+        finally:
+            self._capture_streams(False)
+
         result.elapsed_time = elapsed(start_time)
         return result
 
@@ -73,7 +104,7 @@ class VowsParallelRunner(VowsRunnerABC):
             'tests': [],
             'contexts': [],
             'topic_elapsed': 0,
-            'error': None,
+            'error': None
         }
 
         ctx_collection.append(ctx_result)
@@ -201,7 +232,23 @@ class VowsParallelRunner(VowsRunnerABC):
             e = sys.exc_info()[1]
             ctx_obj.topic_error = e   # is this needed still?
             ctx_result['error'] = e
+        finally:
+            ctx_result['stdout'] = VowsParallelRunner.output.stdout.getvalue()
+            ctx_result['stderr'] = VowsParallelRunner.output.stderr.getvalue()
+
+    def _capture_streams(self, capture):
+        if capture:
+            sys.stdout = AnsiToWin32(_StreamCapture('stdout'), convert=False, strip=True)
+            sys.stderr = AnsiToWin32(_StreamCapture('stderr'), convert=False, strip=True)
+        else:
+            sys.stdout = VowsParallelRunner.orig_stdout
+            sys.stderr = VowsParallelRunner.orig_stderr
 
     def _run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated=False):
         #   FIXME: Add Docstring
         return self.pool.spawn(self.run_vow, tests_collection, topic, ctx_obj, vow, vow_name, enumerated)
+
+    def run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated=False):
+        results = super(VowsParallelRunner, self).run_vow(tests_collection, topic, ctx_obj, vow, vow_name, enumerated=enumerated)
+        results['stdout'] = VowsParallelRunner.output.stdout.getvalue()
+        results['stderr'] = VowsParallelRunner.output.stderr.getvalue()
