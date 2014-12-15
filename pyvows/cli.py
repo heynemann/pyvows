@@ -58,6 +58,7 @@ class Messages(object):  # pragma: no cover
     no_color = 'Turn off colorized output. (default: %(default)s)'
     progress = 'Show progress ticks during testing. (default: %(default)s)'
     template = 'Print a PyVows test file template. (Disables testing)'
+    capture_output = 'Capture stdout and stderr during test execution (default: %(default)s)'
 
 
 class Parser(argparse.ArgumentParser):
@@ -120,12 +121,13 @@ class Parser(argparse.ArgumentParser):
         self.add_argument('--no-color', action='store_true', default=False, help=Messages.no_color)
         self.add_argument('--progress', action='store_true', dest='progress', default=False, help=Messages.progress)
         self.add_argument('--version', action='version', version='%(prog)s {0}'.format(version.to_str()))
+        self.add_argument('--capture-output', action='store_true', default=False, help=Messages.capture_output)
         self.add_argument('-v', action='append_const', dest='verbosity', const=1, help=Messages.verbosity)
 
         self.add_argument('path', nargs='?', default=os.curdir, help=Messages.path)
 
 
-def run(path, pattern, verbosity, show_progress, exclusion_patterns=None, inclusion_patterns=None):
+def run(path, pattern, verbosity, show_progress, exclusion_patterns=None, inclusion_patterns=None, capture_output=False):
     #   FIXME: Add Docstring
 
     # This calls Vows.run(), which then calls VowsRunner.run()
@@ -142,7 +144,7 @@ def run(path, pattern, verbosity, show_progress, exclusion_patterns=None, inclus
 
     on_success = show_progress and VowsDefaultReporter.on_vow_success or None
     on_error = show_progress and VowsDefaultReporter.on_vow_error or None
-    result = Vows.run(on_success, on_error)
+    result = Vows.run(on_success, on_error, capture_output)
 
     return result
 
@@ -179,7 +181,15 @@ def main():
         cov.start()
 
     verbosity = len(arguments.verbosity) if arguments.verbosity else 2
-    result = run(path, pattern, verbosity, arguments.progress, arguments.exclude, arguments.include)
+    result = run(
+        path,
+        pattern,
+        verbosity,
+        arguments.progress,
+        exclusion_patterns=arguments.exclude,
+        inclusion_patterns=arguments.include,
+        capture_output=arguments.capture_output
+    )
     reporter = VowsDefaultReporter(result, verbosity)
 
     # Print test results first

@@ -14,6 +14,10 @@ from datetime import datetime
 import socket
 import traceback
 from xml.dom.minidom import Document
+import re
+
+INVALID_CHARACTERS = re.compile(r"[\000-\010\013\014\016-\037]")
+INVALID_CHARACTERS = re.compile(r"[\000]")
 
 
 class XUnitReporter(object):
@@ -66,6 +70,9 @@ class XUnitReporter(object):
 
         return document
 
+    def _safe_cdata(self, str):
+        return INVALID_CHARACTERS.sub('', str)
+
     def create_test_case_elements(self, document, parent_node, context):
         #   FIXME: Add Docstring
 
@@ -73,6 +80,15 @@ class XUnitReporter(object):
         topic_node.setAttribute('classname', context['name'])
         topic_node.setAttribute('name', 'topic')
         topic_node.setAttribute('time', '0.0')
+        stdOutNode = document.createElement('system-out')
+        stdOutText = document.createCDATASection(self._safe_cdata(context['stdout']))
+        stdOutNode.appendChild(stdOutText)
+        stdErrNode = document.createElement('system-err')
+        stdErrText = document.createCDATASection(self._safe_cdata(context['stderr']))
+        stdErrNode.appendChild(stdErrText)
+
+        topic_node.appendChild(stdOutNode)
+        topic_node.appendChild(stdErrNode)
         if context.get('error', None):
             e = context['error']
             error_msg = 'Error in {0!s}: {1!s}'.format(e.source, e.exc_info[1])
@@ -97,6 +113,16 @@ class XUnitReporter(object):
             testcase_node.setAttribute('classname', str(test_stats['context']))
             testcase_node.setAttribute('name', str(test_stats['name']))
             testcase_node.setAttribute('time', '{time:.3f}'.format(time=test_stats['taken']))
+
+            stdOutNode = document.createElement('system-out')
+            stdOutText = document.createCDATASection(self._safe_cdata(test['stdout']))
+            stdOutNode.appendChild(stdOutText)
+            stdErrNode = document.createElement('system-err')
+            stdErrText = document.createCDATASection(self._safe_cdata(test['stderr']))
+            stdErrNode.appendChild(stdErrText)
+
+            testcase_node.appendChild(stdOutNode)
+            testcase_node.appendChild(stdErrNode)
             parent_node.appendChild(testcase_node)
 
             if not test['succeeded']:
@@ -106,10 +132,6 @@ class XUnitReporter(object):
                     error['value'],
                     error['traceback']
                 )
-
-                if isinstance(test['topic'], Exception):
-                    exc_type, exc_value, exc_traceback = test['context_instance'].topic_error
-                    error_msg += traceback.format_exception(exc_type, exc_value, exc_traceback)
 
                 error_data = {
                     'errtype': error['type'].__name__,
