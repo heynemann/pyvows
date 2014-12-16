@@ -19,7 +19,7 @@ class ResultMock():
 
 
 @Vows.batch
-class XUnitReporterVows(Vows.Context):
+class XunitReporterVows(Vows.Context):
 
     class WhenShowingZeroTests(Vows.Context):
         def topic(self):
@@ -59,28 +59,69 @@ class XUnitReporterVows(Vows.Context):
                     'tests': [
                         {
                             'name': 'Test1',
-                            'succeeded': True
+                            'succeeded': True,
+                            'stdout': 'outline',
+                            'stderr': 'errline'
                         }
                     ],
-                    'contexts': []
+                    'contexts': [],
+                    'stdout': 'outline',
+                    'stderr': 'errline'
                 }
             ]
             reporter = XUnitReporter(result)
             return reporter.create_report_document().firstChild
 
-        def should_create_a_testcase_node(self, topic):
-            expect(topic.firstChild.nodeName).to_equal('testcase')
-
         def should_create_topic_and_test_node(self, topic):
             expect(len(topic.childNodes)).to_equal(2)
 
-        def should_set_classname_for_context(self, topic):
-            classnames = [node.getAttribute('classname') for node in topic.childNodes]
-            expect(classnames).to_equal(['Context1', 'Context1'])
+        class TopicTestcase(Vows.Context):
+            def topic(self, suiteNode):
+                return [node for node in suiteNode.childNodes if node.getAttribute('name') == 'topic'][0]
 
-        def should_set_name_for_context(self, topic):
-            names = sorted([node.getAttribute('name') for node in topic.childNodes])
-            expect(names).to_equal(['Test1', 'topic'])
+            def node_name_is_testcase(self, topic):
+                expect(topic.nodeName).to_equal('testcase')
+
+            def classname_attribute_is_context1(self, topic):
+                expect(topic.getAttribute('classname')).to_equal('Context1')
+
+            class OutputNode(Vows.Context):
+                def topic(self, testcaseNode):
+                    return [node for node in testcaseNode.childNodes if node.nodeName == 'system-out'][0]
+
+                def has_text_outline(self, topic):
+                    expect(topic.firstChild.data).to_equal('outline')
+
+            class ErrorNode(Vows.Context):
+                def topic(self, testcaseNode):
+                    return [node for node in testcaseNode.childNodes if node.nodeName == 'system-err'][0]
+
+                def has_text_errline(self, topic):
+                    expect(topic.firstChild.data).to_equal('errline')
+
+        class Test1Testcase(Vows.Context):
+            def topic(self, suiteNode):
+                return [node for node in suiteNode.childNodes if node.getAttribute('name') == 'Test1'][0]
+
+            def node_name_is_testcase(self, topic):
+                expect(topic.nodeName).to_equal('testcase')
+
+            def classname_attribute_is_context1(self, topic):
+                expect(topic.getAttribute('classname')).to_equal('Context1')
+
+            class OutputNode(Vows.Context):
+                def topic(self, testcaseNode):
+                    return [node for node in testcaseNode.childNodes if node.nodeName == 'system-out'][0]
+
+                def has_text_outline(self, topic):
+                    expect(topic.firstChild.data).to_equal('outline')
+
+            class ErrorNode(Vows.Context):
+                def topic(self, testcaseNode):
+                    return [node for node in testcaseNode.childNodes if node.nodeName == 'system-err'][0]
+
+                def has_text_errline(self, topic):
+                    expect(topic.firstChild.data).to_equal('errline')
 
     class WhenShowingATopicError(Vows.Context):
         def topic(self):
@@ -99,21 +140,72 @@ class XUnitReporterVows(Vows.Context):
                     'name': 'Context1',
                     'tests': [],
                     'error': VowsTopicError('topic', test_exc_info),
-                    'contexts': []
+                    'contexts': [],
+                    'stdout': '',
+                    'stderr': ''
                 }
             ]
             reporter = XUnitReporter(result)
             return reporter.create_report_document().firstChild.firstChild
 
-        def should_create_a_failing_test_for_topic(self, topic):
-            expect(len(topic.childNodes)).to_equal(1)
-
         class FailureNodeForTopic(Vows.Context):
-            def topic(self, testcase):
-                return testcase.firstChild
+            def topic(self, testcaseNode):
+                return [node for node in testcaseNode.childNodes if node.nodeName == 'failure'][0]
 
             def should_have_original_exception_type(self, topic):
                 expect(topic.getAttribute('type')).to_equal('Exception')
 
             def should_have_original_exception_message(self, topic):
                 expect(topic.getAttribute('message')).to_equal('Error in topic: asdf')
+
+    class WhenATopicIsACapturedExceptionAndAVowFails(Vows.Context):
+        def topic(self):
+            try:
+                raise Exception('fdsa')
+            except:
+                test_exc_info = sys.exc_info()
+
+            result = ResultMock()
+            result.successful_tests = 1
+            result.errored_tests = 1
+            result.total_test_count = 2
+            result.elapsed_time = 0
+            result.contexts = [
+                {
+                    'name': 'ContextWithCapturedError',
+                    'error': None,
+                    'contexts': [],
+                    'stdout': '',
+                    'stderr': '',
+                    'tests': [{
+                        'context_instance': Vows.Context(),
+                        'name': 'failedCheckOnException',
+                        'enumerated': False,
+                        'result': None,
+                        'topic': Exception('fdsa'),
+                        'error': dict(zip(['type', 'value', 'traceback'], test_exc_info)),
+                        'succeeded': False,
+                        'file': 'asdf.py',
+                        'lineno': 1,
+                        'elapsed': 0,
+                        'stdout': '',
+                        'stderr': ''
+                    }]
+                }
+            ]
+            reporter = XUnitReporter(result)
+            return reporter.create_report_document().firstChild
+
+        class TestcaseForTest(Vows.Context):
+            def topic(self, suiteNode):
+                return [node for node in suiteNode.childNodes if node.getAttribute('name') == 'failedCheckOnException'][0]
+
+            class FailureNodeForTopic(Vows.Context):
+                def topic(self, testcaseNode):
+                    return [node for node in testcaseNode.childNodes if node.nodeName == 'failure'][0]
+
+                def should_have_original_exception_type(self, topic):
+                    expect(topic.getAttribute('type')).to_equal('Exception')
+
+                def should_have_original_exception_message(self, topic):
+                    expect(topic.getAttribute('message')).to_equal('fdsa')

@@ -41,7 +41,7 @@ class ErrorsInTopicFunction(Vows.Context):
         def topic(self):
             dummySuite = {'dummySuite': set([WhenTopicRaisesAnException])}
             execution_plan = ExecutionPlanner(dummySuite, set(), set()).plan()
-            runner = VowsRunner(dummySuite, Vows.Context, None, None, execution_plan)
+            runner = VowsRunner(dummySuite, Vows.Context, None, None, execution_plan, False)
             return runner.run()
 
         def results_are_not_successful(self, topic):
@@ -54,7 +54,7 @@ class ErrorsInTopicFunction(Vows.Context):
         def topic(self):
             dummySuite = {'dummySuite': set([WhenTeardownIsDefined])}
             execution_plan = ExecutionPlanner(dummySuite, set(), set(['excluded_vows_do_not_block'])).plan()
-            runner = VowsRunner(dummySuite, Vows.Context, None, None, execution_plan)
+            runner = VowsRunner(dummySuite, Vows.Context, None, None, execution_plan, False)
             return runner.run()
 
         def results_are_not_successful(self, topic):
