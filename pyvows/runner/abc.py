@@ -20,12 +20,13 @@ from pyvows.utils import elapsed
 
 class VowsRunnerABC(object):
 
-    def __init__(self, suites, context_class, on_vow_success, on_vow_error, execution_plan):
+    def __init__(self, suites, context_class, on_vow_success, on_vow_error, execution_plan, capture_output=False):
         self.suites = suites  # a suite is a file with pyvows tests
         self.context_class = context_class
         self.on_vow_success = on_vow_success
         self.on_vow_error = on_vow_error
         self.execution_plan = execution_plan
+        self.capture_output = capture_output
 
     def run(self):
         pass
