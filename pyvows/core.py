@@ -17,7 +17,7 @@ import copy
 import preggy
 
 from pyvows import utils
-from pyvows.decorators import _batch, async_topic, capture_error
+from pyvows.decorators import _batch, async_topic, capture_error, skip_if
 from pyvows.runner import VowsRunner
 from pyvows.runner.executionplan import ExecutionPlanner
 
@@ -127,6 +127,14 @@ class Vows(object):
         return capture_error(topic_func)
 
     @staticmethod
+    def skip_if(condition, reason):
+        return skip_if(condition, reason)
+
+    @staticmethod
+    def skip(reason):
+        return skip_if(True, reason)
+
+    @staticmethod
     def batch(ctx_class):
         '''Class decorator.  Use on subclasses of `Vows.Context`.
 
@@ -141,7 +149,7 @@ class Vows(object):
         if suite not in Vows.suites:
             Vows.suites[suite] = set()
         Vows.suites[suite].add(ctx_class)
-        _batch(ctx_class)
+        return _batch(ctx_class)
 
     @classmethod
     def collect(cls, path, pattern):

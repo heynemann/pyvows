@@ -13,6 +13,7 @@ from __future__ import division, print_function
 
 import re
 import traceback
+import sys
 
 from pyvows.color import yellow, green, red, bold
 
@@ -56,6 +57,7 @@ class VowsReporter(object):
 
     HONORED = green('✓')
     BROKEN = red('✗')
+    SKIPPED = '?'
     TAB = '  '
 
     def __init__(self, result, verbosity):
@@ -148,7 +150,7 @@ class VowsReporter(object):
     #-------------------------------------------------------------------------
     #   Printing Methods
     #-------------------------------------------------------------------------
-    def humanized_print(self, msg, indentation=None):
+    def humanized_print(self, msg, indentation=None, file=sys.stdout):
         '''Passes `msg` through multiple text filters to make the output
         appear more like normal text, then prints it (indented by
         `indentation`).
@@ -161,20 +163,20 @@ class VowsReporter(object):
         msg = msg.capitalize()
         msg = self.format_python_constants(msg)
 
-        print(self.indent_msg(msg, indentation))
+        print(self.indent_msg(msg, indentation), file=file)
 
-    def print_traceback(self, err_type, err_obj, err_traceback):
+    def print_traceback(self, err_type, err_obj, err_traceback, file=sys.stdout):
         '''Prints a color-formatted traceback with appropriate indentation.'''
         if isinstance(err_obj, AssertionError):
             error_msg = err_obj
         else:
             error_msg = unicode(err_obj)
 
-        print(self.indent_msg(red(error_msg)))
+        print(self.indent_msg(red(error_msg)), file=file)
 
         if self.verbosity >= V_NORMAL:
             traceback_msg = traceback.format_exception(err_type, err_obj, err_traceback)
             traceback_msg = self.format_traceback(traceback_msg)
             traceback_msg = '\n{traceback}'.format(traceback=traceback_msg)
             traceback_msg = self.indent_msg(yellow(traceback_msg))
-            print(traceback_msg)
+            print(traceback_msg, file=file)

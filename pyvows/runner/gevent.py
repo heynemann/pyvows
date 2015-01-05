@@ -29,6 +29,7 @@ from pyvows.runner.utils import get_topics_for
 from pyvows.result import VowsResult
 from pyvows.utils import elapsed
 from pyvows.runner.abc import VowsRunnerABC, VowsTopicError
+from pyvows.runner import SkipTest
 
 #-----------------------------------------------------------------------------
 
@@ -92,7 +93,7 @@ class VowsParallelRunner(VowsRunnerABC):
         result.elapsed_time = elapsed(start_time)
         return result
 
-    def run_context(self, ctx_collection, ctx_name, ctx_obj, execution_plan, index=-1, suite=None):
+    def run_context(self, ctx_collection, ctx_name, ctx_obj, execution_plan, index=-1, suite=None, skipReason=None):
         #   FIXME: Add Docstring
 
         #-----------------------------------------------------------------------
@@ -104,7 +105,8 @@ class VowsParallelRunner(VowsRunnerABC):
             'tests': [],
             'contexts': [],
             'topic_elapsed': 0,
-            'error': None
+            'error': None,
+            'skip': skipReason
         }
 
         ctx_collection.append(ctx_result)
@@ -113,6 +115,10 @@ class VowsParallelRunner(VowsRunnerABC):
         teardown_blockers = []
 
         def _run_setup_and_topic(ctx_obj, index):
+            # If we're already mid-skip, don't run anything
+            if skipReason:
+                raise skipReason
+
             # Run setup function
             try:
                 ctx_obj.setup()
@@ -135,7 +141,8 @@ class VowsParallelRunner(VowsRunnerABC):
                 topic = topic_func(*topic_list)
                 ctx_result['topic_elapsed'] = elapsed(start_time)
                 return topic
-
+            except SkipTest:
+                raise
             except Exception:
                 raise VowsTopicError('topic', sys.exc_info())
 
@@ -144,14 +151,19 @@ class VowsParallelRunner(VowsRunnerABC):
                 def _run_vows_and_subcontexts(topic, index=-1, enumerated=False):
                     # methods
                     for vow_name, vow in vows:
-                        vow_greenlet = self._run_vow(
-                            ctx_result['tests'],
-                            topic,
-                            ctx_obj,
-                            vow,
-                            vow_name,
-                            enumerated=enumerated)
-                        teardown_blockers.append(vow_greenlet)
+                        if skipReason:
+                            skipped_result = self.get_vow_result(vow, topic, ctx_obj, vow_name, enumerated)
+                            skipped_result['skip'] = skipReason
+                            ctx_result['tests'].append(skipped_result)
+                        else:
+                            vow_greenlet = self._run_vow(
+                                ctx_result['tests'],
+                                topic,
+                                ctx_obj,
+                                vow,
+                                vow_name,
+                                enumerated=enumerated)
+                            teardown_blockers.append(vow_greenlet)
 
                     # classes
                     for subctx_name, subctx in subcontexts:
@@ -169,7 +181,8 @@ class VowsParallelRunner(VowsRunnerABC):
                             subctx_obj,
                             execution_plan['contexts'][subctx_name],
                             index=index,
-                            suite=suite or ctx_result['filename']
+                            suite=suite or ctx_result['filename'],
+                            skipReason=skipReason
                         )
                         teardown_blockers.append(subctx_greenlet)
 
@@ -223,15 +236,20 @@ class VowsParallelRunner(VowsRunnerABC):
         # Begin
         #-----------------------------------------------------------------------
         try:
-            topic = _run_setup_and_topic(ctx_obj, index)
-            _update_execution_plan()
-            # Only run tests & teardown if setup & topic run without errors
+            try:
+                topic = _run_setup_and_topic(ctx_obj, index)
+                _update_execution_plan()
+            except SkipTest, se:
+                ctx_result['skip'] = se
+                skipReason = se
+                topic = None
+            except VowsTopicError, e:
+                ctx_result['error'] = e
+                skipReason = SkipTest('topic dependency failed')
+                topic = None
             _run_tests(topic)
-            _run_teardown()
-        except VowsTopicError:
-            e = sys.exc_info()[1]
-            ctx_obj.topic_error = e   # is this needed still?
-            ctx_result['error'] = e
+            if not ctx_result['error']:
+                _run_teardown()
         finally:
             ctx_result['stdout'] = VowsParallelRunner.output.stdout.getvalue()
             ctx_result['stderr'] = VowsParallelRunner.output.stderr.getvalue()

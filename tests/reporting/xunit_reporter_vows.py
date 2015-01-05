@@ -26,6 +26,7 @@ class XunitReporterVows(Vows.Context):
             result = ResultMock()
             result.successful_tests = 0
             result.errored_tests = 0
+            result.skipped_tests = 0
             result.total_test_count = 0
             result.elapsed_time = 0
             result.contexts = []
@@ -37,7 +38,7 @@ class XunitReporterVows(Vows.Context):
 
         def should_have_a_testsuite_node(self, topic):
             expect(topic.to_xml()).to_match(r'.*<testsuite errors="0" failures="0" hostname=".+?" ' +
-                                            'name="pyvows" tests="0" time="0\.000" timestamp=".+?"/>')
+                                            'name="pyvows" skip="0" tests="0" time="0\.000" timestamp=".+?"/>')
 
         class WithDocument(Vows.Context):
             def topic(self, topic):
@@ -51,6 +52,7 @@ class XunitReporterVows(Vows.Context):
             result = ResultMock()
             result.successful_tests = 1
             result.errored_tests = 0
+            result.skipped_tests = 0
             result.total_test_count = 1
             result.elapsed_time = 0
             result.contexts = [
@@ -133,6 +135,7 @@ class XunitReporterVows(Vows.Context):
             result = ResultMock()
             result.successful_tests = 1
             result.errored_tests = 0
+            result.skipped_tests = 0
             result.total_test_count = 1
             result.elapsed_time = 0
             result.contexts = [
@@ -168,6 +171,7 @@ class XunitReporterVows(Vows.Context):
             result = ResultMock()
             result.successful_tests = 1
             result.errored_tests = 1
+            result.skipped_tests = 0
             result.total_test_count = 2
             result.elapsed_time = 0
             result.contexts = [

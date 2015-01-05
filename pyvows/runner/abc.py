@@ -14,6 +14,7 @@ import time
 
 from pyvows.runner.utils import get_file_info_for
 from pyvows.utils import elapsed
+from pyvows.runner import SkipTest
 
 #-------------------------------------------------------------------------------------------------
 
@@ -34,10 +35,7 @@ class VowsRunnerABC(object):
     def run_context(self):
         pass
 
-    def run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated):
-        #   FIXME: Add Docstring
-
-        start_time = time.time()
+    def get_vow_result(self, vow, topic, ctx_obj, vow_name, enumerated):
         filename, lineno = get_file_info_for(vow)
 
         vow_result = {
@@ -47,11 +45,21 @@ class VowsRunnerABC(object):
             'result': None,
             'topic': topic,
             'error': None,
+            'skip': None,
             'succeeded': False,
             'file': filename,
             'lineno': lineno,
-            'elapsed': 0
+            'elapsed': 0,
+            'stdout': '',
+            'stderr': ''
         }
+        return vow_result
+
+    def run_vow(self, tests_collection, topic, ctx_obj, vow, vow_name, enumerated):
+        #   FIXME: Add Docstring
+
+        start_time = time.time()
+        vow_result = self.get_vow_result(vow, topic, ctx_obj, vow_name, enumerated)
 
         try:
             result = vow(ctx_obj, topic)
@@ -59,13 +67,9 @@ class VowsRunnerABC(object):
             vow_result['succeeded'] = True
             if self.on_vow_success:
                 self.on_vow_success(vow_result)
-
+        except SkipTest, se:
+            vow_result['skip'] = se
         except:
-            #   FIXME:
-            #
-            #   Either...
-            #       *   Describe why we're catching every exception, or
-            #       *   Fix to catch specific kinds of exceptions
             err_type, err_value, err_traceback = sys.exc_info()
             vow_result['error'] = {
                 'type': err_type,
