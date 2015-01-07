@@ -59,19 +59,27 @@ def capture_error(topic_func):
 
 
 def skip_if(condition, reason):
-    '''Topic or vow decorator.  Causes a topic or vow to be skipped if `condition` is True
+    '''Topic or vow or context decorator.  Causes a topic or vow to be skipped if `condition` is True
 
     This is equivilent to `if condition: raise SkipTest(reason)`
     '''
+    from pyvows.core import Vows
 
-    def real_decorator(topic_or_vow):
+    def real_decorator(topic_or_vow_or_context):
         if not condition:
-            return topic_or_vow
+            return topic_or_vow_or_context
 
-        def wrapper(*args, **kwargs):
-            raise SkipTest(reason)
-        wrapper.__name__ = topic_or_vow.__name__
-        return wrapper
+        if type(topic_or_vow_or_context) == type(Vows.Context):
+            class klass_wrapper(topic_or_vow_or_context):
+                def topic(self):
+                    raise SkipTest(reason)
+            klass_wrapper.__name__ = topic_or_vow_or_context.__name__
+            return klass_wrapper
+        else:
+            def wrapper(*args, **kwargs):
+                raise SkipTest(reason)
+            wrapper.__name__ = topic_or_vow_or_context.__name__
+            return wrapper
     return real_decorator
 
 #-------------------------------------------------------------------------------------------------

@@ -275,6 +275,67 @@ class SkippingThings(Vows.Context):
         def there_are_four_total_tests(self, topic):
             expect(topic.total_test_count).to_equal(4)
 
+    class ResultsWhenSubcontextHasSkipDecorator(Vows.Context):
+        def topic(self):
+            dummySuite = {'dummySuite': set([SubcontextHasSkipDecorator])}
+            execution_plan = ExecutionPlanner(dummySuite, set(), set()).plan()
+            runner = VowsRunner(dummySuite, Vows.Context, None, None, execution_plan, False)
+            results = runner.run()
+            return results
+
+        def results_are_successful(self, topic):
+            expect(topic.successful).to_equal(True)
+
+        def teardown_is_still_called(self, topic):
+            expect(SubcontextHasSkipDecorator.teardownCalled).to_equal(True)
+
+        def test_is_not_run(self, topic):
+            expect(SubcontextHasSkipDecorator.testRun).to_equal(True)
+
+        def subcontext_topic_is_not_run(self, topic):
+            expect(SubcontextHasSkipDecorator.subcontextTopicRun).to_equal(False)
+
+        def subcontext_test_is_not_run(self, topic):
+            expect(SubcontextHasSkipDecorator.subcontextTestRun).to_equal(False)
+
+        def there_are_two_skipped_tests(self, topic):
+            expect(topic.skipped_tests).to_equal(2)
+
+        def there_are_two_successful_tests(self, topic):
+            expect(topic.successful_tests).to_equal(2)
+
+        def there_are_zero_errored_tests(self, topic):
+            expect(topic.errored_tests).to_equal(0)
+
+        def there_are_four_total_tests(self, topic):
+            expect(topic.total_test_count).to_equal(4)
+
+        class TestReporterVerbose(Vows.Context):
+            def topic(self, results):
+                return VowsTestReporter(results, V_VERBOSE)
+
+            class TestReporterVerboseOutput(Vows.Context):
+                def topic(self, reporter):
+                    output = StringIO()
+                    reporter.pretty_print(file=output)
+                    return output.getvalue()
+
+                def shows_skipped_count(self, topic):
+                    expect(topic).to_include('2 skipped')
+
+                def top_context_shows_skipped_message(self, topic):
+                    expect(topic).to_include('Subcontext has skip decorator\n')
+
+                def subcontext_shows_skipped_message(self, topic):
+                    expect(topic).to_include('Sub context (SKIPPED: just because)')
+
+                def tests_should_not_run_vow_shows_run(self, topic):
+                    expect(topic).Not.to_include('? tests should not run\n')
+                    expect(topic).to_include('tests should not run\n')
+
+                def subcontext_tests_should_also_not_run_vow_shows_skipped(self, topic):
+                    expect(topic).to_include('? subcontext tests should also not run\n')
+
 
 class SkipIsRaisedFromTopic(Vows.Context):
     teardownCalled = False
@@ -390,3 +451,27 @@ class TopicHasSkipDecorator(Vows.Context):
 
         def subcontext_tests_should_also_not_run(self, topic):
             TopicHasSkipDecorator.subcontextTestRun = True
+
+
+class SubcontextHasSkipDecorator(Vows.Context):
+    teardownCalled = False
+    testRun = False
+    subcontextTopicRun = False
+    subcontextTestRun = False
+
+    def topic(self):
+        return 0
+
+    def teardown(self):
+        SubcontextHasSkipDecorator.teardownCalled = True
+
+    def tests_should_not_run(self, topic):
+        SubcontextHasSkipDecorator.testRun = True
+
+    @Vows.skip('just because')
+    class SubContext(Vows.Context):
+        def topic(self):
+            SubcontextHasSkipDecorator.subcontextTopicRun = True
+
+        def subcontext_tests_should_also_not_run(self, topic):
+            SubcontextHasSkipDecorator.subcontextTestRun = True
