@@ -10,11 +10,12 @@
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
 from functools import wraps
-import re
 
 from pyvows.async_topic import VowsAsyncTopic
+from pyvows.runner import SkipTest
 
 #-------------------------------------------------------------------------------------------------
+
 
 def _batch(klass):
     # This is underscored-prefixed because the only intended use (via
@@ -39,6 +40,7 @@ def async_topic(topic):
     wrapper.__name__ = topic.__name__
     return wrapper
 
+
 def capture_error(topic_func):
     '''Topic decorator.  Allows any errors raised to become the topic value.
 
@@ -55,7 +57,33 @@ def capture_error(topic_func):
     wrapper.__name__ = topic_func.__name__
     return wrapper
 
+
+def skip_if(condition, reason):
+    '''Topic or vow or context decorator.  Causes a topic or vow to be skipped if `condition` is True
+
+    This is equivilent to `if condition: raise SkipTest(reason)`
+    '''
+    from pyvows.core import Vows
+
+    def real_decorator(topic_or_vow_or_context):
+        if not condition:
+            return topic_or_vow_or_context
+
+        if type(topic_or_vow_or_context) == type(Vows.Context):
+            class klass_wrapper(topic_or_vow_or_context):
+                def topic(self):
+                    raise SkipTest(reason)
+            klass_wrapper.__name__ = topic_or_vow_or_context.__name__
+            return klass_wrapper
+        else:
+            def wrapper(*args, **kwargs):
+                raise SkipTest(reason)
+            wrapper.__name__ = topic_or_vow_or_context.__name__
+            return wrapper
+    return real_decorator
+
 #-------------------------------------------------------------------------------------------------
+
 
 class FunctionWrapper(object):
 

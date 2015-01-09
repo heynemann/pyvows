@@ -73,12 +73,16 @@ class VowsResult(object):
         `VowsResult` was 100% successful.
 
         '''
-        return self.successful_tests == self.total_test_count
+        return self.successful_tests + self.skipped_tests == self.total_test_count
 
     @property
     def total_test_count(self):
         '''Returns the total number of tests.'''
-        return self.successful_tests + self.errored_tests
+        return self.successful_tests + self.errored_tests + self.skipped_tests
+
+    @staticmethod
+    def test_is_successful(test):
+        return not (test['error'] or test['skip'])
 
     @property
     def successful_tests(self):
@@ -86,8 +90,8 @@ class VowsResult(object):
         return self._count_contexts(
             contexts=self.contexts,
             count_func=lambda context: (
-                len([t for t in context['tests'] if t['succeeded']])
-                + (0 if context.get('error', None) else 1)
+                len([t for t in context['tests'] if self.test_is_successful(t)])
+                + (0 if (context['error'] or context['skip']) else 1)
             )
         )
 
@@ -97,8 +101,19 @@ class VowsResult(object):
         return self._count_contexts(
             contexts=self.contexts,
             count_func=lambda context: (
-                len([t for t in context['tests'] if not t['succeeded']])
-                + (0 if not context.get('error', None) else 1)
+                len([t for t in context['tests'] if t['error']])
+                + (1 if context['error'] else 0)
+            )
+        )
+
+    @property
+    def skipped_tests(self):
+        '''Returns the number of tests that were skipped'''
+        return self._count_contexts(
+            contexts=self.contexts,
+            count_func=lambda context: (
+                len([t for t in context['tests'] if t['skip']])
+                + (1 if context['skip'] else 0)
             )
         )
 
@@ -118,7 +133,7 @@ class VowsResult(object):
 
         # Success only if all tests succeeded
         for test in context['tests']:
-            succeeded = succeeded and test['succeeded']
+            succeeded = succeeded and not test['error']
 
         return succeeded
 

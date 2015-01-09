@@ -11,13 +11,14 @@ from pyvows import Vows, expect
 from pyvows.result import VowsResult
 from pyvows.reporting import VowsTestReporter  # , VowsDefaultReporter
 
+from StringIO import StringIO
+
 
 @Vows.batch
 class VowsTestReporterExceptions(Vows.Context):
 
     def topic(self):
         v = VowsTestReporter(VowsResult(), 0)
-        v.humanized_print = lambda a: None
         return v
 
     def should_not_raise_TypeError_on_tests_without_a_topic(self, topic):
@@ -28,12 +29,14 @@ class VowsTestReporterExceptions(Vows.Context):
                     'context_instance': Vows.Context(),
                     'error': {'type': '',
                               'value': '',
-                              'traceback': ''}
+                              'traceback': ''},
+                    'skip': None
                     }
             context = {'tests': [test],
                        'contexts': []
                        }
-            topic.print_context('Derp', context)
+            output = StringIO()
+            topic.print_context('Derp', context, file=output)
         except AssertionError as e:
             expect(e).to_be_an_error_like(AssertionError)
             expect(e).Not.to_be_an_error_like(TypeError)

@@ -41,6 +41,7 @@ class XUnitReporter(object):
         result_summary = {
             'total': result.total_test_count,
             'errors': 0,
+            'skip': result.skipped_tests,
             'failures': result.errored_tests,
             'ts': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
             'hostname': socket.gethostname(),
@@ -59,6 +60,7 @@ class XUnitReporter(object):
         testsuite_node.setAttribute('tests', str(result_summary['total']))
         testsuite_node.setAttribute('errors', str(result_summary['errors']))
         testsuite_node.setAttribute('failures', str(result_summary['failures']))
+        testsuite_node.setAttribute('skip', str(result_summary['skip']))
         testsuite_node.setAttribute('timestamp', str(result_summary['ts']))
         testsuite_node.setAttribute('hostname', str(result_summary['hostname']))
         testsuite_node.setAttribute('time', '{elapsed:.3f}'.format(elapsed=result_summary['elapsed']))
@@ -100,6 +102,11 @@ class XUnitReporter(object):
             failure_text = document.createTextNode(''.join(error_tb))
             failure_node.appendChild(failure_text)
             topic_node.appendChild(failure_node)
+        if context.get('skip', None):
+            skip_node = document.createElement('skipped')
+            skip_node.setAttribute('message', str(context['skip']))
+            topic_node.appendChild(skip_node)
+
         parent_node.appendChild(topic_node)
 
         for test in context['tests']:
@@ -125,7 +132,7 @@ class XUnitReporter(object):
             testcase_node.appendChild(stdErrNode)
             parent_node.appendChild(testcase_node)
 
-            if not test['succeeded']:
+            if test.get('error', None):
                 error = test['error']
                 error_msg = traceback.format_exception(
                     error['type'],
@@ -145,6 +152,10 @@ class XUnitReporter(object):
                 failure_text = document.createTextNode(str(error_data['tb']))
                 failure_node.appendChild(failure_text)
                 testcase_node.appendChild(failure_node)
+            if test.get('skip', None):
+                skip_node = document.createElement('skipped')
+                skip_node.setAttribute('message', str(test['skip']))
+                testcase_node.appendChild(skip_node)
 
         for ctx in context['contexts']:
             self.create_test_case_elements(document, parent_node, ctx)

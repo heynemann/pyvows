@@ -9,7 +9,7 @@
 # Copyright (c) 2013 Richard Lupton r.lupton@gmail.com
 
 from pyvows import Vows, expect
-from pyvows.runner import VowsRunner
+from pyvows.runner import VowsRunner, SkipTest
 from pyvows.runner.executionplan import ExecutionPlanner
 
 
@@ -27,7 +27,7 @@ class ErrorsInTopicFunction(Vows.Context):
         def it_is_passed_to_tests_as_normal(self, topic):
             expect(topic).to_be_an_error_like(ZeroDivisionError)
 
-    class WhenTopicReturnsAnException:
+    class WhenTopicReturnsAnException(Vows.Context):
         def topic(self):
             try:
                 return 42 / 0
@@ -37,7 +37,7 @@ class ErrorsInTopicFunction(Vows.Context):
         def it_is_passed_to_tests_as_normal(self, topic):
             expect(topic).to_be_an_error_like(ZeroDivisionError)
 
-    class WhenTopicRaisesAnUnexpectedException:
+    class WhenTopicRaisesAnUnexpectedException(Vows.Context):
         def topic(self):
             dummySuite = {'dummySuite': set([WhenTopicRaisesAnException])}
             execution_plan = ExecutionPlanner(dummySuite, set(), set()).plan()
@@ -47,10 +47,30 @@ class ErrorsInTopicFunction(Vows.Context):
         def results_are_not_successful(self, topic):
             expect(topic.successful).to_equal(False)
 
+        class ResultForTopContextVows(Vows.Context):
+            def topic(self, results):
+                return results.contexts[0]['tests'][0]
+
+            def skip_is_set_to_a_skiptest_exception(self, topic):
+                expect(topic['skip']).to_be_an_error_like(SkipTest)
+
+            def skip_message_relates_reason_as_topic_failure(self, topic):
+                expect(str(topic['skip'])).to_include('topic dependency failed')
+
+        class ResultForSubContext(Vows.Context):
+            def topic(self, results):
+                return results.contexts[0]['contexts'][0]
+
+            def skip_is_set_to_a_skiptest_exception(self, topic):
+                expect(topic['skip']).to_be_an_error_like(SkipTest)
+
+            def skip_message_relates_reason_as_topic_failure(self, topic):
+                expect(str(topic['skip'])).to_include('topic dependency failed')
+
         def vows_and_subcontexts_and_teardown_are_not_called(self, topic):
             expect(WhenTopicRaisesAnException.functionsCalled).to_equal(0)
 
-    class WhenSubcontextTopicRaisesAnException:
+    class WhenSubcontextTopicRaisesAnException(Vows.Context):
         def topic(self):
             dummySuite = {'dummySuite': set([WhenTeardownIsDefined])}
             execution_plan = ExecutionPlanner(dummySuite, set(), set(['excluded_vows_do_not_block'])).plan()
@@ -80,7 +100,7 @@ class WhenTopicRaisesAnException(Vows.Context):
     def tests_should_not_run(self, topic):
         WhenTopicRaisesAnException.functionsCalled += 1
 
-    class SubContext:
+    class SubContext(Vows.Context):
         def subcontexts_should_also_not_run(self, topic):
             WhenTopicRaisesAnException.functionsCalled += 1
 
@@ -91,7 +111,7 @@ class WhenTeardownIsDefined(Vows.Context):
     def teardown(self):
         WhenTeardownIsDefined.teardownCalled = True
 
-    class WhenSubcontextTeardownIsDefined:
+    class WhenSubcontextTeardownIsDefined(Vows.Context):
         teardownCalled = False
 
         def teardown(self):
@@ -101,6 +121,6 @@ class WhenTeardownIsDefined(Vows.Context):
         def excluded_vows_do_not_block(self, topic):
             raise Exception('This will never pass')
 
-        class WhenTopicRaisesAnException:
+        class WhenTopicRaisesAnException(Vows.Context):
             def topic(self):
                 return 42 / 0

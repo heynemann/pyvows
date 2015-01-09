@@ -12,6 +12,8 @@ from pyvows import Vows, expect
 from pyvows.reporting import VowsDefaultReporter
 from pyvows.runner.abc import VowsTopicError
 
+from StringIO import StringIO
+
 # These tests check that the reporting, which happens after all tests
 # have run, correctly shows the errors raised in topic functions.
 
@@ -33,7 +35,8 @@ class ErrorReporting(Vows.Context):
             # Patch the print_traceback() method to just record its
             # arguments.
             self.print_traceback_args = None
-            def print_traceback(*args):
+
+            def print_traceback(*args, **kwargs):
                 self.print_traceback_args = args
             self.reporter.print_traceback = print_traceback
 
@@ -53,7 +56,7 @@ class ErrorReporting(Vows.Context):
 
             def reporter_should_call_print_traceback_with_the_exception(self, context):
                 self.parent.print_traceback_args = None
-                self.parent.reporter.print_context('TestContext', context)
+                self.parent.reporter.print_context('TestContext', context, file=StringIO())
                 expect(self.parent.print_traceback_args).to_equal(('type', 'value', 'traceback'))
 
         class ASuccessfulContext:
@@ -71,5 +74,5 @@ class ErrorReporting(Vows.Context):
 
             def reporter_should_not_call_print_traceback(self, context):
                 self.parent.print_traceback_args = None
-                self.parent.reporter.print_context('TestContext', context)
+                self.parent.reporter.print_context('TestContext', context, file=StringIO())
                 expect(self.parent.print_traceback_args).to_equal(None)
