@@ -87,6 +87,16 @@ class ErrorsInTopicFunction(Vows.Context):
                 teardownCalled
             ).to_equal(True)
 
+    class WhenTeardownRaisesAnException(Vows.Context):
+        def topic(self):
+            dummySuite = {'dummySuite': set([WhenTeardownRaisesException])}
+            execution_plan = ExecutionPlanner(dummySuite, set(), set()).plan()
+            runner = VowsRunner(dummySuite, Vows.Context, None, None, execution_plan, False)
+            return runner.run()
+
+        def results_are_not_successful(self, topic):
+            expect(topic.successful).to_equal(False)
+
 
 class WhenTopicRaisesAnException(Vows.Context):
     functionsCalled = 0
@@ -124,3 +134,8 @@ class WhenTeardownIsDefined(Vows.Context):
         class WhenTopicRaisesAnException(Vows.Context):
             def topic(self):
                 return 42 / 0
+
+
+class WhenTeardownRaisesException(Vows.Context):
+    def teardown(self):
+        raise Exception('omg')
