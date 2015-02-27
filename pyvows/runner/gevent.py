@@ -249,7 +249,10 @@ class VowsParallelRunner(VowsRunnerABC):
                 topic = None
             _run_tests(topic)
             if not ctx_result['error']:
-                _run_teardown()
+                try:
+                    _run_teardown()
+                except Exception, e:
+                    ctx_result['error'] = e
         finally:
             ctx_result['stdout'] = VowsParallelRunner.output.stdout.getvalue()
             ctx_result['stderr'] = VowsParallelRunner.output.stderr.getvalue()
