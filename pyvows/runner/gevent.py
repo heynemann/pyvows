@@ -127,7 +127,8 @@ class VowsParallelRunner(VowsRunnerABC):
 
             # Find & run topic function
             if not hasattr(ctx_obj, 'topic'):  # ctx_obj has no topic
-                return ctx_obj._get_first_available_topic(index)
+                ctx_obj.topic_value = ctx_obj._get_first_available_topic(index)
+                return ctx_obj.topic_value
 
             try:
                 topic_func = ctx_obj.topic
@@ -139,11 +140,20 @@ class VowsParallelRunner(VowsRunnerABC):
                     return None
 
                 topic = topic_func(*topic_list)
+
+                # setup generated topics if needed
+                is_generator = inspect.isgenerator(topic)
+                if is_generator:
+                    ctx_obj.generated_topic = True
+                    topic = ctx_obj.topic_value = list(topic)
+                else:
+                    ctx_obj.topic_value = topic
+
                 ctx_result['topic_elapsed'] = elapsed(start_time)
                 return topic
             except SkipTest:
                 raise
-            except Exception:
+            except:
                 raise VowsTopicError('topic', sys.exc_info())
 
         def _run_tests(topic):
@@ -186,19 +196,7 @@ class VowsParallelRunner(VowsRunnerABC):
                         )
                         teardown_blockers.append(subctx_greenlet)
 
-                # setup generated topics if needed
-                is_generator = inspect.isgenerator(topic)
-                if is_generator:
-                    try:
-                        ctx_obj.generated_topic = True
-                        topic = ctx_obj.topic_value = list(topic)
-                    except Exception:
-                        # Actually getting the values from the generator may raise exception
-                        raise VowsTopicError('topic', sys.exc_info())
-                else:
-                    ctx_obj.topic_value = topic
-
-                if is_generator:
+                if ctx_obj.generated_topic and not ctx_result['error']:
                     for index, topic_value in enumerate(topic):
                         _run_vows_and_subcontexts(topic_value, index=index, enumerated=True)
                 else:

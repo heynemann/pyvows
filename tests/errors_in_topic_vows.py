@@ -11,6 +11,7 @@
 from pyvows import Vows, expect
 from pyvows.runner import VowsRunner, SkipTest
 from pyvows.runner.executionplan import ExecutionPlanner
+from pyvows.runner.abc import VowsTopicError
 
 
 # These tests demonstrate what happens when the topic function raises
@@ -97,6 +98,19 @@ class ErrorsInTopicFunction(Vows.Context):
         def results_are_not_successful(self, topic):
             expect(topic.successful).to_equal(False)
 
+    class WhenGeneratedTopicRaisesAnUnexpectedException(Vows.Context):
+        def topic(self):
+            dummySuite = {'dummySuite': set([WhenGeneratedTopicRaisesAnException])}
+            execution_plan = ExecutionPlanner(dummySuite, set(), set()).plan()
+            runner = VowsRunner(dummySuite, Vows.Context, None, None, execution_plan, False)
+            return runner.run()
+
+        def results_are_not_successful(self, results):
+            expect(results.successful).to_equal(False)
+
+        def the_tests_are_still_reported(self, results):
+            expect(results.contexts[0]['tests']).to_length(1)
+
 
 class WhenTopicRaisesAnException(Vows.Context):
     functionsCalled = 0
@@ -139,3 +153,12 @@ class WhenTeardownIsDefined(Vows.Context):
 class WhenTeardownRaisesException(Vows.Context):
     def teardown(self):
         raise Exception('omg')
+
+
+class WhenGeneratedTopicRaisesAnException(Vows.Context):
+    def topic(self):
+        for i in xrange(1):
+            yield 1/i
+
+    def one_vow(self):
+        raise Exception('This should not run')
