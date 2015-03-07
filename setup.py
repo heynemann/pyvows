@@ -17,7 +17,6 @@ from setuptools import setup, find_packages
 from pyvows import version
 
 
-
 _test_requires = [
     'argparse',
     'colorama',
@@ -61,7 +60,10 @@ setup(
     entry_points={
         'console_scripts': [
             'pyvows = pyvows.cli:main'
-        ]
+        ],
+        'distutils.commands': [
+            ' vows = pyvows.commands:VowsCommand',
+        ],
     },
 
 
