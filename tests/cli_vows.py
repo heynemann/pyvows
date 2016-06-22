@@ -39,7 +39,7 @@ class PyVowsCommandLineInterface(Vows.Context):
                 return parser.parse_args(mock_args)
 
             def should_contain_cover(self, topic):
-                expect(topic).to_include('cover')
+                expect('cover' in topic).to_be_true()
 
             def cover_should_be_true(self, topic):
                 expect(topic.cover).to_be_true()
