@@ -17,3 +17,6 @@ pyvows.iml
 bin/
 include/
 lib/
+
+/coverage.xml
+/pyvows.xml

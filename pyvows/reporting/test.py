@@ -11,7 +11,10 @@ have been run.
 from __future__ import division, print_function
 
 import sys
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except:
+    from io import StringIO
 
 from pyvows.color import yellow, red, blue
 from pyvows.reporting.common import (

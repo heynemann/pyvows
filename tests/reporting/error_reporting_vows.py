@@ -12,7 +12,10 @@ from pyvows import Vows, expect
 from pyvows.reporting import VowsDefaultReporter
 from pyvows.runner.abc import VowsTopicError
 
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except:
+    from io import StringIO
 
 # These tests check that the reporting, which happens after all tests
 # have run, correctly shows the errors raised in topic functions.

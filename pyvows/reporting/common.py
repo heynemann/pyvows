@@ -42,10 +42,10 @@ def ensure_encoded(thing, encoding='utf-8'):
     Currently used only for characters `✓` and `✗`.
 
     '''
-    if isinstance(thing, unicode):
-        return thing.encode(encoding)
-    else:
+    if isinstance(thing, bytes) or not isinstance(thing, str):
         return thing
+    else:
+        return thing.encode(encoding)
 
 
 class VowsReporter(object):
@@ -169,8 +169,10 @@ class VowsReporter(object):
         '''Prints a color-formatted traceback with appropriate indentation.'''
         if isinstance(err_obj, AssertionError):
             error_msg = err_obj
+        elif isinstance(err_obj, bytes):
+            error_msg = err_obj.decode('utf8')
         else:
-            error_msg = unicode(err_obj)
+            error_msg = err_obj
 
         print(self.indent_msg(red(error_msg)), file=file)
 

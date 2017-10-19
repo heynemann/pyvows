@@ -6,7 +6,10 @@ from pyvows.reporting.test import VowsTestReporter
 from pyvows.reporting.xunit import XUnitReporter
 from pyvows.reporting.common import V_VERBOSE
 
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except:
+    from io import StringIO
 
 
 @Vows.batch
@@ -331,7 +334,10 @@ class SkippingThings(Vows.Context):
 
                 def tests_should_not_run_vow_shows_run(self, topic):
                     expect(topic).Not.to_include('? tests should not run\n')
-                    expect(topic).to_include('tests should not run\n')
+                    try:
+                        expect(topic).to_include('tests should not run\n')
+                    except:
+                        expect(topic).to_include("b'tests should not run'\n")
 
                 def subcontext_tests_should_also_not_run_vow_shows_skipped(self, topic):
                     expect(topic).to_include('? subcontext tests should also not run\n')

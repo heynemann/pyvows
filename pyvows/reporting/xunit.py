@@ -26,7 +26,7 @@ class XUnitReporter(object):
     def __init__(self, result):
         self.result_summary = self.summarize_results(result)
 
-    def write_report(self, filename, encoding='utf-8'):
+    def write_report(self, filename, encoding=None):
         #   FIXME: Add Docstring
         with codecs.open(filename, 'w', encoding, 'replace') as output_file:
             output_file.write(self.to_xml(encoding))

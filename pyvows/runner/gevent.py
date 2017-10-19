@@ -14,7 +14,10 @@ from __future__ import absolute_import
 import inspect
 import sys
 import time
-import StringIO
+try:
+    from StringIO import StringIO
+except:
+    from io import StringIO
 try:
     from colorama.ansitowin32 import AnsiToWin32
 except ImportError:
@@ -36,8 +39,8 @@ from pyvows.runner import SkipTest
 
 class _LocalOutput(gevent.local.local):
     def __init__(self):
-        self.__dict__['stdout'] = StringIO.StringIO()
-        self.__dict__['stderr'] = StringIO.StringIO()
+        self.__dict__['stdout'] = StringIO()
+        self.__dict__['stderr'] = StringIO()
 
 
 class _StreamCapture(object):
@@ -71,9 +74,9 @@ class VowsParallelRunner(VowsRunnerABC):
         start_time = time.time()
         result = VowsResult()
         if self.capture_output:
-            self._capture_streams(self.capture_output)
+            self._capture_streams(True)
         try:
-            for suiteName, suitePlan in self.execution_plan.iteritems():
+            for suiteName, suitePlan in self.execution_plan.items():
                 batches = [batch for batch in self.suites[suiteName] if batch.__name__ in suitePlan['contexts']]
                 for batch in batches:
                     self.pool.spawn(
@@ -88,7 +91,8 @@ class VowsParallelRunner(VowsRunnerABC):
 
             self.pool.join()
         finally:
-            self._capture_streams(False)
+            if self.capture_output:
+                self._capture_streams(False)
 
         result.elapsed_time = elapsed(start_time)
         return result
@@ -125,11 +129,11 @@ class VowsParallelRunner(VowsRunnerABC):
             except Exception:
                 raise VowsTopicError('setup', sys.exc_info())
 
-            # Find & run topic function
-            if not hasattr(ctx_obj, 'topic'):  # ctx_obj has no topic
-                return ctx_obj._get_first_available_topic(index)
-
             try:
+                # Find & run topic function
+                if not hasattr(ctx_obj, 'topic'):  # ctx_obj has no topic
+                    return ctx_obj._get_first_available_topic(index)
+
                 topic_func = ctx_obj.topic
                 topic_list = get_topics_for(topic_func, ctx_obj)
 
@@ -239,11 +243,11 @@ class VowsParallelRunner(VowsRunnerABC):
             try:
                 topic = _run_setup_and_topic(ctx_obj, index)
                 _update_execution_plan()
-            except SkipTest, se:
+            except SkipTest as se:
                 ctx_result['skip'] = se
                 skipReason = se
                 topic = None
-            except VowsTopicError, e:
+            except VowsTopicError as e:
                 ctx_result['error'] = e
                 skipReason = SkipTest('topic dependency failed')
                 topic = None
@@ -251,7 +255,7 @@ class VowsParallelRunner(VowsRunnerABC):
             if not ctx_result['error']:
                 try:
                     _run_teardown()
-                except Exception, e:
+                except Exception as e:
                     ctx_result['error'] = e
         finally:
             ctx_result['stdout'] = VowsParallelRunner.output.stdout.getvalue()

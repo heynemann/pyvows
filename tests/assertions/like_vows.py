@@ -8,6 +8,7 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 Bernardo Heynemann heynemann@gmail.com
 
+import sys
 from pyvows import Vows, expect
 
 
@@ -46,9 +47,6 @@ class AssertionIsLike(Vows.Context):
 
         def we_assert_it_is_like_42_float(self, topic):
             expect(topic).to_be_like(42.0)
-
-        def we_assert_it_is_like_42_long(self, topic):
-            expect(topic).to_be_like(long(42))
 
         def we_assert_it_is_not_like_41(self, topic):
             expect(topic).Not.to_be_like(41)

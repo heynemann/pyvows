@@ -141,7 +141,7 @@ class DiscoveringExecutionTree(Vows.Context):
             }
             expect(topic).to_equal(baseline)
 
-    class WithBothInclusionAndExclution(Vows.Context):
+    class WithBothInclusionAndExclusion(Vows.Context):
         @Vows.capture_error
         def topic(self):
             planner = ExecutionPlanner(

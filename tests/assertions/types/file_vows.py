@@ -15,7 +15,9 @@ from pyvows import Vows, expect
 STRINGS = {
     'that_are_files': (
         __file__,
-        unicode(__file__),
+        (__file__.decode('utf8')
+         if isinstance(__file__, bytes) \
+         else __file__),
     ),
 
     'that_are_not_files':   (
