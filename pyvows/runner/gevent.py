@@ -14,7 +14,10 @@ from __future__ import absolute_import
 import inspect
 import sys
 import time
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 try:
     from colorama.ansitowin32 import AnsiToWin32
 except ImportError:
@@ -239,11 +242,11 @@ class VowsParallelRunner(VowsRunnerABC):
             try:
                 topic = _run_setup_and_topic(ctx_obj, index)
                 _update_execution_plan()
-            except SkipTest, se:
+            except SkipTest as se:
                 ctx_result['skip'] = se
                 skipReason = se
                 topic = None
-            except VowsTopicError, e:
+            except VowsTopicError as e:
                 ctx_result['error'] = e
                 skipReason = SkipTest('topic dependency failed')
                 topic = None
@@ -251,7 +254,7 @@ class VowsParallelRunner(VowsRunnerABC):
             if not ctx_result['error']:
                 try:
                     _run_teardown()
-                except Exception, e:
+                except Exception as e:
                     ctx_result['error'] = e
         finally:
             ctx_result['stdout'] = VowsParallelRunner.output.stdout.getvalue()
