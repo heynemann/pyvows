@@ -1,10 +1,11 @@
 sudo: false
-dist: trusty
+dist: xenial
 language: python
 python:
   - 2.7
   - 3.6
+  - 3.8
 script:
-    - make coverage 
+    - make coverage
 after_success:
     - coveralls
