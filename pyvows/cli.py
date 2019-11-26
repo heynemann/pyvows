@@ -224,7 +224,7 @@ def main():
 
             if xml:
                 if arguments.cover_report:
-                    with open(arguments.cover_report, 'w') as report:
+                    with open(arguments.cover_report, 'wb') as report:
                         report.write(xml)
 
                 arguments.cover_threshold /= 100.0

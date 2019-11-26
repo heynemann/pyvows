@@ -31,7 +31,8 @@ class BaseContext(Vows.Context):
     # Second case: BaseSubcontext should be ignored.
     class BaseSubcontext(Vows.Context):
 
-        def topic(self, (Thingy, ponies)):
+        def topic(self, v):
+            (Thingy, ponies) = v
             self.ignore('prepare')
             for pony in ponies:
                 yield (Thingy, self.prepare(pony))
@@ -56,7 +57,8 @@ class PonyVows(Vows.Context):
         class ActualSubcontext(BaseContext.BaseSubcontext):
 
             def prepare(self, something):
-                return unicode(something)
+                return something.decode('utf8') if isinstance(something, bytes) else something
 
-            def pony_is_alicorn(self, (Thingy, pony)):
+            def pony_is_alicorn(self, v):
+                (Thingy, pony) = v
                 expect(Thingy.alicorns).to_include(pony)

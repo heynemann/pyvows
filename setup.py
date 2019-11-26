@@ -18,14 +18,14 @@ from pyvows import version
 
 
 _test_requires = [
-    'argparse',
-    'colorama',
-    'coverage'
+    'argparse>=1.4.0',
+    'colorama>=0.3.7',
+    'coverage>=4.1.1'
 
 ]
 _install_requires = [
-    'gevent>=0.13.6',
-    'preggy>=0.11.1',
+    'gevent>=1.2.2',
+    'preggy>=1.3.0',
 ]
 if sys.version_info < (2, 7):
     _install_requires.append('argparse >= 1.1')

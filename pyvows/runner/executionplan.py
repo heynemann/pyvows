@@ -15,7 +15,7 @@ class ExecutionPlanner(object):
 
     def plan(self):
         plan = {}
-        for suiteName, contextClasses in self.suites.iteritems():
+        for suiteName, contextClasses in self.suites.items():
             plan[suiteName] = {
                 'contexts': {}
             }
@@ -63,9 +63,10 @@ class ExecutionPlanner(object):
         ]
 
         context['vows'] = [
-            name for name, vow in contextMembers if inspect.ismethod(vow)
-            and self.is_included(context['id'] + '.' + name)
-            and not self.is_excluded(name)
+            name for name, vow in contextMembers
+            if (inspect.ismethod(vow) or inspect.isfunction(vow))
+               and self.is_included(context['id'] + '.' + name)
+               and not self.is_excluded(name)
         ]
 
         subcontexts = [

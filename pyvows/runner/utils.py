@@ -34,10 +34,10 @@ def get_topics_for(topic_function, ctx_obj):
     # check for decorated topic function
     if hasattr(topic_function, '_original'):
         # _wrapper_type is 'async_topic' or 'capture_error'
-        async = (getattr(topic_function, '_wrapper_type', None) == 'async_topic')
+        _async = (getattr(topic_function, '_wrapper_type', None) == 'async_topic')
         topic_function = topic_function._original
     else:
-        async = False
+        _async = False
  
     code = get_code_for(topic_function)
  
@@ -48,7 +48,7 @@ def get_topics_for(topic_function, ctx_obj):
     expected_args = code.co_argcount - 1
  
     # taking the callback argument into consideration
-    if async:
+    if _async:
         expected_args -= 1
  
     # prepare to create `topics` list

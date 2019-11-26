@@ -11,7 +11,10 @@ from pyvows import Vows, expect
 from pyvows.result import VowsResult
 from pyvows.reporting import VowsTestReporter  # , VowsDefaultReporter
 
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except:
+    from io import StringIO
 
 
 @Vows.batch

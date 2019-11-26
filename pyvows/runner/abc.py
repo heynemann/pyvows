@@ -67,7 +67,7 @@ class VowsRunnerABC(object):
             vow_result['succeeded'] = True
             if self.on_vow_success:
                 self.on_vow_success(vow_result)
-        except SkipTest, se:
+        except SkipTest as se:
             vow_result['skip'] = se
         except:
             err_type, err_value, err_traceback = sys.exc_info()

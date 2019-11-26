@@ -15,13 +15,13 @@ from pyvows import Vows, expect
 #-------------------------------------------------------------------------------------------------
 
 def asyncFunc(pool, callback):
-    def async():
+    def _async():
         time.sleep(0.1)
         return 10
 
     def get_value(value):
         callback(value, 20, kwarg=30, kw2=40)
-    pool.apply_async(async, callback=get_value)
+    pool.apply_async(_async, callback=get_value)
 
 #-------------------------------------------------------------------------------------------------
 
