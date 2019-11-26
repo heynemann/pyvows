@@ -35,6 +35,7 @@ setup(
     ### OVERVIEW
     name='pyVows',
     description='pyVows is a BDD test engine based on Vows.js <http://vowsjs.org>.',
+    long_description_content_type='text/x-rst',
     long_description=dedent(
         '''pyVows is a test engine based on Vows.js. It features topic-based testing,
         (*fast*) parallel running of tests, code coverage reports, test profiling, and
