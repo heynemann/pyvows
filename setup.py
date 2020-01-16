@@ -47,7 +47,7 @@ setup(
 
 
     ### URLs
-    url='http://pyvows.org',
+    url='https://github.com/heynemann/pyvows',
 
 
     ### TECHNICAL INFO
