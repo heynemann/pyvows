@@ -61,7 +61,7 @@ def capture_error(topic_func):
 def skip_if(condition, reason):
     '''Topic or vow or context decorator.  Causes a topic or vow to be skipped if `condition` is True
 
-    This is equivilent to `if condition: raise SkipTest(reason)`
+    This is equivalent to `if condition: raise SkipTest(reason)`
     '''
     from pyvows.core import Vows
 
