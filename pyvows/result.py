@@ -27,7 +27,7 @@ class VowsResult(object):
         self.elapsed_time = 0.0
 
     def _count_contexts(self, contexts=None, count_func=lambda context: 1):
-        '''Used interally for class properties
+        '''Used internally for class properties
         `total_test_count`, `successful_tests`, and `errored_tests`.
 
         '''

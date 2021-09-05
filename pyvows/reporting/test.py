@@ -133,7 +133,7 @@ class VowsTestReporter(VowsReporter):
                 self.indent += 2
 
                 ### NOTE:
-                ###     Commented out try/except; potential debugging hinderance
+                ###     Commented out try/except; potential debugging hindrance
 
                 #try:
 
